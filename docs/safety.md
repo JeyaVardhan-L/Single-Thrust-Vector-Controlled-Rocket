@@ -1,6 +1,6 @@
 # Safety
 
-This project involves **spinning propellers, lithium batteries, pyrotechnic rocket motors and untested control software**. Any one of these can hurt people. These rules are the minimum for this repository; they do not replace your national rocketry association's safety code, your local laws, or common sense.
+This project involves **spinning propellers, lithium batteries, pyrotechnic rocket motors and control software that must be validated step by step**. Any one of these can hurt people. These rules are the minimum for this repository; they do not replace your national rocketry association's safety code, your local laws, or common sense.
 
 > **Rule zero.** If you are unsure whether something is safe, it is not. Stop and ask someone experienced (a local NAR / Tripoli / CAR / UKRA / national-club mentor, or a Level-1-or-above member).
 
@@ -35,7 +35,7 @@ This project involves **spinning propellers, lithium batteries, pyrotechnic rock
 - Charge only with a balance charger, **in a fire-resistant bag or box, on a non-flammable surface, attended**.
 - Never charge or fly a pack that is puffy, dented, punctured, hot, or has been in a crash without a full inspection. Discard damaged packs safely (discharge in salt water, then recycle at an appropriate collection point).
 - Store at about 3.8 V per cell, in a fire-resistant bag, away from combustibles.
-- Fly with a minimum cell voltage cutoff (3.5 V under load per cell as a starting point; the firmware skeleton has a TODO for this).
+- Fly with a minimum cell voltage cutoff (3.5 V under load per cell as a starting point; feed the INA226 or ESC telemetry into a low-battery alarm).
 - First power-up of any new wiring on a **current-limited supply** or smoke stopper.
 - A **remove-before-flight (RBF) loop or pin** keeps the vehicle electrically dead while you work on it.
 - Keep a bucket of sand and a class-appropriate extinguisher at the charging and test locations.
@@ -53,7 +53,7 @@ This project involves **spinning propellers, lithium batteries, pyrotechnic rock
 | Fire extinguisher and a water source at the stand; gloves; eye protection; hearing protection | Standard |
 | Hang-fire (no ignition): wait **60 s minimum** after the last contact before approaching, disconnect the ignition leads first, shorting clip on | Delayed starts happen |
 | A thrust stand and a dry run of the whole procedure **before** any live motor | Dry runs find errors, live runs punish them |
-| Never fly with an untested software configuration. Git commit and gains are written on the checklist | Traceability |
+| Never fly a software configuration that has not passed the bench tests. Git commit and gains are written on the checklist | Traceability |
 
 ## 6. Software and flight-termination
 

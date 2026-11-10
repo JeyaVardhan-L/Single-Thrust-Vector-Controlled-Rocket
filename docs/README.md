@@ -6,7 +6,7 @@ Read in this order the first time. Afterwards use it as a lookup.
 
 1. **[Safety](safety.md)**: rules for propellers, LiPo batteries, motors, test stands, range. Non-negotiable.
 2. **[Project overview](00-project-overview.md)**: why two phases, what "done" means, the go / no-go gates.
-3. **[Open decisions](open-decisions.md)**: assumptions in this baseline that you must confirm against your real CAD and supplies.
+3. **[Design choices](design-choices.md)**: the baseline values (motor, gears, stack, recovery) and the alternatives.
 
 ## 1. System level
 
@@ -60,4 +60,3 @@ Everything above has an interactive counterpart in the web viewer (`npm start`):
 - **Axes (3D model):** three.js Y-up. Rocket nose is +Y in the model; the gimbal axes are X and Z.
 - **Units:** millimetres for geometry, SI elsewhere unless stated.
 - **"Gate":** a documented go / no-go checkpoint with pass criteria. Do not skip gates.
-- **Status words:** *Baseline* = chosen default, may change. *Assumption* = needs confirmation. *Verified* = measured on the real hardware (none yet).

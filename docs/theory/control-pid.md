@@ -42,7 +42,3 @@ Pick `ωn` so that the closed loop is much slower than the actuator and latency.
 3. Or close the loop with a known `Kp`, measure the oscillation frequency `f`: `G ≈ (2π f)² / Kp`.
 
 Enter the measured `G` in the PID lab preset and the firmware comments.
-
-## Further steps (not in baseline)
-
-Feed-forward from the commanded attitude, gain scheduling with thrust, notch filter for structural modes, Kalman filter for attitude/rate, rate-limited setpoints.

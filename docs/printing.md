@@ -6,7 +6,7 @@ Printed parts are **structure**, not decoration. Print them well, inspect them, 
 
 | Material | Use | Notes |
 |---|---|---|
-| **PETG** | Monocopter ring, hub, deck, battery tray; rocket stack frames | Tough, tolerant of vibration, ≈ 75 °C softening: **keep away from the exhaust** |
+| **PETG** | Monocopter ring, hub, deck, battery tray; rocket stack plates | Tough, tolerant of vibration, ≈ 75 °C softening: **keep away from the exhaust** |
 | **PA-CF / PA12-CF (nylon + carbon)** | Rocket landing frame, gimbal parts | Stiff, heat-resistant to ≈ 120 °C+. Dry the filament; print with hardened nozzle |
 | **TPU 95A** | Monocopter legs and foot caps (optional) | Absorbs landing shocks |
 | **PLA** | Test fits and jigs only | Creeps and softens in a hot car. Do not use on flight hardware |
@@ -47,8 +47,8 @@ Filament: ≈ 105 g (BOM F-01). Print time: 8-10 h total on a 0.4 mm nozzle.
 
 | Part | Qty | Material | Orientation | Notes |
 |---|---|---|---|---|
-| Stack frames (telemetry, battery 2, PCB, battery 1) | 4 | PETG / PA-CF | flat | 110 × 110 × 4 mm, corner collars |
-| Landing frame with 4 hinge arms | 1 | PA-CF | flat | Heat and impact loads |
+| Stack plates (telemetry, PCB, battery) | 3 | PETG / PA-CF | flat | 110 × 110 × 4 mm, rod bosses, lightening holes |
+| Landing frame: 133 mm diamond with 4 corner hinge lugs | 1 | PA-CF | flat | Heat and impact loads |
 | Gimbal fixed mount | 1 | PA-CF | flat | Four rod bosses |
 | Gimbal outer ring | 1 | PA-CF or Al | flat | Ø60 mm ring with 4 pin bosses |
 | Gimbal inner collar | 1 | PA-CF or Al | vertical | Grips Ø32 mm tube |

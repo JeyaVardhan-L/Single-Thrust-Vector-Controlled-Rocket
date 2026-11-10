@@ -14,8 +14,8 @@ export function mountViewer({ model: id, stageEl, leftEl, rightEl }) {
 
   const isRocket = id === 'rocket';
   const stage = createStage(stageEl, {
-    cameraPos: isRocket ? [880, 560, 980] : [420, 330, 470],
-    target: isRocket ? [0, 290, 0] : [0, 130, 0],
+    cameraPos: isRocket ? [700, 470, 800] : [420, 330, 470],
+    target: isRocket ? [0, 280, 0] : [0, 130, 0],
     gridSize: isRocket ? 1400 : 800,
     preserveDrawingBuffer: shot,
   });

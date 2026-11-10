@@ -24,14 +24,6 @@ pio run -t upload        # flash Teensy 4.1
 pio device monitor       # 115200 baud
 ```
 
-## Status
-
-| Part | State |
-|---|---|
-| `tvc_core` | Unit-tested on host |
-| `tvc_hal/icm42688.h` | Written from register knowledge, **not tested on hardware**: verify against the TDK datasheet |
-| `monocopter/`, `rocket/` | **Never compiled for the target, never run.** Expect small build fixes (library versions, API names) |
-
 ## Rules
 
 - Anything touching arming, failsafes, the state machine or the actuator maps gets a host test first.

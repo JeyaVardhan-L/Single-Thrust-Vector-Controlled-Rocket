@@ -1,26 +1,11 @@
 // Phase 2 model: RK-1 TVC rocket (stacked-frame airframe, gear-driven 2-axis gimbal, splayed legs).
-// Part ids mirror the CAD browser tree: tvc, gear36t1, gear36t2, rods, landing-frame, battery-frame1,
-// pcb-frame, battery-frame2, telemetry-frame, landing-gear, test-stand (+ motor).
-import { THREE, MAT, Parts, box, cyl, torus, sphere, strut, gear, squareFrame } from '../common/kit.js';
+// Part ids follow the CAD browser tree: tvc, gear36t1, gear36t2, rods, landing-frame, battery-frame,
+// pcb-frame, telemetry-frame, landing-gear, test-stand (+ motor).
+import { THREE, MAT, Parts, box, cyl, torus, sphere, strut, gear, plate, tubeAlong } from '../common/kit.js';
 import { ROCKET as S, GEAR_RATIO } from '../data/spec.js';
 
 const DEG = Math.PI / 180;
 const PI = Math.PI;
-
-function frameWithCollars(y) {
-  const g = new THREE.Group();
-  const f = squareFrame(S.frameSize, 12, S.frameThickness, MAT.print);
-  f.position.y = y;
-  g.add(f);
-  // rod collars at the four corners + gusset cross bars
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
-    g.add(box(16, S.frameThickness + 4, 16, MAT.printDk, sx * S.rodOffset, y, sz * S.rodOffset));
-  }
-  const c1 = box(S.frameSize * 1.28, 3, 6, MAT.print, 0, y, 0); c1.rotation.y = PI / 4; c1.scale.x = 0.62;
-  const c2 = box(S.frameSize * 1.28, 3, 6, MAT.print, 0, y, 0); c2.rotation.y = -PI / 4; c2.scale.x = 0.62;
-  g.add(c1, c2);
-  return g;
-}
 
 export function buildRocket() {
   const root = new THREE.Group();
@@ -28,98 +13,184 @@ export function buildRocket() {
   const parts = new Parts(root);
   const gy = S.gimbalY;
 
+  // ---------------- shared helpers for the stack ----------------
+  const blueMat = new THREE.MeshStandardMaterial({ color: 0x2f6fd0, roughness: 0.5, metalness: 0.1 });
+  const brass = MAT.gold;
+  const RO = S.rodOffset, T = S.frameThickness;
+
+  // One 3D-printed stack plate: rounded square, rod bosses with nuts above and below, lightening holes.
+  function stackPlate(y, extraHoles = []) {
+    const g = new THREE.Group();
+    const holes = [];
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) holes.push([sx * RO, sz * RO, 3.3]);
+    holes.push([0, 0, 17]);
+    for (const [x, z] of [[-30, 0], [30, 0], [0, -32], [0, 32]]) holes.push([x, z, 7.5]);
+    holes.push(...extraHoles);
+    const pl = plate(S.frameSize, T, holes, MAT.print, 8);
+    pl.position.y = y - T / 2;
+    g.add(pl);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      g.add(cyl(7, 7.6, T + 4, MAT.printDk, 20, sx * RO, y, sz * RO));          // rod boss
+      g.add(cyl(5.2, 5.2, 3, MAT.steel, 6, sx * RO, y + T / 2 + 4.5, sz * RO)); // lock nut above
+      g.add(cyl(5.2, 5.2, 3, MAT.steel, 6, sx * RO, y - T / 2 - 4.5, sz * RO)); // lock nut below
+    }
+    return g;
+  }
+  const standoff = (g, x, y, z, h = 9) => g.add(cyl(2.6, 2.6, h, brass, 8, x, y + h / 2, z));
+  const lead = (g, pts, col) => g.add(tubeAlong(pts, 0.9, new THREE.MeshStandardMaterial({ color: col, roughness: 0.6 })));
+  const led = (g, x, y, z, c) => g.add(sphere(1.6, new THREE.MeshBasicMaterial({ color: c }), x, y, z));
+
   // ---------------- rods ----------------
   {
     const g = new THREE.Group();
     const len = S.rodTopY - S.rodBottomY;
     for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
-      g.add(cyl(S.rodRadius, S.rodRadius, len, MAT.carbon, 14, sx * S.rodOffset, S.rodBottomY + len / 2, sz * S.rodOffset));
+      const x = sx * RO, z = sz * RO;
+      g.add(cyl(S.rodRadius, S.rodRadius, len, MAT.carbon, 14, x, S.rodBottomY + len / 2, z));
+      g.add(sphere(S.rodRadius + 1.2, MAT.black, x, S.rodTopY, z));                                // top cap
+      g.add(cyl(S.rodRadius + 1.6, S.rodRadius + 1.6, 4, MAT.black, 14, x, S.rodBottomY - 2, z));  // foot cap
     }
     parts.add('rods', g, {
       name: 'Rods (×4)', category: 'structure', cad: 'rods:1', explode: [0, -25, 0],
-      desc: 'Four Ø6 mm carbon-fibre rods, 490 mm. Carry the stack and the thrust load from the gimbal mount.',
+      desc: 'Four Ø6 mm carbon-fibre rods, 425 mm, capped at both ends. They carry the stack and the thrust load from the gimbal mount.',
     });
   }
 
-  // ---------------- frames ----------------
-  const batt = (w, h, d, x, y, z) => {
-    const b = new THREE.Group();
-    b.add(box(w, h, d, MAT.lipo, x, y, z));
-    b.add(box(w - 6, 0.8, d - 6, MAT.black, x, y + h / 2 + 0.3, z));
-    b.add(box(w + 2, 5, 8, MAT.black, x, y, z - 6));
-    b.add(box(8, 5, 8, MAT.red, x + w / 2 + 4, y, z));
-    return b;
-  };
-
-  // telemetry frame (top): LoRa radio, GPS, antenna
+  // ---------------- stack: telemetry frame (top) ----------------
   {
+    const y = S.telemetryFrameY, top = y + T / 2;
     const g = new THREE.Group();
-    g.add(frameWithCollars(S.telemetryFrameY));
-    g.add(box(34, 2, 22, MAT.pcb, -18, S.telemetryFrameY + 5, 6));
-    g.add(box(14, 3, 14, MAT.steel, -22, S.telemetryFrameY + 8, 6));
-    g.add(cyl(17, 17, 6, MAT.white, 32, 36, S.telemetryFrameY + 7, 0));   // GPS puck
-    g.add(cyl(0.9, 0.9, 85, MAT.black, 12, S.telemetryFrameY + 48, 6));   // whip antenna
-    g.add(sphere(2.5, MAT.glow, 38, S.telemetryFrameY + 8, 0));
+    g.add(stackPlate(y));
+    for (const [x, z] of [[-34, 22], [34, 22], [-34, -22]]) standoff(g, x, top, z, 6);
+    // LoRa module with shield can and SMA connector
+    g.add(box(34, 1.4, 22, blueMat, -22, top + 6.7, 12));
+    g.add(box(14, 2.4, 11, MAT.steel, -26, top + 8.6, 12));
+    const sma = cyl(2.8, 2.8, 8, MAT.gold, 16, -40, top + 8, 12);
+    sma.rotation.z = PI / 2;
+    g.add(sma);
+    // GPS puck: white housing, black patch, dark bezel
+    g.add(cyl(17, 17.5, 6, MAT.white, 40, 22, top + 3, -10));
+    g.add(cyl(13, 13, 0.6, MAT.black, 40, 22, top + 6.2, -10));
+    g.add(cyl(18, 18, 1.2, MAT.slate, 40, 22, top + 0.6, -10));
+    // whip antenna on a base, with tip bead
+    g.add(cyl(3.2, 3.8, 5, MAT.black, 16, 20, top + 2.5, 26));
+    g.add(cyl(0.9, 0.9, 92, MAT.black, 8, 20, top + 50, 26));
+    g.add(sphere(1.8, MAT.red, 20, top + 96, 26));
+    // buzzer, status LEDs, short flying leads
+    g.add(cyl(5.5, 5.5, 5, MAT.black, 20, -34, top + 2.5, -28));
+    led(g, -10, top + 2, -32, 0x3ecf8e); led(g, -3, top + 2, -32, 0xffb000); led(g, 4, top + 2, -32, 0xff4040);
+    lead(g, [[-22, top + 6, 20], [-12, top + 18, 40], [-4, y - 2, 46]], 0x111111);
+    lead(g, [[22, top + 1, -26], [30, top + 14, -40], [38, y - 2, -46]], 0xd8321e);
     parts.add('telemetry-frame', g, {
-      name: 'Telemetry frame', category: 'avionics', cad: 'telemetry-frame:1', explode: [0, 290, 0],
-      desc: 'Top frame: LoRa telemetry radio, GPS puck, whip antenna, status LED. Highest point = best RF and GPS view.',
-    });
-  }
-  // battery frame 2 (servo battery B)
-  {
-    const g = new THREE.Group();
-    g.add(frameWithCollars(S.battery2FrameY));
-    g.add(batt(58, 18, 32, 0, S.battery2FrameY + 11, 0));
-    parts.add('battery-frame2', g, {
-      name: 'Battery frame 2 (servo pack B)', category: 'power', cad: 'battery-frame2:1', explode: [0, 210, 0],
-      desc: '2S 850 mAh LiPo dedicated to the gimbal servos, so servo current spikes cannot brown out the flight computer.',
-    });
-  }
-  // pcb frame
-  {
-    const g = new THREE.Group();
-    g.add(frameWithCollars(S.pcbFrameY));
-    g.add(box(84, 1.8, 54, MAT.pcb, 0, S.pcbFrameY + 4, 0));
-    g.add(box(18, 3, 36, MAT.black, -8, S.pcbFrameY + 7, 0));        // Teensy 4.1
-    g.add(box(8, 2, 8, MAT.black, 22, S.pcbFrameY + 6, -10));          // IMU
-    g.add(box(8, 2, 8, MAT.black, 22, S.pcbFrameY + 6, 8));            // baro
-    g.add(box(10, 6, 8, MAT.red, 34, S.pcbFrameY + 8, -19));           // pyro terminals
-    g.add(box(10, 6, 8, MAT.red, 34, S.pcbFrameY + 8, 19));
-    g.add(sphere(2, MAT.glow, -34, S.pcbFrameY + 6, 20));
-    parts.add('pcb-frame', g, {
-      name: 'PCB frame (flight computer)', category: 'avionics', cad: 'pcb-frame:1', explode: [0, 130, 0],
-      desc: 'Flight computer board: Teensy 4.1, IMU, barometer, servo + pyro drivers, microSD logger. IMU sits near the stack centreline.',
-    });
-  }
-  // battery frame 1 (avionics battery A)
-  {
-    const g = new THREE.Group();
-    g.add(frameWithCollars(S.battery1FrameY));
-    g.add(batt(58, 18, 32, 0, S.battery1FrameY + 11, 0));
-    parts.add('battery-frame1', g, {
-      name: 'Battery frame 1 (avionics pack A)', category: 'power', cad: 'battery-frame1:1', explode: [0, 50, 0],
-      desc: '2S 850 mAh LiPo for the avionics rail. Low in the stack to keep the centre of gravity forward of the thrust line.',
+      name: 'Telemetry frame', category: 'avionics', cad: 'telemetry-frame:1', explode: [0, 190, 0],
+      desc: 'Top plate: LoRa radio with SMA, GPS puck, 90 mm whip antenna, buzzer and three status LEDs. Highest point for the best RF and GPS view.',
     });
   }
 
-  // landing frame: square frame + 4 hinge arms on the axes
+  // ---------------- stack: PCB frame (middle) ----------------
   {
+    const y = S.pcbFrameY, top = y + T / 2;
     const g = new THREE.Group();
-    g.add(frameWithCollars(S.landingFrameY));
+    g.add(stackPlate(y));
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) standoff(g, sx * 38, top, sz * 22, 9);
+    const by = top + 9 + 0.8;                              // board top surface height
+    g.add(box(88, 1.6, 52, MAT.pcb, 0, by, 0));            // carrier board
+    // Teensy 4.1: PCB, MCU, USB, SD slot, pin headers
+    g.add(box(61, 1.4, 18, MAT.pcb, -8, by + 4, 0));
+    g.add(box(10, 1.4, 10, MAT.black, -4, by + 5.1, 0));
+    g.add(box(8, 2.6, 7, MAT.steel, -41.5, by + 5.2, 0));
+    g.add(box(15, 2.4, 12, MAT.steel, 20, by + 5.2, 0));
+    g.add(box(58, 2.6, 2.4, MAT.black, -8, by + 2.5, 8));
+    g.add(box(58, 2.6, 2.4, MAT.black, -8, by + 2.5, -8));
+    // IMU + baro daughter boards
+    g.add(box(15, 1.2, 15, blueMat, 30, by + 1.4, 12));
+    g.add(box(5, 1.2, 5, MAT.black, 30, by + 2.4, 12));
+    g.add(box(10, 1.2, 10, blueMat, 30, by + 1.4, -10));
+    g.add(box(3.5, 1, 3.5, MAT.steel, 30, by + 2.3, -10));
+    // pyro screw terminals + JST servo connectors
+    for (const z of [-20, -13]) g.add(box(8, 8, 6.4, blueMat, 36, by + 4.8, z));
+    for (let i = 0; i < 4; i++) g.add(box(9, 5, 6, MAT.white, -40, by + 3.3, 17 - i * 6.5));
+    // capacitors, regulator, fuse
+    for (const x of [8, 14, 20]) g.add(cyl(2.6, 2.6, 6, MAT.black, 14, x, by + 3.8, -20));
+    g.add(box(12, 3, 9, MAT.black, 8, by + 2.4, 20));
+    g.add(box(9, 3.2, 4, MAT.red, 22, by + 2.6, 20));
+    // remove-before-flight pin with flag, arm toggle switch, LEDs
+    g.add(cyl(1.6, 1.6, 20, MAT.red, 10, -22, by + 11, -20));
+    g.add(box(18, 0.8, 9, MAT.red, -22, by + 20.6, -24));
+    g.add(cyl(3.6, 3.6, 5, MAT.steel, 16, 40, by + 4, 20));
+    const lever = cyl(1, 1, 9, MAT.steel, 8, 40, by + 8.5, 20);
+    lever.rotation.x = 0.35;
+    g.add(lever);
+    led(g, -36, by + 1.8, -21, 0x3ecf8e); led(g, -31, by + 1.8, -21, 0xffb000);
+    lead(g, [[-40, by + 6, 17], [-50, by + 4, 40], [-46, y - 2, 48]], 0xe8b400);
+    lead(g, [[-40, by + 6, 10.5], [-52, by + 2, 34], [-47, y - 2, 46]], 0x2a6ee8);
+    parts.add('pcb-frame', g, {
+      name: 'PCB frame (flight computer)', category: 'avionics', cad: 'pcb-frame:1', explode: [0, 100, 0],
+      desc: 'Carrier board on brass standoffs: Teensy 4.1 with microSD, IMU and baro boards, servo JST ports, pyro terminals, regulator, fuse, RBF pin and arm switch. The IMU sits on the stack axis.',
+    });
+  }
+
+  // ---------------- stack: battery frame (bottom of the stack) ----------------
+  {
+    const y = S.batteryFrameY, top = y + T / 2;
+    const g = new THREE.Group();
+    g.add(stackPlate(y));
+    const pack = (z, tag) => {
+      const p = new THREE.Group();
+      p.add(box(56, 17, 29, MAT.lipo, 0, top + 8.5, z));
+      p.add(box(50, 0.6, 23, MAT.black, 0, top + 17.2, z));      // label panel
+      p.add(box(8, 1, 14, tag, -14, top + 17.7, z));              // colour tag
+      p.add(box(7, 5.5, 8, MAT.red, 31, top + 8, z));             // XT30 housing
+      p.add(box(3, 3, 6, MAT.gold, 35, top + 8, z));
+      return p;
+    };
+    g.add(pack(-17, MAT.white));   // pack A: avionics
+    g.add(pack(17, MAT.orange));   // pack B: servos
+    // Velcro straps over both packs and a foam pad
+    g.add(box(9, 0.9, 68, MAT.black, -2, top + 17.9, 0));
+    g.add(box(9, 19, 1.2, MAT.black, -2, top + 9, 34.4));
+    g.add(box(9, 19, 1.2, MAT.black, -2, top + 9, -34.4));
+    g.add(box(60, 1.2, 4, MAT.rubber, 0, top + 0.6, 0));
+    lead(g, [[32, top + 8, -17], [46, top + 12, -30], [48, y + 12, -42], [48, y - 4, -46]], 0xd8321e);
+    lead(g, [[32, top + 8, 17], [46, top + 12, 30], [48, y + 12, 42], [48, y - 4, 46]], 0xd8321e);
+    parts.add('battery-frame', g, {
+      name: 'Battery frame (packs A + B)', category: 'power', cad: 'battery-frame1:1', explode: [0, 40, 0],
+      desc: 'Two 2S 850 mAh LiPo packs side by side under Velcro straps. Pack A (white tag) feeds the avionics, pack B (orange tag) feeds only the gimbal servos, so servo current spikes cannot reset the flight computer.',
+    });
+  }
+
+  // ---------------- landing frame: diamond plate, corners on the leg axes ----------------
+  {
+    const y = S.landingFrameY;
+    const g = new THREE.Group();
+    const dia = new THREE.Group();
+    dia.position.y = y;
+    dia.rotation.y = PI / 4;
+    const pl = plate(S.landingFrameSize, T + 1, [[0, 0, 27], [-30, 30, 8], [30, 30, 8], [-30, -30, 8], [30, -30, 8]], MAT.print, 9);
+    pl.position.y = -(T + 1) / 2;
+    dia.add(pl);
+    g.add(dia);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      g.add(cyl(8.5, 8.5, T + 5, MAT.printDk, 20, sx * RO, y, sz * RO));
+      g.add(cyl(5.2, 5.2, 3, MAT.steel, 6, sx * RO, y + 4.5, sz * RO));
+      g.add(cyl(5.2, 5.2, 3, MAT.steel, 6, sx * RO, y - 4.5, sz * RO));
+    }
+    // hinge lugs on the four corners (on the X and Z axes)
     for (let i = 0; i < 4; i++) {
-      const a = i * 90 * DEG;
-      const arm = box(S.legHingeRadius - 30, 6, 14, MAT.printDk);
-      arm.position.set(Math.cos(a) * (S.legHingeRadius / 2 + 15), S.landingFrameY, Math.sin(a) * (S.legHingeRadius / 2 + 15));
-      arm.rotation.y = -a;
-      g.add(arm);
-      const bracket = box(14, 30, 4, MAT.printDk);
-      bracket.position.set(Math.cos(a) * S.legHingeRadius, S.landingFrameY - 12, Math.sin(a) * S.legHingeRadius);
-      bracket.rotation.y = -a + PI / 2;
-      g.add(bracket);
+      const hold = new THREE.Group();
+      hold.position.set(0, y, 0);
+      hold.rotation.y = -i * 90 * DEG;                        // local +X is radial
+      const R = S.legHingeRadius;
+      hold.add(box(20, 6, 22, MAT.printDk, R - 12, -1, 0));
+      for (const sz of [-1, 1]) hold.add(box(14, 22, 3, MAT.printDk, R - 2, -9, sz * 8));
+      const pin = cyl(2, 2, 24, MAT.steel, 12, R, -12, 0);
+      pin.rotation.x = PI / 2;
+      hold.add(pin);
+      g.add(hold);
     }
     parts.add('landing-frame', g, {
-      name: 'Landing frame', category: 'structure', cad: 'landing-frame:1', explode: [0, -35, 0],
-      desc: 'Frame with four hinge arms for the landing legs; also the upper guide for the motor tube.',
+      name: 'Landing frame', category: 'structure', cad: 'landing-frame:1', explode: [0, -40, 0],
+      desc: 'Diamond plate (rotated 45°) whose four corners carry the leg hinge lugs; the rods pass through bosses on its edges. Also the upper guide for the motor tube.',
     });
   }
 
@@ -141,6 +212,7 @@ export function buildRocket() {
       bearing.rotation.z = PI / 2;
       g.add(bearing);
     }
+    g.add(cyl(42, 42, 1.6, MAT.alu, 48, 0, gy - 44, 0));   // heat-shield disc under the gimbal
     // servo A bracket (pitch axis servo, at +X)
     g.add(box(14, 3, 24, MAT.printDk, 56, gy - 18, 0));
     g.add(box(4, 30, 22, MAT.printDk, 49, gy - 24, 0));
@@ -240,8 +312,8 @@ export function buildRocket() {
     motorPivot.add(flame);
     g.add(motorPivot);
     parts.add('motor', g, {
-      name: 'Motor tube + 29 mm solid motor', category: 'propulsion', cad: '(not in CAD yet)', explode: [0, -230, 0],
-      desc: 'Baseline assumption: certified 29 mm composite reload in a 32 mm G10/phenolic tube clamped by the gimbal collar. See docs/open-decisions.md.',
+      name: 'Motor tube + 29 mm solid motor', category: 'propulsion', cad: '(motor tube and motor)', explode: [0, -230, 0],
+      desc: 'Certified 29 mm composite reload in a 32 mm G10/phenolic tube clamped by the gimbal collar. See docs/design-choices.md.',
     });
   }
 
@@ -251,11 +323,12 @@ export function buildRocket() {
     for (let i = 0; i < S.legs; i++) {
       const a = i * 90 * DEG;
       const dir = new THREE.Vector3(Math.cos(a), 0, Math.sin(a));
-      const hinge = dir.clone().multiplyScalar(S.legHingeRadius).setY(S.legHingeY);
+      const hinge = dir.clone().multiplyScalar(S.legHingeRadius).setY(S.legHingeY - 12);
       const foot = dir.clone().multiplyScalar(S.footRadius).setY(6);
       g.add(strut(hinge.toArray(), foot.toArray(), S.legRadius, MAT.print));
       g.add(cyl(14, 16, 6, MAT.rubber, 24, foot.x, 3, foot.z));
-      g.add(sphere(5, MAT.steel, hinge.x, hinge.y, hinge.z));
+      g.add(sphere(5.5, MAT.steel, hinge.x, hinge.y, hinge.z));
+      g.add(strut([hinge.x, hinge.y, hinge.z], [hinge.x + (foot.x - hinge.x) * 0.16, hinge.y + (foot.y - hinge.y) * 0.16, hinge.z + (foot.z - hinge.z) * 0.16], 6, MAT.printDk));
       // brace from fixed gimbal mount to leg mid
       const mid = hinge.clone().lerp(foot, 0.5);
       const mountPt = dir.clone().multiplyScalar(48).setY(gy);

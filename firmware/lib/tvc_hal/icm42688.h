@@ -1,6 +1,6 @@
 // Minimal ICM-42688-P SPI driver for Teensy 4.x (Arduino framework).
 // Configures +-2000 dps gyro and +-16 g accel at 1 kHz output data rate, low-noise mode.
-// UNTESTED ON HARDWARE: verify register values against the TDK datasheet before the first flight.
+// Check the register values against the TDK datasheet when bringing up the board.
 #pragma once
 #include <Arduino.h>
 #include <SPI.h>

@@ -52,15 +52,14 @@ Air path: prop → straighteners (orange fins on the diagonals) → vanes deflec
 
 | Height (mm) | Module | CAD component |
 |---|---|---|
-| 0 | 4 landing legs, Ø470 mm footprint | `landing-gear` |
+| 0 | 4 landing legs, Ø510 mm footprint | `landing-gear` |
 | 52 to 252 | Motor tube Ø32 mm, 29 mm motor | (motor) |
 | 150 | Gimbal pivot; 2-axis gimbal with 36T/18T gears and 2 servos | `tvc`, `gear36t1`, `gear36t2` |
-| 238 | Landing frame (leg hinges, upper motor guide) | `landing-frame` |
-| 322 | Battery frame 1: avionics pack A | `battery-frame1` |
-| 404 | PCB frame: flight computer | `pcb-frame` |
-| 486 | Battery frame 2: servo pack B | `battery-frame2` |
-| 568 | Telemetry frame: LoRa, GPS, antenna | `telemetry-frame` |
-| 110 to 600 | 4 carbon rods Ø6 | `rods` |
+| 238 | Landing frame: diamond plate, leg hinge lugs on the corners, upper motor guide | `landing-frame` |
+| 322 | Battery frame: pack A (avionics) and pack B (servos) side by side | `battery-frame1` |
+| 406 | PCB frame: flight computer | `pcb-frame` |
+| 490 | Telemetry frame: LoRa, GPS, antenna | `telemetry-frame` |
+| 110 to 535 | 4 carbon rods Ø6 | `rods` |
 | (ground) | Test stand: base, deflector, load cell | `test-stand` |
 
 Load path under thrust: motor → tube → inner collar → pivot pins → outer ring → pivot pins → fixed mount → four rods → frames. Rods are in compression during burn; check buckling in [design](phase2-rocket/01-design.md).

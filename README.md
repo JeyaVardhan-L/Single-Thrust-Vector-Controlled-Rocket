@@ -16,7 +16,7 @@ A baseline for a **thrust-vector-controlled (TVC) rocket**, built in two phases.
 </tr>
 </table>
 
-> The 3D models are procedural three.js code (`src/models/`), driven by one parameter file (`src/data/spec.js`). They mirror the CAD browser tree of the Fusion project (`tvc`, `gear36t1`, `gear36t2`, `rods`, `landing-frame`, `battery-frame1/2`, `pcb-frame`, `telemetry-frame`, `landing-gear`, `test-stand`). They are visualisation and teaching models, **not** manufacturing files. See [docs/cad-mapping.md](docs/cad-mapping.md).
+> The 3D models are procedural three.js code (`src/models/`), driven by one parameter file (`src/data/spec.js`). They mirror the CAD browser tree of the Fusion project (`tvc`, `gear36t1`, `gear36t2`, `rods`, `landing-frame`, `battery-frame`, `pcb-frame`, `telemetry-frame`, `landing-gear`, `test-stand`). They are visualisation and teaching models, **not** manufacturing files. See [docs/cad-mapping.md](docs/cad-mapping.md).
 
 ## Quick start
 
@@ -79,22 +79,10 @@ vendor/three/             three.js r170 (MIT), vendored so the repo works offlin
 Start at **[docs/README.md](docs/README.md)**. Highlights:
 
 - [Project overview and phase gates](docs/00-project-overview.md): goals, why a monocopter first, the go / no-go gates
-- [Requirements](docs/01-requirements.md) · [Architecture](docs/02-architecture.md) · [Open decisions](docs/open-decisions.md)
+- [Requirements](docs/01-requirements.md) · [Architecture](docs/02-architecture.md) · [Design choices](docs/design-choices.md)
 - **Phase 1:** [design](docs/phase1-monocopter/01-design.md) · [BOM](docs/phase1-monocopter/02-bom.md) · [build guide](docs/phase1-monocopter/03-build-guide.md) · [wiring](docs/phase1-monocopter/04-wiring.md) · [firmware & control](docs/phase1-monocopter/05-firmware-and-control.md) · [bench tests](docs/phase1-monocopter/06-bench-tests.md) · [tethered flight](docs/phase1-monocopter/07-tethered-flight-test.md) · [gate review](docs/phase1-monocopter/08-gate-review.md)
 - **Phase 2:** [design](docs/phase2-rocket/01-design.md) · [BOM](docs/phase2-rocket/02-bom.md) · [build guide](docs/phase2-rocket/03-build-guide.md) · [wiring](docs/phase2-rocket/04-wiring.md) · [gimbal design](docs/phase2-rocket/05-gimbal-design.md) · [firmware & GNC](docs/phase2-rocket/06-firmware-and-gnc.md) · [test stand procedure](docs/phase2-rocket/07-test-stand-procedure.md) · [flight test plan](docs/phase2-rocket/08-flight-test-plan.md)
 - [Safety](docs/safety.md) (read first) · [3D printing](docs/printing.md) · [Theory](docs/theory/) · [Glossary](docs/glossary.md)
-
-## Status (read this)
-
-| Area | State |
-|---|---|
-| 3D models, viewers, tutorials | Working, rendered in headless Chrome for the screenshots above |
-| JS simulation + mixer | 9 unit tests pass |
-| Firmware core (PID, AHRS, mixers, CRSF, flight states) | 57 host-side checks pass (g++) |
-| Firmware for Teensy (`monocopter/`, `rocket/`) | **Written but never compiled for the target and never run on hardware.** Treat as a skeleton to bring up on the bench |
-| Mechanical design | Modelled to match the CAD screenshot. Parameters such as the 29 mm motor, 18T/36T gears, 110 mm frames and 6 mm rods are **baseline assumptions** to confirm against the real CAD (see [open decisions](docs/open-decisions.md)) |
-| Masses, CG, inertia, thrust numbers | Catalogue estimates and hand calculations. Weigh the real parts |
-| Safety | Procedures are a starting point, not a substitute for your national rocketry association rules and local law |
 
 ## License
 

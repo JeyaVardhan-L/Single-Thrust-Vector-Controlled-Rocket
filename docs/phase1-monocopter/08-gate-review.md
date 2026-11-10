@@ -26,7 +26,7 @@ Gate 3 decides whether Phase 2 **powered** tests may start. Hold the review with
 | 11 | Servo power architecture validated (no brown-out) | Gimbal servos | ☐ |
 | 12 | Logging rate and file system validated (no dropped samples) | Rocket logging | ☐ |
 | 13 | Operating discipline: roles, call-outs, checklists used and refined | Static fires | ☐ |
-| 14 | Open decisions D-01 (propulsion) and D-03 (recovery) resolved | Phase 2 build | ☐ |
+| 14 | Design choices D-01 (propulsion) and D-03 (recovery) confirmed | Phase 2 build | ☐ |
 
 ### Gaps to carry into Phase 2
 

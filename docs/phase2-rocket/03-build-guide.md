@@ -12,8 +12,8 @@ Tools: those of [Phase 1](../phase1-monocopter/03-build-guide.md) plus a dial in
 
 | Do | Check |
 |---|---|
-| Print per [printing](../printing.md): 4 stack frames (PETG/PA-CF), landing frame (PA-CF), gimbal parts (PA-CF or machined Al), gear sectors/pinions, brackets | Weights vs BOM ±10 % |
-| Cut four Ø6 mm carbon rods to 490 mm; deburr; seal ends with thin CA (wear gloves and a mask when cutting carbon) | Rods straight, equal length ±0.5 mm |
+| Print per [printing](../printing.md): 3 stack plates (PETG/PA-CF), the diamond landing frame (PA-CF), gimbal parts (PA-CF or machined Al), gear sectors/pinions, brackets | Weights vs BOM ±10 % |
+| Cut four Ø6 mm carbon rods to 425 mm; deburr; seal ends with thin CA (wear gloves and a mask when cutting carbon) | Rods straight, equal length ±0.5 mm |
 | Install M3 heat-set inserts in all corner collars and brackets | Flush, square |
 | Ream/drill rod holes to Ø6.2 mm if tight | Rod slides through every collar by hand |
 
@@ -46,21 +46,20 @@ Tools: those of [Phase 1](../phase1-monocopter/03-build-guide.md) plus a dial in
 ## Step 5: Landing frame and legs (`landing-frame`, `landing-gear`)
 
 1. Slide the landing frame on the rods at 238 mm (centre height) and lock it with the collar screws.
-2. Hinge the four legs on the hinge arms (hinge radius 70 mm); fit rubber feet.
+2. Hinge the four legs on the corner lugs of the landing frame (hinge radius 94 mm); fit rubber feet.
 3. Fit the 1.6 mm braces from the gimbal mount to each leg midpoint.
 
 **Check:** the footprint is level within 2 mm; the vehicle stands upright; push test: no tipping up to ≈ 30° of lean.
 
-## Step 6: Stack frames (`battery-frame1`, `pcb-frame`, `battery-frame2`, `telemetry-frame`)
+## Step 6: Stack plates (`battery-frame`, `pcb-frame`, `telemetry-frame`)
 
 Install bottom-up and lock each to the rods:
 
 | Frame | Centre height | Contents |
 |---|---|---|
-| battery-frame1 | 322 mm | 2S 850 mAh pack A (avionics) |
-| pcb-frame | 404 mm | Flight computer: Teensy 4.1, IMU, baro, pyro driver, regulator, fuse, RBF, arm switch |
-| battery-frame2 | 486 mm | 2S 850 mAh pack B (servos) |
-| telemetry-frame | 568 mm | LoRa radio, GPS puck, whip antenna, buzzer / LED |
+| battery-frame | 322 mm | Two 2S 850 mAh packs side by side: pack A (avionics, white tag), pack B (servos, orange tag) |
+| pcb-frame | 406 mm | Flight computer: Teensy 4.1, IMU, baro, pyro driver, regulator, fuse, RBF, arm switch |
+| telemetry-frame | 490 mm | LoRa radio, GPS puck, whip antenna, buzzer / LED |
 
 1. Build the flight-computer board per [04-wiring](04-wiring.md). Mount on silicone grommets with the IMU near the stack axis.
 2. Wire pack B → 5 A fuse → servo rail; pack A → RBF/arm → 5 V regulator → logic. **One ground star point.**
@@ -71,8 +70,8 @@ Install bottom-up and lock each to the rods:
 
 ## Step 7: Mass and balance
 
-1. Weigh the vehicle with the dummy motor. Compare with the BOM (952 g with a G reload; F class ≈ 55 g less).
-2. Find the CG (hang on two cords): expect ≈ 280 mm above the ground. Lateral CG offset ≤ 3 mm.
+1. Weigh the vehicle with the dummy motor. Compare with the BOM (914 g with a G reload; F class ≈ 55 g less).
+2. Find the CG (hang on two cords): expect ≈ 256 mm above the ground. Lateral CG offset ≤ 3 mm.
 3. Update `L` (CG − 150 mm) and estimate `I` (bifilar pendulum or the CAD): put both in the PID lab and the gimbal lab.
 
 ## Step 8: Firmware and Gate A

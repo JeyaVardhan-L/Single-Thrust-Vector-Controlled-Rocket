@@ -34,7 +34,7 @@ Each requirement has an ID, a verification method (**T**est, **A**nalysis, **I**
 
 | ID | Requirement | Ver. | Gate |
 |---|---|---|---|
-| RK-01 | Loaded mass ≤ 1.5 kg (BOM baseline 952 g) | I | B |
+| RK-01 | Loaded mass ≤ 1.5 kg (BOM baseline 914 g) | I | B |
 | RK-02 | Lift-off thrust-to-weight ≥ 2.5 for first flights (F-class motor), ≥ 5 before any G-class flight | A / T | B |
 | RK-03 | Gimbal range ±7° mechanical, software limit ±6.5°, both axes | T | A |
 | RK-04 | Gimbal backlash < 0.3° at the motor tube, measured | T | A |
@@ -48,7 +48,7 @@ Each requirement has an ID, a verification method (**T**est, **A**nalysis, **I**
 | RK-12 | Stand thrust trace shall match the motor datasheet within ±15 % average thrust | T | B |
 | RK-13 | Closed-loop stand test shall reject a commanded 2° attitude offset within 0.5 s without gimbal saturation > 20 % of the time | T | D |
 | RK-14 | Recovery (decision D-03) shall be ground-tested (deployment test with a dummy mass) before any free flight | T | E |
-| RK-15 | The CG shall sit above the gimbal pivot (nozzle below the CG) at the designed height, about 280 mm above the ground plane with an empty motor tube; verify with a balance test within ±10 mm | I | A |
+| RK-15 | The CG shall sit above the gimbal pivot (nozzle below the CG) at the designed height, about 256 mm above the ground plane with an empty motor tube; verify with a balance test within ±10 mm | I | A |
 
 ## Traceability
 

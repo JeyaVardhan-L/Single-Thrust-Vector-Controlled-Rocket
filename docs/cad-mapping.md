@@ -8,16 +8,15 @@ The source CAD is a Fusion project named `rera-final` ("Read-only file" banner, 
 | `gear36t1:1` | `gear36t1` | `rocket.js` | G-02, G-03 | 36-tooth gear sector + 18T pinion + servo for axis 1 |
 | `gear36t2:1` | `gear36t2` | `rocket.js` | G-02, G-03, G-05 | Same for axis 2, riding on the outer ring |
 | `rods:1` | `rods` | `rocket.js` | R-01 | Four Ø6 mm rods |
-| `landing-frame:1` | `landing-frame` | `rocket.js` | R-03 | Frame with four hinge arms |
-| `battery-frame1:1` | `battery-frame1` | `rocket.js` | E-01, R-02 | Frame + avionics pack |
+| `landing-frame:1` | `landing-frame` | `rocket.js` | R-03 | Diamond plate with four corner hinge lugs |
+| `battery-frame1:1`, `battery-frame2:1` | `battery-frame` | `rocket.js` | E-01, E-02, R-02 | One plate carrying both packs (A white tag, B orange tag) |
 | `pcb-frame:1` | `pcb-frame` | `rocket.js` | A-01..A-09, E-03..E-05, R-02 | Flight-computer board frame |
-| `battery-frame2:1` | `battery-frame2` | `rocket.js` | E-02, R-02 | Frame + servo pack |
 | `telemetry-frame:1` | `telemetry-frame` | `rocket.js` | A-05, A-06, A-08, R-02 | Radio, GPS, antenna |
 | `landing-gear:1` | `landing-gear` | `rocket.js` | R-04, R-05 | Four legs, feet, braces |
 | `test-stand:1` | `test-stand` | `rocket.js` | T-01 | Base, deflector, load cell |
-| *(not in CAD yet)* | `motor` | `rocket.js` | M-01..M-03 | Motor tube and motor |
+| *(motor tube and motor)* | `motor` | `rocket.js` | M-01..M-03 | Motor tube and motor |
 
-Phase 1 has no CAD in the repository yet; the monocopter parts are:
+The monocopter parts are:
 
 | three.js part id | What it is | BOM lines |
 |---|---|---|
@@ -35,7 +34,7 @@ Phase 1 has no CAD in the repository yet; the monocopter parts are:
 
 ## How the models were derived
 
-- **Rocket:** reproduced from the CAD screenshot: four rods on the diagonals; five square frames stacked with the landing frame lowest; hinge arms on the axes; gimbal at the bottom with gear sectors; four legs splayed with thin braces; a central test-stand column below the nozzle. Dimensions are estimated from proportions and standard parts. They are **assumptions**, listed in [open-decisions](open-decisions.md).
+- **Rocket:** reproduced from the CAD screenshot: four rods on the diagonals; three square stack plates above a diamond-shaped landing frame whose corners carry the hinge lugs; gimbal at the bottom with gear sectors; four legs splayed with thin braces; a central test-stand column below the nozzle. Dimensions follow standard parts and the proportions of the screenshot; the choices are listed in [design choices](design-choices.md).
 - **Monocopter:** reproduced from the photograph: guard ring, central motor with the propeller *below* it pushing air down, a lower deck with four servos and orange vanes, three legs, battery on top with a strap, LEDs around the ring.
 
 ## Replacing the procedural model with real CAD

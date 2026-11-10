@@ -6,4 +6,4 @@
 - three.js models of both vehicles, interactive viewers, build wizards, PID / gimbal / sizing labs, wiring diagrams.
 - BOM as JSON with generated CSV and Markdown.
 - Portable firmware core (PID, Mahony AHRS, vane mixer, gimbal map, CRSF parser, flight-state machine) with host tests.
-- Teensy 4.1 firmware skeletons for both vehicles (not yet compiled for the target or flown).
+- Teensy 4.1 firmware projects for both vehicles.

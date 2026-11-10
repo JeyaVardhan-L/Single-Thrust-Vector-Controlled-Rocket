@@ -73,4 +73,4 @@ m = 0.485 kg → weight 4.76 N. T_max = 14 N → TWR 2.9. Hover throttle ≈ √
 
 ## Worked example: RK-1 F-class gimbal
 
-T = 25 N, L = 0.14 m, I = 0.025 kg·m² → `G = 140 rad/s²`. At δ = 6.5°: `M = 25 × 0.14 × 0.113 = 0.40 N·m`, `α = 16 rad/s²`. Servo needs ±13° (ratio 2).
+T = 25 N, L = 0.11 m, I = 0.018 kg·m² → `G = 153 rad/s²`. At δ = 6.5°: `M = 25 × 0.11 × 0.113 = 0.31 N·m`, `α = 17 rad/s²`. Servo needs ±13° (ratio 2).

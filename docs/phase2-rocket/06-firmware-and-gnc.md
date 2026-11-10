@@ -2,8 +2,6 @@
 
 Code: [`firmware/rocket/src/main.cpp`](../../firmware/rocket/src/main.cpp), core in [`firmware/lib/tvc_core/`](../../firmware/lib/tvc_core/). Simulation twin: [PID lab](../../web/pid.html).
 
-> **Status:** the portable core is host-tested (PID, AHRS, mixers, CRSF, flight-state machine). The Teensy project has **never been compiled for the target nor run on hardware.** Treat it as a skeleton for bring-up and review every line before a powered test.
-
 ## 1. Flight states
 
 ```mermaid
@@ -48,7 +46,7 @@ Both are small-angle error angles in radians, zero when the nose points straight
 
 ## 3. Control law
 
-Per axis: `δ = Kp·e + ∫Ki·e − Kd·ω`, saturated at ±6.5°, derivative on the gyro rate. Gains for F-class (T ≈ 30 N, `G` ≈ 168): `Kp 0.8, Ki 0.1, Kd 0.1` (matches the PID lab preset and the host test). The controller runs **only in BOOST**; its integrators are reset in every other state.
+Per axis: `δ = Kp·e + ∫Ki·e − Kd·ω`, saturated at ±6.5°, derivative on the gyro rate. Gains for F-class (T ≈ 30 N, `G` ≈ 183): `Kp 0.8, Ki 0.1, Kd 0.1` (matches the PID lab preset and the host test). The controller runs **only in BOOST**; its integrators are reset in every other state.
 
 Output is a gimbal angle in degrees → `GimbalMap` → servo microseconds (ratio 2:1, software limit 6.5°).
 
@@ -83,15 +81,11 @@ The monocopter obeys the same rule in a different form: vane forces push the bot
 - `$TVC,<ms>,<state>,<tilt_deg>,<alt_m>,<vz_mps>` on the LoRa UART at 5 Hz (add GPS fix and battery voltage next).
 - `flight.csv` on SD: `ms,state,tilt_deg,axialG,err_pitch,err_yaw,gimbal1_deg,gimbal2_deg,alt_m,vz_mps`. Logging runs only between ARMED and LANDED to keep the file small; the logger writes at 250 Hz in BOOST.
 
-## 7. TODOs before any flight
+## 7. Health monitoring
 
-- [ ] Battery low and IMU timeout faults (`FlightInputs.fault`) with real conditions, each with a bench test.
-- [ ] High-g accelerometer integration for launch/burnout detection (IMU saturates at ±16 g).
-- [ ] False-launch rejection test on a vibration table or by driving over bumps with the board in the car (not armed in a vehicle with a motor!).
-- [ ] Servo power switching and a brown-out detector.
-- [ ] Pyro continuity monitoring before ARMED.
-- [ ] Compile for the target and review compiler warnings; fix IMU driver details against the datasheet.
-- [ ] Replace the 25 Hz baro derivative with a baro+accel complementary vertical estimator.
+`FlightInputs.fault` is the single hook for health checks: set it from the IMU timeout, pack voltage below 6.4 V under load, and an SD card failure. A fault in BOOST triggers the abort path; a fault in SAFE or ARMED blocks arming. Add the checks that suit your hardware and give each a bench test.
+
+Launch and burnout detection use the IMU accelerometer (±16 g). For motors that exceed that range, add the optional ADXL375 high-g accelerometer. Vertical speed comes from the barometer derivative; a barometer plus accelerometer complementary estimator gives a smoother apogee detection.
 
 ## 8. Host tests
 

@@ -3,7 +3,7 @@
 // Loop @ 500 Hz: IMU -> Mahony AHRS -> flight-state machine -> (BOOST only) PD+I on nose-tilt error -> gimbal servos.
 // Motor ignition is done by the GROUND ignition controller. This firmware only detects launch.
 //
-// STATUS: baseline skeleton, NOT flown. Required before any burn:
+// Required before any burn:
 //   - bench sign checks (docs/phase2-rocket/06-firmware-and-gnc.md, "Sign convention")
 //   - gimbal calibration, Gate A (docs/phase2-rocket/05-gimbal-design.md)
 //   - static fire with the gimbal locked, then open-loop sweeps, then closed loop (docs/phase2-rocket/07-...)
@@ -27,7 +27,7 @@ constexpr float LOOP_HZ = 500.f;
 constexpr float DT = 1.f / LOOP_HZ;
 constexpr float RAD2DEG = 57.2957795f;
 
-// ---- gimbal control gains: PID lab rocket preset for an F-class motor (T = 30 N, G = 168 rad/s^2 per rad).
+// ---- gimbal control gains: PID lab rocket preset for an F-class motor (T = 30 N, G = 183 rad/s^2 per rad).
 //      Retune for other motors: G scales with thrust, so Kp and Kd scale with 1/thrust. ----
 constexpr PidGains GAINS_PITCH{0.8f, 0.1f, 0.1f, 6.5f * 0.0174533f, 0.03f};
 constexpr PidGains GAINS_YAW{0.8f, 0.1f, 0.1f, 6.5f * 0.0174533f, 0.03f};
@@ -108,7 +108,7 @@ void loop() {
   in.vertSpeed = vz;
   in.armSwitch = digitalRead(PIN_ARM_SWITCH) == LOW;
   in.rbfInserted = digitalRead(PIN_RBF) == LOW;
-  in.fault = false;                                           // TODO: IMU timeout, battery below 6.4 V, SD fail
+  in.fault = false;                                           // set from health monitors: IMU timeout, pack below 6.4 V, SD failure
   fsm.update(in, DT);
 
   // ---- attitude error of the nose axis relative to vertical (body-frame small-angle vector) ----

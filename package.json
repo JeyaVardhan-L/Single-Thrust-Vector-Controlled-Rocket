@@ -1,7 +1,7 @@
 {
   "name": "tvc-rocket-baseline",
   "version": "0.1.0",
-  "description": "Baseline repo for a TVC rocket (Phase 2) and the vane-controlled monocopter test vehicle (Phase 1): docs, three.js models, interactive tutorials, firmware skeleton.",
+  "description": "Baseline repo for a TVC rocket (Phase 2) and the vane-controlled monocopter test vehicle (Phase 1): docs, three.js models, interactive tutorials, firmware.",
   "private": true,
   "type": "module",
   "license": "MIT",

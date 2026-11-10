@@ -30,20 +30,20 @@ export const ROCKET = {
   rodOffset: 47,          // rod position from axis (x and z), 4 rods on the diagonals
   rodRadius: 3,           // 6 mm rods
   rodBottomY: 110,
-  rodTopY: 600,
+  rodTopY: 535,
   gimbalY: 150,           // gimbal pivot height
   landingFrameY: 238,
-  battery1FrameY: 322,
-  pcbFrameY: 404,
-  battery2FrameY: 486,
-  telemetryFrameY: 568,
+  landingFrameSize: 133,  // diamond: rotated 45 deg, corners on the leg axes
+  batteryFrameY: 322,
+  pcbFrameY: 406,
+  telemetryFrameY: 490,
   motorTube: { od: 32, id: 29, length: 200, y0: 52 },
   gear: { module: 1, pinionTeeth: 18, sectorTeeth: 36 }, // ratio 2:1  (CAD: gear36t1, gear36t2)
   gimbalRangeDeg: 7,      // mechanical gimbal limit each axis
   legs: 4,
-  legHingeRadius: 70,
+  legHingeRadius: 94,
   legHingeY: 238,
-  footRadius: 235,
+  footRadius: 255,
   legRadius: 4,
 };
 

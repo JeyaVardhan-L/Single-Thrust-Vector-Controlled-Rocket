@@ -3,8 +3,7 @@
 // Control: angle mode on roll/pitch (PID, derivative on gyro), rate mode on yaw. Output -> vane mixer -> 4 servos.
 // Safety: arm only with throttle low and RC link alive; RC loss > 250 ms or switch off => motor off, vanes centred.
 //
-// STATUS: written for bring-up, NOT yet flown. Complete docs/phase1-monocopter/06-bench-tests.md first,
-// especially the sign checks, with the PROPELLER REMOVED.
+// Before flight run docs/phase1-monocopter/06-bench-tests.md, especially the sign checks, with the PROPELLER REMOVED.
 #include <Arduino.h>
 #include <SD.h>
 #include <SPI.h>

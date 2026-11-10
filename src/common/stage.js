@@ -3,9 +3,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/OrbitControls.js';
 
 export const COLORS = {
-  bg: 0x0e1218,
-  grid: 0x2a3340,
-  gridMajor: 0x3b4758,
+  bg: 0x0f0e12,
+  grid: 0x2a2a30,
+  gridMajor: 0x3d3d46,
 };
 
 export function createStage(container, opts = {}) {

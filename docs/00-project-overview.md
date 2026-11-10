@@ -53,7 +53,7 @@ Phase 2 mechanical work (printing, gimbal, frames) can start in parallel with Ph
 |---|---|---|
 | Thrust source | 2306 motor + 6″ prop, 4S | 29 mm certified solid motor: F class first, G class later (baseline) |
 | Control actuators | 4 vanes in prop wash, 4 servos | 2-axis gimbal, 2 servos, 2:1 gears |
-| Take-off mass (BOM) | ≈ 485 g | ≈ 952 g incl. loaded motor |
+| Take-off mass (BOM) | ≈ 485 g | ≈ 914 g incl. loaded motor |
 | Thrust-to-weight | ≈ 3 (target ≥ 2) | ≈ 3 with an F-class motor (first tests), 6 to 13 with G-class (later) |
 | Controller | Teensy 4.1, 500 Hz | Teensy 4.1, 500 Hz |
 | Link | ExpressLRS (control + telemetry) | LoRa telemetry, no command uplink in flight |
@@ -68,14 +68,14 @@ Numbers in the table are from the BOM JSON files and catalogue data; weigh the r
 1. Models: [rocket](../web/rocket.html) and [monocopter](../web/monocopter.html) in three.js, parameterised.
 2. Procedures: build guides, test procedures and gates, checklists.
 3. Components: BOMs with mass and cost, wiring, pin maps.
-4. Software: portable tested core + Teensy skeletons.
+4. Software: a portable, unit-tested core plus Teensy 4.1 projects for both vehicles.
 5. Tutorials: build wizards, PID lab, gimbal lab, sizing, wiring.
 
 ## Roadmap (suggested order)
 
 | Step | Work | Output |
 |---|---|---|
-| 0 | Read safety, resolve [open decisions](open-decisions.md), pin down CAD parameters | Updated `spec.js` + BOM |
+| 0 | Read safety, confirm the [design choices](design-choices.md) and CAD parameters | Updated `spec.js` + BOM |
 | 1 | Order Phase 1 parts, print MC-1 | Built airframe |
 | 2 | Compile and bring up firmware on the bench | Gate 0 |
 | 3 | Thrust stand, vane authority | Gate 1 |
@@ -84,4 +84,3 @@ Numbers in the table are from the BOM JSON files and catalogue data; weigh the r
 | 6 | Static fires: locked, open-loop sweeps, closed loop | Gates B to D |
 | 7 | First free flight, then iterate | Gate E |
 
-Optional later phases (not in this baseline): throttled propulsive landing hop with an EDF or hybrid motor, active fin control, GNSS-aided guidance.

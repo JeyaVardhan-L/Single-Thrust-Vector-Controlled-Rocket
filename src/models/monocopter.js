@@ -171,7 +171,7 @@ export function buildMonocopter() {
     g.add(box(16, 3, 10, MAT.black, 62, S.ringY + 9, 0));
     parts.add('esc', g, {
       name: 'ESC 40 A (DShot)', category: 'power', explode: [40, 85, 0],
-      desc: 'Single 40 A 4S ESC (BLHeli_S / AM32) driven by a 400 Hz PWM signal from the flight computer (DShot is a planned upgrade).',
+      desc: 'Single 40 A 4S ESC (BLHeli_S / AM32) driven by a 400 Hz PWM signal from the flight computer.',
     });
   }
 

@@ -4,15 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PID lab · attitude control simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:,">
 </head>
 <body>
 <header class="topbar">
-  <span class="brand">TVC<b>·</b>Rocket</span>
+  <span class="brand">tvc rocket</span>
   <nav>
-    <a href="../index.html">Home</a><a href="monocopter.html">Phase 1 · Monocopter</a><a href="rocket.html">Phase 2 · Rocket</a>
-    <a href="assembly.html?model=rocket">Build guide</a><a href="gimbal.html">Gimbal lab</a><a href="pid.html" class="on">PID lab</a><a href="sizing.html">Sizing</a><a href="wiring.html">Wiring</a>
+    <a href="../index.html">home</a><a href="monocopter.html">monocopter</a><a href="rocket.html">rocket</a>
+    <a href="assembly.html?model=rocket">build guide</a><a href="gimbal.html">gimbal lab</a><a href="pid.html" class="on">pid lab</a><a href="sizing.html">sizing</a><a href="wiring.html">wiring</a>
   </nav>
 </header>
 <div class="app">
@@ -73,7 +76,7 @@ function plot(canvas, series, opts) {
   const W = canvas.clientWidth, H = canvas.height;
   canvas.width = W * dpr; canvas.style.height = H + 'px';
   const c = canvas.getContext('2d'); c.scale(dpr, dpr);
-  c.fillStyle = '#0b0f15'; c.fillRect(0, 0, W, H);
+  c.fillStyle = '#ffffff'; c.fillRect(0, 0, W, H);
   const m = { l: 52, r: 12, t: 14, b: 26 };
   const all = series.flatMap((s) => s.y);
   let lo = Math.min(...all, 0), hi = Math.max(...all, 0);
@@ -81,18 +84,18 @@ function plot(canvas, series, opts) {
   const pad = (hi - lo) * 0.08 || 1; lo -= pad; hi += pad;
   const X = (t) => m.l + (t / opts.T) * (W - m.l - m.r);
   const Y = (v) => H - m.b - ((v - lo) / (hi - lo)) * (H - m.t - m.b);
-  c.strokeStyle = '#1d2531'; c.fillStyle = '#8b98a9'; c.font = '11px sans-serif'; c.lineWidth = 1;
+  c.strokeStyle = '#e5e5e5'; c.fillStyle = '#000'; c.font = '300 11px Inter, sans-serif'; c.lineWidth = 1;
   for (let i = 0; i <= 4; i++) { const v = lo + ((hi - lo) * i) / 4; c.beginPath(); c.moveTo(m.l, Y(v)); c.lineTo(W - m.r, Y(v)); c.stroke(); c.fillText(v.toFixed(opts.dp ?? 1), 6, Y(v) + 4); }
   for (let t = 0; t <= opts.T; t += 0.5) { c.fillText(t.toFixed(1) + 's', X(t) - 8, H - 8); }
-  c.strokeStyle = '#3b4758'; c.beginPath(); c.moveTo(m.l, Y(0)); c.lineTo(W - m.r, Y(0)); c.stroke();
-  if (opts.lim) { c.setLineDash([4, 4]); c.strokeStyle = '#7a3c1a'; [opts.lim, -opts.lim].forEach((v) => { c.beginPath(); c.moveTo(m.l, Y(v)); c.lineTo(W - m.r, Y(v)); c.stroke(); }); c.setLineDash([]); }
-  if (opts.vline) { c.strokeStyle = '#2f5d8a'; c.beginPath(); c.moveTo(X(opts.vline), m.t); c.lineTo(X(opts.vline), H - m.b); c.stroke(); c.fillStyle = '#4aa8ff'; c.fillText('disturbance', X(opts.vline) + 4, m.t + 10); }
+  c.strokeStyle = '#000'; c.beginPath(); c.moveTo(m.l, Y(0)); c.lineTo(W - m.r, Y(0)); c.stroke();
+  if (opts.lim) { c.setLineDash([4, 4]); c.strokeStyle = '#f0a800'; [opts.lim, -opts.lim].forEach((v) => { c.beginPath(); c.moveTo(m.l, Y(v)); c.lineTo(W - m.r, Y(v)); c.stroke(); }); c.setLineDash([]); }
+  if (opts.vline) { c.strokeStyle = '#0071bb'; c.beginPath(); c.moveTo(X(opts.vline), m.t); c.lineTo(X(opts.vline), H - m.b); c.stroke(); c.fillStyle = '#0071bb'; c.fillText('disturbance', X(opts.vline) + 4, m.t + 10); }
   series.forEach((s) => {
     c.strokeStyle = s.color; c.lineWidth = 1.8; c.beginPath();
     s.y.forEach((v, i) => { const x = X(s.t[i]), y = Y(v); i ? c.lineTo(x, y) : c.moveTo(x, y); });
     c.stroke();
   });
-  c.fillStyle = '#dfe6ee'; c.fillText(opts.title, m.l + 6, m.t + 12);
+  c.fillStyle = '#000'; c.fillText(opts.title, m.l + 6, m.t + 12);
 }
 
 function run() {
@@ -104,12 +107,12 @@ function run() {
   };
   sliders.forEach(([k]) => { $('#' + k + 'O').textContent = (+$('#' + k).value).toFixed(k === 'kd' ? 3 : k === 'kp' || k === 'ki' ? 2 : 1); });
   const r = simulate(cfg);
-  plot($('#c1'), [{ t: r.t, y: r.theta.map((v) => v / DEG), color: '#4aa8ff' }], { T: 4, title: 'Attitude error (deg)', vline: P.disturb.t0, dp: 1 });
+  plot($('#c1'), [{ t: r.t, y: r.theta.map((v) => v / DEG), color: '#000' }], { T: 4, title: 'Attitude error (deg)', vline: P.disturb.t0, dp: 1 });
   const unitScale = presetId === 'rocket' ? 1 / DEG : 1;
-  plot($('#c2'), [{ t: r.t, y: r.u.map((v) => v * unitScale), color: '#7a8aa0' }, { t: r.t, y: r.delta.map((v) => v * unitScale), color: '#ff7a2f' }],
+  plot($('#c2'), [{ t: r.t, y: r.u.map((v) => v * unitScale), color: '#b2b2b2' }, { t: r.t, y: r.delta.map((v) => v * unitScale), color: '#0071bb' }],
     { T: 4, title: presetId === 'rocket' ? 'Gimbal angle (deg): command (grey) vs actual (orange)' : 'Vane command (normalised): command (grey) vs actual (orange)', lim: P.umax * unitScale, vline: P.disturb.t0, dp: 1 });
   const m = r.metrics;
-  const card = (l, v, cls = '') => `<div class="card"><div style="color:var(--muted);font-size:12px">${l}</div><div style="font-size:24px;font-weight:700" class="${cls}">${v}</div></div>`;
+  const card = (l, v, cls = '') => `<div class="card"><div style="color:var(--muted);font-size:12px">${l}</div><div style="font-size:24px;font-weight:300" class="${cls}">${v}</div></div>`;
   $('#metrics').innerHTML = card('Settling time (2 %)', m.settleTime.toFixed(2) + ' s') + card('Overshoot', m.overshootPct.toFixed(0) + ' %') +
     card('Disturbance peak', m.peakDisturbanceDeg.toFixed(1) + '°') + card('Time saturated', m.saturationPct.toFixed(0) + ' %') +
     card('Peak actuator rate', m.peakActuatorRate.toFixed(1) + (presetId === 'rocket' ? ' rad/s' : ' /s'));

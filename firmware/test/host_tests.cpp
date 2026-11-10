@@ -22,14 +22,14 @@ static const float DEG = 3.14159265f / 180.f;
 
 static void test_pid_stabilises_double_integrator() {
   std::printf("pid: stabilises a double-integrator rocket model\n");
-  // Same numbers as the JS PID lab rocket preset (G = 168 rad/s^2 per rad, kp 0.8, ki 0.1, kd 0.1).
+  // Same numbers as the JS PID lab rocket preset (G = 183 rad/s^2 per rad, kp 0.8, ki 0.1, kd 0.1).
   tvc::Pid pid({0.8f, 0.1f, 0.1f, 7.f * DEG, 0.05f});
   float theta = 5.f * DEG, omega = 0.f, delta = 0.f;
   const float dt = 0.002f;
   for (int i = 0; i < 2500; ++i) {              // 5 s
     float u = pid.update(0.f - theta, omega, dt);
     delta += (u - delta) / 0.03f * dt;          // first-order actuator lag
-    omega += 168.f * delta * dt;
+    omega += 183.f * delta * dt;
     theta += omega * dt;
   }
   NEAR(theta, 0.f, 0.5f * DEG, "attitude error settles below 0.5 deg");

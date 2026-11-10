@@ -25,7 +25,7 @@ flowchart LR
 | 9 | IMU INT | ICM-42688-P INT1 | Not used by the baseline loop (polling) |
 | 18 / 19 | I²C SDA / SCL | BMP390 (0x76), INA226 (0x40) | 4.7 k pull-ups on the carrier |
 | 0 / 1 | Serial1 RX / TX | ELRS receiver TX / RX | 420 000 baud, 3.3 V logic |
-| 2 | ESC signal | ESC | 400 Hz PWM, 1000 to 2000 µs. DShot is a later upgrade |
+| 2 | ESC signal | ESC | 400 Hz PWM, 1000 to 2000 µs |
 | 3 / 4 / 5 / 6 | Vane servo 1 front, 2 right, 3 rear, 4 left | Servo signal | 50 Hz, 900 to 2100 µs |
 | 7 | Buzzer | Active buzzer via NPN | |
 | 8 | Status LED | LED + 330 Ω | On when armed |

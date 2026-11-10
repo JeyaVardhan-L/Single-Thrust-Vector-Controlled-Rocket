@@ -8,7 +8,7 @@ export const MAT = {
   black:   new THREE.MeshStandardMaterial({ color: 0x16181c, roughness: 0.5, metalness: 0.3 }),
   steel:   new THREE.MeshStandardMaterial({ color: 0xb9c0c9, roughness: 0.3, metalness: 0.9 }),
   alu:     new THREE.MeshStandardMaterial({ color: 0x9aa4af, roughness: 0.4, metalness: 0.8 }),
-  slate:   new THREE.MeshStandardMaterial({ color: 0x39414c, roughness: 0.75, metalness: 0.25 }),
+  slate:   new THREE.MeshStandardMaterial({ color: 0x24242a, roughness: 0.8, metalness: 0.1 }),
   carbon:  new THREE.MeshStandardMaterial({ color: 0x23262b, roughness: 0.35, metalness: 0.5 }),
   pcb:     new THREE.MeshStandardMaterial({ color: 0x0f6b3a, roughness: 0.6, metalness: 0.2 }),
   gold:    new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.3, metalness: 0.9 }),
@@ -174,3 +174,26 @@ export class Parts {
 }
 
 export { THREE };
+
+// Flat machined-style plate: rounded square outline with circular cut-outs (holes: [[x, z, radius], ...]).
+// Lies in the XZ plane, centred on the origin, thickness along Y.
+export function plate(size, thick, holes = [], mat = MAT.print, corner = 7) {
+  const h = size / 2, r = corner;
+  const s = new THREE.Shape();
+  s.moveTo(-h + r, -h);
+  s.lineTo(h - r, -h); s.quadraticCurveTo(h, -h, h, -h + r);
+  s.lineTo(h, h - r); s.quadraticCurveTo(h, h, h - r, h);
+  s.lineTo(-h + r, h); s.quadraticCurveTo(-h, h, -h, h - r);
+  s.lineTo(-h, -h + r); s.quadraticCurveTo(-h, -h, -h + r, -h);
+  for (const [x, z, rad] of holes) {
+    const p = new THREE.Path();
+    p.absarc(x, z, rad, 0, Math.PI * 2, true);
+    s.holes.push(p);
+  }
+  const geo = new THREE.ExtrudeGeometry(s, { depth: thick, bevelEnabled: true, bevelThickness: 0.5, bevelSize: 0.5, bevelSegments: 1, curveSegments: 20 });
+  geo.rotateX(-Math.PI / 2);
+  geo.translate(0, thick / 2, 0);
+  const m = new THREE.Mesh(geo, mat);
+  m.castShadow = true; m.receiveShadow = true;
+  return m;
+}

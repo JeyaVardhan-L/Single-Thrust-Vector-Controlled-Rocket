@@ -58,4 +58,4 @@ Record every flight in `docs/test-logs/`, with the git commit, motor, conditions
 
 ## 6. Exit and next steps
 
-After F4: write the *Phase 2 summary*: measured gains, authority, hardware wear, open issues. Candidates for a later phase (not in this baseline): throttleable propulsion for a propulsive landing hop, fin or cold-gas roll control, GNSS-aided guidance, a magnetometer for heading.
+After F4: write the *Phase 2 summary*: measured gains, authority, hardware wear and issues found.

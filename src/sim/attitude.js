@@ -21,13 +21,13 @@ const DEG = Math.PI / 180;
 export const PRESETS = {
   rocket: {
     id: 'rocket', label: 'RK-1 rocket (gimbal angle command)',
-    unit: 'rad', G: 168, damping: 0.0, umax: 7 * DEG,
+    unit: 'rad', G: 183, damping: 0.0, umax: 7 * DEG,
     pid: { kp: 0.8, ki: 0.1, kd: 0.1 },
     act: { tau: 0.03, rate: 6.0 },
     delay: 0.008, loopHz: 500,
     noise: { gyro: 0.01, angle: 0.002 },
     step: 5 * DEG, disturb: { t0: 1.5, accel: 8, dur: 0.15 },
-    note: 'F-class first-test motor: T = 30 N, L = 0.14 m (pivot to CG), I = 0.025 kg m^2, so G = T L / I = 168 rad/s^2 per rad (a G-class motor at 80 N gives 448). Gimbal limit 7 deg, rate 6 rad/s (about 344 deg/s).',
+    note: 'F-class first-test motor: T = 30 N, L = 0.11 m (pivot to CG), I = 0.018 kg m^2, so G = T L / I = 183 rad/s^2 per rad (a G-class motor at 80 N gives 489). Gimbal limit 7 deg, rate 6 rad/s (about 344 deg/s).',
   },
   monocopter: {
     id: 'monocopter', label: 'MC-1 monocopter (normalised vane command)',

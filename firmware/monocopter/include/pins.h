@@ -3,9 +3,9 @@
 
 constexpr int PIN_IMU_CS = 10;       // SPI0: MOSI 11, MISO 12, SCK 13
 constexpr int PIN_IMU_INT = 9;
-// I2C0 (SDA 18, SCL 19): BMP390 @ 0x76, INA226 @ 0x40 (not used by the baseline loop yet)
+// I2C0 (SDA 18, SCL 19): BMP390 @ 0x76, INA226 @ 0x40 (for battery and baro readings)
 // Serial1 (RX 0, TX 1) @ 420000 baud: ExpressLRS receiver (CRSF)
-constexpr int PIN_ESC = 2;           // 400 Hz PWM, 1000..2000 us (DShot is a planned upgrade)
+constexpr int PIN_ESC = 2;           // 400 Hz PWM, 1000..2000 us
 constexpr int PIN_VANE[4] = {3, 4, 5, 6};   // 1 front, 2 right, 3 rear, 4 left
 constexpr int PIN_BUZZER = 7;
 constexpr int PIN_LED = 8;

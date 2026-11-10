@@ -4,22 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bill of materials</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:,">
 </head>
 <body>
 <header class="topbar">
-  <span class="brand">TVC<b>·</b>Rocket</span>
+  <span class="brand">tvc rocket</span>
   <nav>
-    <a href="../index.html">Home</a><a href="monocopter.html">Phase 1 · Monocopter</a><a href="rocket.html">Phase 2 · Rocket</a>
-    <a href="assembly.html?model=rocket">Build guide</a><a href="sizing.html">Sizing</a><a href="bom.html?model=monocopter" id="nm">BOM · Monocopter</a><a href="bom.html?model=rocket" id="nr">BOM · Rocket</a>
+    <a href="../index.html">home</a><a href="monocopter.html">monocopter</a><a href="rocket.html">rocket</a>
+    <a href="assembly.html?model=rocket">build guide</a><a href="sizing.html">sizing</a><a href="bom.html?model=monocopter" id="nm">bom · monocopter</a><a href="bom.html?model=rocket" id="nr">bom · rocket</a>
   </nav>
 </header>
 <div class="page">
   <h1 id="title">Bill of materials</h1>
   <p class="lead" id="note"></p>
   <div class="grid c3" id="tot"></div>
-  <div class="btn-row"><label style="font-size:13px;color:var(--muted)">Filter <input id="q" type="text" placeholder="e.g. servo" style="background:#0b0f15;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:5px 8px"></label>
+  <div class="btn-row"><label style="font-size:13px;color:var(--muted)">Filter <input id="q" type="text" placeholder="e.g. servo" style="width:200px"></label>
     <label style="font-size:13px;color:var(--muted)"><input type="checkbox" id="onlyOn"> on-board only</label>
     <a class="btn" id="csv" href="#">Download CSV</a></div>
   <div style="overflow:auto"><table id="t"></table></div>
@@ -35,14 +38,14 @@ $('#csv').href = `../hardware/bom/${which}.csv`;
 const onboard = bom.items.filter((i) => i.onboard);
 const mass = onboard.reduce((s, i) => s + i.mass_g * i.qty, 0), cost = bom.items.reduce((s, i) => s + i.price_usd * i.qty, 0);
 $('#tot').innerHTML = [['On-board mass', mass.toFixed(0) + ' g'], ['Total cost (indicative)', '$' + cost.toFixed(0)], ['Line items', bom.items.length]]
-  .map(([a, b]) => `<div class="card"><div style="color:var(--muted);font-size:12px">${a}</div><div style="font-size:26px;font-weight:700">${b}</div></div>`).join('');
+  .map(([a, b]) => `<div class="card"><div style="color:var(--muted);font-size:12px">${a}</div><div style="font-size:26px;font-weight:300">${b}</div></div>`).join('');
 function draw() {
   const q = $('#q').value.toLowerCase(), only = $('#onlyOn').checked;
   const rows = bom.items.filter((i) => (!only || i.onboard) && (!q || (i.name + i.spec + i.notes + i.cat + i.id).toLowerCase().includes(q)));
   let last = '';
   $('#t').innerHTML = '<tr><th>ID</th><th>Item</th><th class="num">Qty</th><th class="num">g each</th><th class="num">$ each</th><th>On</th><th>Spec / notes</th></tr>' +
     rows.map((i) => {
-      const head = i.cat !== last ? `<tr><td colspan="7" style="background:#101722;color:var(--accent);font-weight:600">${i.cat}</td></tr>` : ''; last = i.cat;
+      const head = i.cat !== last ? `<tr><td colspan="7" style="background:#fff;font-weight:300">${i.cat}</td></tr>` : ''; last = i.cat;
       return head + `<tr><td>${i.id}</td><td>${i.name}</td><td class="num">${i.qty}</td><td class="num">${i.mass_g}</td><td class="num">${i.price_usd}</td><td>${i.onboard ? '●' : ''}</td><td style="color:var(--muted)">${[i.spec, i.notes].filter(Boolean).join(' · ')}</td></tr>`;
     }).join('');
 }

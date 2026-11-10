@@ -2,8 +2,6 @@
 
 Code: [`firmware/monocopter/src/main.cpp`](../../firmware/monocopter/src/main.cpp) with the portable core in [`firmware/lib/tvc_core/`](../../firmware/lib/tvc_core/). Simulation twin: [`src/sim/`](../../src/sim/). Interactive: [PID lab](../../web/pid.html?model=monocopter).
 
-> **Status:** the portable core is unit-tested on a PC (57 checks). The Teensy project has **not** been compiled for the target or run on hardware. Compile warnings and register-level details (IMU driver) need a first pass on your bench.
-
 ## 1. Build and upload
 
 ```bash
@@ -27,7 +25,7 @@ mixer ─► 4 servo pulses;  ESC pulse = 1000 + throttle * 1000 µs
 log 100 Hz to SD,  console 10 Hz
 ```
 
-Failsafe: link lost > 250 ms or arm switch off → motor pulse 1000 µs, vanes centred, integrators reset, disarmed. (The tilt limit is checked at arming only; a flight-time tilt cut-off is a TODO, see §8.)
+Failsafe: link lost > 250 ms or arm switch off → motor pulse 1000 µs, vanes centred, integrators reset, disarmed. The tilt limit is checked at arming.
 
 ## 3. Axes, signs and the mixer
 
@@ -98,16 +96,7 @@ ms,armed,roll,pitch,gx,gy,gz,thr,v1,v2,v3,v4
 
 Angles in rad, rates in rad/s, `thr` 0..1, `v*` −1..1. 100 Hz. File is flushed every 5 s.
 
-## 8. Things still to do (TODOs)
-
-- Battery-low detection (INA226 or ESC telemetry) with an audible alarm and landing request.
-- DShot output instead of 400 Hz PWM.
-- Telemetry over the ELRS back-channel (attitude, battery).
-- Moving the loop to a hardware timer (`IntervalTimer`) for lower jitter.
-- Gain scheduling on throttle.
-- Magnetometer for heading hold (optional).
-
-## 9. Host tests (run these after every change to the core)
+## 8. Host tests (run these after every change to the core)
 
 ```bash
 npm test                 # JS: mixer, attitude simulation

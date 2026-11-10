@@ -23,7 +23,7 @@ const executablePath = candidates.find((p) => fs.existsSync(p));
 if (!executablePath) { console.error('No Chrome found. Set CHROME_PATH.'); process.exit(1); }
 
 const shots = [
-  { file: 'rocket-hero.png',        url: 'web/rocket.html?shot&pose',               w: 1400, h: 1100, cam: '700,470,780,0,300,0' },
+  { file: 'rocket-hero.png',        url: 'web/rocket.html?shot&pose',               w: 1400, h: 1100, cam: '600,420,690,0,285,0' },
   { file: 'rocket-exploded.png',    url: 'web/rocket.html?shot&explode=0.8',        w: 1400, h: 1100, cam: '1250,560,1450,0,300,0' },
   { file: 'rocket-gimbal.png',      url: 'web/rocket.html?shot&pose&select=tvc',    w: 1400, h: 1100, cam: '260,260,300,0,150,0' },
   { file: 'monocopter-hero.png',    url: 'web/monocopter.html?shot&pose',           w: 1400, h: 1100, cam: '420,330,470,0,130,0' },

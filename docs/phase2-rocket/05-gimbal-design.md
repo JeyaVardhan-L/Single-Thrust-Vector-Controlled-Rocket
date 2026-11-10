@@ -10,7 +10,7 @@ Two nested axes. The outer ring pivots about X on bearings in the fixed mount (r
 
 For small angles the thrust vector tilts by the two angles independently. For the largest angles (±7°) the coupling error is `≈ θx θz / 2 ≈ 0.003 rad (0.17°)`: negligible.
 
-Thrust `T` tilted by `δ` gives a side force `T sin δ` at the pivot. Restoring torque about the CG: `M = T sin δ · L`, `L ≈ 0.14 m`. Angular acceleration `α = M / I`, `I ≈ 0.025 kg·m²`.
+Thrust `T` tilted by `δ` gives a side force `T sin δ` at the pivot. Restoring torque about the CG: `M = T sin δ · L`, `L ≈ 0.11 m`. Angular acceleration `α = M / I`, `I ≈ 0.018 kg·m²`.
 
 ## 2. Gear stage
 
@@ -62,7 +62,7 @@ All of the following, recorded in a test log:
 - ☐ 60 s sweep without skipping or overheating
 - ☐ No brown-out at stall
 - ☐ RBF / arm interlocks verified (SYS-01, RK-06, RK-07)
-- ☐ CG within ±10 mm of 282 mm (±3 mm laterally)
+- ☐ CG within ±10 mm of 256 mm (±3 mm laterally)
 - ☐ Measured actuator lag/rate entered in the PID lab and gains re-tuned in simulation for the chosen motor
 
 ## 6. Tuning gains for a motor
@@ -75,8 +75,8 @@ Kp = ωn² / G        Kd = 2 ζ ωn / G        Ki ≈ 0.1 to 0.15 · Kp
 
 | Motor (avg T) | G | Kp | Kd |
 |---|---|---|---|
-| F class, 25 to 30 N | 140 to 168 | 0.9 to 0.7 | 0.12 to 0.10 |
-| G class, 60 N | 336 | 0.43 | 0.05 |
-| G class, 80 N | 448 | 0.32 | 0.04 |
+| F class, 25 to 30 N | 153 to 183 | 0.94 to 0.79 | 0.11 to 0.09 |
+| G class, 60 N | 367 | 0.39 | 0.05 |
+| G class, 80 N | 489 | 0.29 | 0.03 |
 
 Thrust is not constant during a burn: gains tuned for the average thrust are too high at a thrust spike and too low in the tail-off. Keep the stand logs to quantify it.

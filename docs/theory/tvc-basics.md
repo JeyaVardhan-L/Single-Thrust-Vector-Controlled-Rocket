@@ -36,7 +36,7 @@ The monocopter uses vanes because they behave like a gimbal for control purposes
 
 ## Two axes
 
-A vertical rocket needs two lateral control channels (pitch and yaw) plus, optionally, roll. RK-1 has two gimbal axes and **no roll control**: roll is uncontrolled and mostly irrelevant for a symmetric rocket but visible in the logs. A roll-control add-on (a pair of small vanes or a cold-gas jet) is a later phase.
+A vertical rocket needs two lateral control channels (pitch and yaw) plus, optionally, roll. RK-1 has two gimbal axes and **no roll control**: roll is uncontrolled and mostly irrelevant for a symmetric rocket but visible in the logs.
 
 ## Typical numbers for small hobby TVC
 
