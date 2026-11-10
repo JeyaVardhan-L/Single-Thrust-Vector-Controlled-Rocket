@@ -4,9 +4,9 @@ import { OrbitControls } from 'three/addons/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/RoomEnvironment.js';
 
 export const COLORS = {
-  bg: 0xf7f6f2,        // Limestone
-  grid: 0xe6e5e0,
-  gridMajor: 0xd0cfc8,
+  bg: 0xe8e6e0,        // Bone
+  grid: 0xdad7cf,
+  gridMajor: 0xc6c3ba,
 };
 
 export function createStage(container, opts = {}) {

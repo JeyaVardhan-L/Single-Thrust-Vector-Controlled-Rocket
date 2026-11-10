@@ -139,7 +139,7 @@ export class Parts {
   }
   setVisible(id, v) { const p = this.map.get(id); if (p) p.group.visible = v; }
   // Highlight uses emissive tint on cloned materials so shared MAT stays untouched.
-  setHighlight(id, on, color = 0xfc5000) {
+  setHighlight(id, on, color = 0x1925aa) {
     const p = this.map.get(id);
     if (!p) return;
     p.group.traverse((o) => {

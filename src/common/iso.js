@@ -18,7 +18,7 @@ const outlineMat = (ink, width) => new THREE.ShaderMaterial({
  */
 export function createIsoStage(container, model, opts = {}) {
   const {
-    ink = 0x070607, fill = 0xf7f6f2, accent = 0xfc5000, sulfur = 0xf5f28e,
+    ink = 0x000000, fill = 0xffffff, accent = 0x1925aa, sulfur = 0xd6d3cb,
     accentCats = ['actuation', 'propulsion'], sulfurCats = ['power'],
     visible = null, hide = [], explode = 0, azimuth = 45, spin = 0, zoom = 1, outline = 1.1, edgeAngle = 28,
     bg = null, pad = 1.12,

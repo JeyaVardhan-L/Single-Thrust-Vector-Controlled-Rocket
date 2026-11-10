@@ -3,86 +3,97 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>tvc rocket · open build guide</title>
+<title>TVC Rocket · open build guide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="web/style.css">
 <link rel="icon" href="data:,">
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="index.html">tvc rocket</a>
+  <a class="brand" href="index.html">TVC Rocket / Open build guide</a>
   <nav>
-    <a href="index.html" class="on">home</a><a href="web/rocket.html">rocket</a><a href="web/monocopter.html">monocopter</a>
-    <a href="web/assembly.html?model=rocket">build</a><a href="web/gimbal.html">gimbal</a><a href="web/pid.html">pid</a>
-    <a href="web/sizing.html">sizing</a><a href="web/wiring.html">wiring</a><a href="web/bom.html?model=rocket">bom</a><a href="web/doc.html?p=docs/README.md">docs</a>
+    <a href="index.html" class="on">Home</a><a href="web/rocket.html">Rocket</a><a href="web/monocopter.html">Monocopter</a>
+    <a href="web/assembly.html?model=rocket">Build</a><a href="web/gimbal.html">Gimbal</a><a href="web/pid.html">PID</a>
+    <a href="web/sizing.html">Sizing</a><a href="web/wiring.html">Wiring</a><a href="web/bom.html?model=rocket">BOM</a><a href="web/doc.html?p=docs/README.md">Docs</a>
   </nav>
-  <a class="cta" href="web/assembly.html?model=rocket">Start building</a>
+  <a class="cta" href="web/assembly.html?model=rocket">Start building<i>/</i></a>
 </header>
 
-<main class="wrap">
-  <section class="hero">
-    <div class="copy">
-      <h1 class="display">TVC<br>Rocket</h1>
+<section class="band hero">
+  <div class="in">
+    <h1 class="display">TVC<br>Rocket</h1>
+    <div class="side-label">Open build guide</div>
+    <div class="hero-grid">
       <div>
-        <p class="lede">An open guide to build an electric thrust-vector rocket: two brushless motors steered by servos through a geared two-axis gimbal. Prove the electronics first on a vane-controlled monocopter.</p>
+        <div class="mono">RK-1 · Phase 2 · electric thrust-vector control</div>
+        <p class="lede">Two brushless motors, steered by servos through a geared two-axis gimbal. Build it from the printed parts to the first tethered hover, after proving the electronics on a vane-controlled monocopter.</p>
         <div class="actions">
-          <a class="cta" href="web/assembly.html?model=rocket">Start building</a>
+          <a class="cta" href="web/assembly.html?model=rocket">Start building<i>/</i></a>
           <a class="btn" href="web/rocket.html">Open the 3D model</a>
           <a class="btn" href="web/doc.html?p=docs/README.md">Read the docs</a>
         </div>
       </div>
+      <div class="iso-hero" id="hero"></div>
     </div>
-    <div class="halftone">
-      <div class="view" id="hero"></div>
-      <div class="cap">RK-1 · isometric drawing · 1.06 kg</div>
+  </div>
+</section>
+
+<section class="band indigo statement">
+  <div class="in">
+    <div class="side-label">Two phases</div>
+    <h2>An electric rocket that stands on its own thrust.</h2>
+    <p>Phase 1 is a monocopter with four vanes in the prop wash. It proves the flight computer, the attitude filter, the control loop, the servos, the logging and the way you work.</p>
+    <p>Phase 2 reuses all of it on RK-1: a coaxial pair of brushless motors in a gimbal, a three-plate stack and four legs.</p>
+    <div class="facts">
+      <div><span class="mono">Take-off mass</span><b>1.06 kg</b></div>
+      <div><span class="mono">Thrust to weight</span><b>2.5</b></div>
+      <div><span class="mono">Gimbal range</span><b>±7°</b></div>
+      <div><span class="mono">Control loop</span><b>500 Hz</b></div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="stats">
-    <div class="card stat"><div class="label">Take-off mass</div><div class="big">1.06 kg</div></div>
-    <div class="card stat"><div class="label">Thrust to weight</div><div class="big">2.5</div></div>
-    <div class="card stat"><div class="label">Gimbal range</div><div class="big">±7°</div></div>
-    <div class="card stat"><div class="label">Control loop</div><div class="big">500 Hz</div></div>
-  </section>
-
-  <section class="section">
-    <h2>Models</h2>
-    <p class="sub">Every part is drawn from one parameter file. Open a model to explode it, inspect parts and drive the actuators.</p>
-    <div class="cards">
-      <a class="pcard" href="web/rocket.html">
+<section class="band">
+  <div class="in">
+    <div class="split"><h2>Build</h2><div class="rule"></div><h2>Models</h2></div>
+    <div class="caption">Every part is drawn from one parameter file. Open a model to explode it, inspect parts and drive the actuators.</div>
+    <div class="cols">
+      <a class="col" href="web/rocket.html" style="border-bottom:0">
         <div class="iso" data-iso="rocket"></div>
-        <div class="body"><span class="tag">Phase 2</span><h3>RK-1 rocket</h3><p>Three stack plates, geared gimbal, coaxial brushless pair, four legs.</p><span class="go">Open model</span></div>
+        <span class="tag">Phase 2</span><h3>RK-1 rocket</h3><p>Three stack plates, geared gimbal, coaxial brushless pair, four legs.</p><span class="go">[ Open model → ]</span>
       </a>
-      <a class="pcard" href="web/monocopter.html">
+      <a class="col" href="web/monocopter.html" style="border-bottom:0">
         <div class="iso" data-iso="monocopter"></div>
-        <div class="body"><span class="tag">Phase 1</span><h3>MC-1 monocopter</h3><p>One prop, four vanes in the wash. The test vehicle for the electronics.</p><span class="go">Open model</span></div>
+        <span class="tag">Phase 1</span><h3>MC-1 monocopter</h3><p>One prop, four vanes in the wash. The test vehicle for the electronics.</p><span class="go">[ Open model → ]</span>
       </a>
-      <a class="pcard" href="web/assembly.html?model=rocket">
+      <a class="col" href="web/assembly.html?model=rocket" style="border-bottom:0">
         <div class="iso" data-iso="exploded"></div>
-        <div class="body"><span class="tag">Build</span><h3>Build wizard</h3><p>Every step highlighted on the model, with checks before you move on.</p><span class="go">Start building</span></div>
+        <span class="tag">Build</span><h3>Build wizard</h3><p>Every step highlighted on the model, with checks before you move on.</p><span class="go">[ Start building → ]</span>
       </a>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="section">
-    <h2>Labs</h2>
-    <p class="sub">Interactive tutorials that run in the browser.</p>
-    <div class="cards">
-      <a class="tcard" href="web/pid.html"><span class="tag">Control</span><h3>PID lab</h3><p>Gains, latency, actuator lag and noise on a single-axis attitude loop.</p><span class="go">Open lab</span></a>
-      <a class="tcard" href="web/gimbal.html"><span class="tag">Mechanics</span><h3>Gimbal lab</h3><p>Thrust, lever arm, gear ratio, servo torque and resolution.</p><span class="go">Open lab</span></a>
-      <a class="tcard" href="web/sizing.html"><span class="tag">Sizing</span><h3>Sizing</h3><p>Live mass budget from the BOM, thrust-to-weight, hover power and endurance.</p><span class="go">Open calculator</span></a>
-      <a class="tcard" href="web/wiring.html"><span class="tag">Electronics</span><h3>Wiring</h3><p>Block diagrams and the Teensy pin map for both vehicles.</p><span class="go">Open diagrams</span></a>
-      <a class="tcard" href="web/bom.html?model=rocket"><span class="tag">Parts</span><h3>Bill of materials</h3><p>Searchable parts list with mass and cost for both vehicles.</p><span class="go">Open table</span></a>
-      <a class="tcard" href="web/assembly.html?model=monocopter"><span class="tag">Phase 1</span><h3>Monocopter build</h3><p>Ten steps from printing to tethered hover.</p><span class="go">Start building</span></a>
+<section class="band" style="padding-top:0">
+  <div class="in">
+    <div class="split"><h2>Labs</h2><div class="rule"></div><h2>Tools</h2></div>
+    <div class="acc" id="acc">
+      <div class="acc-item"><button><span>PID lab</span><i>+</i></button><div class="panel"><p>Gains, latency, actuator lag and noise on a single-axis attitude loop. Presets for the rocket and the monocopter.</p><a href="web/pid.html">[ Open lab → ]</a></div></div>
+      <div class="acc-item"><button><span>Gimbal lab</span><i>+</i></button><div class="panel"><p>Thrust, lever arm, gear ratio, servo torque and resolution in one interactive page.</p><a href="web/gimbal.html">[ Open lab → ]</a></div></div>
+      <div class="acc-item"><button><span>Sizing calculator</span><i>+</i></button><div class="panel"><p>Live mass budget from the bill of materials, thrust to weight, hover power and endurance.</p><a href="web/sizing.html">[ Open calculator → ]</a></div></div>
+      <div class="acc-item"><button><span>Wiring diagrams</span><i>+</i></button><div class="panel"><p>Block diagrams and the Teensy 4.1 pin map for both vehicles.</p><a href="web/wiring.html">[ Open diagrams → ]</a></div></div>
+      <div class="acc-item"><button><span>Bill of materials</span><i>+</i></button><div class="panel"><p>Searchable parts list with mass and cost for both vehicles, with CSV download.</p><a href="web/bom.html?model=rocket">[ Open table → ]</a></div></div>
+      <div class="acc-item"><button><span>Monocopter build wizard</span><i>+</i></button><div class="panel"><p>Ten steps from printing to tethered hover.</p><a href="web/assembly.html?model=monocopter">[ Start building → ]</a></div></div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="section">
-    <h2>Documentation</h2>
-    <p class="sub">Requirements, design, build guides, wiring, firmware, test procedures and go / no-go gates.</p>
+<section class="band indigo">
+  <div class="in">
+    <h2 style="font-size:clamp(32px,4.4vw,46px);max-width:22ch;margin-bottom:36px">Requirements, procedures and gates, in full.</h2>
     <div class="docs">
       <a href="web/doc.html?p=docs/safety.md">Safety <span>read first</span></a>
       <a href="web/doc.html?p=docs/00-project-overview.md">Project overview <span>phases and gates</span></a>
@@ -95,16 +106,18 @@
       <a href="web/doc.html?p=docs/design-choices.md">Design choices <span>baseline values</span></a>
       <a href="web/doc.html?p=docs/printing.md">3D printing <span>materials, settings</span></a>
     </div>
-  </section>
-</main>
-
-<footer class="footer">
-  <div class="display">Build it.</div>
-  <div class="row2">
-    <a class="cta" href="web/assembly.html?model=rocket">Start the rocket build</a>
-    <a class="btn" style="color:#fff;border-color:#fff" href="web/assembly.html?model=monocopter">Start with the monocopter</a>
   </div>
-  <small>Open build guide · MIT licence · <a href="web/doc.html?p=docs/safety.md">safety</a> · <a href="web/doc.html?p=docs/README.md">docs</a> · <a href="hardware/bom/rocket.csv">bom csv</a></small>
+</section>
+
+<footer class="band footer">
+  <div class="in">
+    <div class="display">Build it.</div>
+    <div class="row2">
+      <a class="cta" href="web/assembly.html?model=rocket">Start the rocket build<i>/</i></a>
+      <a class="btn" href="web/assembly.html?model=monocopter">Start with the monocopter</a>
+    </div>
+    <small>Open build guide · MIT licence · <a href="web/doc.html?p=docs/safety.md">Safety</a> · <a href="web/doc.html?p=docs/README.md">Docs</a> · <a href="hardware/bom/rocket.csv">BOM CSV</a></small>
+  </div>
 </footer>
 
 <script type="module">
@@ -112,10 +125,14 @@ import { createIsoStage } from './src/common/iso.js';
 import { buildRocket } from './src/models/rocket.js';
 import { buildMonocopter } from './src/models/monocopter.js';
 
+document.querySelectorAll('.acc-item > button').forEach((b) => b.addEventListener('click', () => {
+  const it = b.parentElement; const open = it.classList.toggle('open'); b.querySelector('i').textContent = open ? '×' : '+';
+}));
+
 const rocket = () => { const m = buildRocket(); m.setGimbal(4, -3); m.setThrottle(0.4); return m; };
 let ready = 0;
 const mark = () => { if (++ready === 4) window.__ready = true; };
-createIsoStage(document.getElementById('hero'), rocket(), { azimuth: 38, spin: 3, zoom: 1.32, outline: 1.2, hide: ['test-stand'], target: [0, 275, 0] });
+createIsoStage(document.getElementById('hero'), rocket(), { azimuth: 38, spin: 3, zoom: 1.35, outline: 1.2, hide: ['test-stand'], target: [0, 275, 0] });
 mark();
 const make = (el, kind) => {
   if (kind === 'rocket') return createIsoStage(el, rocket(), { azimuth: 40, zoom: 1.6, hide: ['test-stand'], target: [0, 275, 0] });
