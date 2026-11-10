@@ -43,7 +43,7 @@ Time budget: print ≈ 10 h, build ≈ 8 h, bench tests ≈ 4 h.
 
 1. Mount the 2306 motor under the hub plate, shaft **down**, with M3 screws (short! see motor datasheet for maximum screw length) and thread-lock.
 2. Spin the bell by hand: no rubbing, no wobble.
-3. Do **not** fit the propeller yet. Put it in a labelled bag.
+3. Do **not** fit the propeller yet. Put it in a labelled bag. Orientation rule for later: the prop sits **below** the motor and must blow air **downward, away from the motor**, so use a pusher-type prop that matches the motor direction (a standard prop mounted this way pulls air the wrong way and gives little thrust).
 4. Balance the propeller on a balancer: remove material from the heavy blade (light sanding of the back face), or add a small piece of tape to the light one, until it stays horizontal.
 
 **Check:** motor wires routed away from the bell; screws do not touch the windings (spin test).

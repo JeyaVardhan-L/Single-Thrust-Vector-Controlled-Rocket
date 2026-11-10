@@ -106,7 +106,7 @@ export function buildMonocopter() {
     }
     parts.add('vanes', g, {
       name: 'Control vanes (×4)', category: 'actuation', explode: [0, -75, 0],
-      desc: 'Four 52×74 mm printed vanes working in the prop wash. Roll/pitch = opposite pairs, yaw = all four together.',
+      desc: 'Four 62×46 mm printed vanes working in the prop wash. Roll/pitch = opposite pairs, yaw = all four together.',
     });
   }
 
@@ -170,7 +170,7 @@ export function buildMonocopter() {
     g.add(box(34, 5, 20, MAT.pcb, 62, S.ringY + 5, 0));
     g.add(box(16, 3, 10, MAT.black, 62, S.ringY + 9, 0));
     parts.add('esc', g, {
-      name: 'ESC 40 A (DShot)', category: 'power', explode: [40, 85, 0],
+      name: 'ESC 40 A (400 Hz PWM)', category: 'power', explode: [40, 85, 0],
       desc: 'Single 40 A 4S ESC (BLHeli_S / AM32) driven by a 400 Hz PWM signal from the flight computer.',
     });
   }

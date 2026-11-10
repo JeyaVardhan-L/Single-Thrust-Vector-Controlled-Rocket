@@ -8,7 +8,6 @@
 | **BEC** | Battery Eliminator Circuit: regulator that makes 5 V or 6 V from the flight battery |
 | **CG / CP** | Centre of gravity / centre of pressure |
 | **CRSF** | Crossfire serial protocol used by ExpressLRS receivers |
-| **DShot** | Digital ESC protocol; the firmware drives the ESC with 400 Hz PWM |
 | **ELRS** | ExpressLRS, open-source RC link |
 | **ESC** | Electronic speed controller for a brushless motor |
 | **FRD** | Forward-Right-Down body axes |

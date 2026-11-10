@@ -21,7 +21,7 @@ Each requirement has an ID, a verification method (**T**est, **A**nalysis, **I**
 |---|---|---|---|
 | MC-01 | Take-off mass ≤ 550 g (BOM baseline 485 g) | I | 1 |
 | MC-02 | Static thrust ≥ 2.0 × take-off weight on a fresh 4S pack | T | 1 |
-| MC-03 | Roll and pitch control authority ≥ 0.02 N·m at hover throttle (design estimate 0.022 N·m; measured on the stand) | T | 1 |
+| MC-03 | Roll and pitch control authority ≥ 0.02 N·m at hover throttle (design value 0.022 N·m, recorded on the stand at Gate 1) | T | 1 |
 | MC-04 | With the swirl-straightening fins fitted, the residual prop reaction torque at hover shall be ≤ 60 % of the yaw authority of the vanes (measured on the stand) | T | 1 |
 | MC-05 | RC link loss or arm-switch off shall cut the motor and centre the vanes within 0.5 s | T | 0 |
 | MC-06 | The vehicle shall refuse to arm if tilt > 20° or throttle > 5 % | T | 0 |

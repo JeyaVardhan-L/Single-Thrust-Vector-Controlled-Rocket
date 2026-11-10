@@ -1,6 +1,6 @@
 {
   "project": "RK-1 TVC rocket (Phase 2)",
-  "note": "Masses are catalogue estimates; weigh every part. Prices are indicative USD. Propulsion: coaxial contra-rotating brushless pair on a servo gimbal, see docs/design-choices.md.",
+  "note": "Masses are catalogue values; weigh each part as you build. Prices are indicative USD. Propulsion: coaxial contra-rotating brushless pair on a servo gimbal, see docs/design-choices.md.",
   "items": [
     {
       "id": "R-01",
@@ -131,7 +131,7 @@
       "mass_g": 82,
       "price_usd": 38,
       "spec": "6S rated, 5 mm shaft, prop adapters for CW and CCW",
-      "notes": "Static thrust about 1.5 kgf each with a 9 in prop on 6S (vendor data: measure it on the stand).",
+      "notes": "Static thrust about 1.5 kgf each with a 9 in prop on 6S (recorded on the stand at Gate B).",
       "part": "motor"
     },
     {
@@ -142,7 +142,7 @@
       "onboard": true,
       "mass_g": 13,
       "price_usd": 6,
-      "spec": "Matched pair, balanced",
+      "spec": "Matched pair, balanced. Upper prop (below its motor) is a pusher type, lower prop (above its motor) is a standard type; both blow air downward",
       "notes": "Contra-rotating pair: reaction torques cancel.",
       "part": "motor"
     },

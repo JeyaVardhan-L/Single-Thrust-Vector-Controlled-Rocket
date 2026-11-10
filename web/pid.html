@@ -6,25 +6,19 @@
 <title>PID lab · attitude control simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:,">
 </head>
 <body>
-<header class="topbar">
-  <span class="brand">tvc rocket</span>
-  <nav>
-    <a href="../index.html">home</a><a href="monocopter.html">monocopter</a><a href="rocket.html">rocket</a>
-    <a href="assembly.html?model=rocket">build guide</a><a href="gimbal.html">gimbal lab</a><a href="pid.html" class="on">pid lab</a><a href="sizing.html">sizing</a><a href="wiring.html">wiring</a>
-  </nav>
-</header>
+<header class="topbar"><a class="brand" href="../index.html">tvc rocket</a><nav><a href="../index.html">home</a><a href="rocket.html">rocket</a><a href="monocopter.html">monocopter</a><a href="assembly.html?model=rocket">build</a><a href="gimbal.html">gimbal</a><a href="pid.html" class="on">pid</a><a href="sizing.html">sizing</a><a href="wiring.html">wiring</a><a href="bom.html?model=rocket">bom</a><a href="doc.html?p=docs/README.md">docs</a></nav><a class="cta" href="assembly.html?model=rocket">Start building</a></header>
 <div class="app">
   <aside class="side left" id="left"></aside>
   <main class="stage" style="overflow:auto;padding:16px">
     <h2 style="margin:0 0 4px">Attitude control: what the gains actually do</h2>
     <p style="color:var(--muted);margin:0 0 12px;max-width:80ch" id="note"></p>
-    <div class="canvas-wrap"><canvas id="c1" height="260"></canvas></div>
-    <div class="canvas-wrap" style="margin-top:12px"><canvas id="c2" height="200"></canvas></div>
+    <div class="canvas-wrap"><canvas id="c1" height="230"></canvas></div>
+    <div class="canvas-wrap" style="margin-top:12px"><canvas id="c2" height="180"></canvas></div>
     <div class="grid c3" style="margin-top:14px" id="metrics"></div>
     <div id="verdict"></div>
   </main>
@@ -57,7 +51,7 @@ function build() {
   P = JSON.parse(JSON.stringify(PRESETS[presetId]));
   $('#note').textContent = P.note;
   const vals = { kp: P.pid.kp, ki: P.pid.ki, kd: P.pid.kd, tau: P.act.tau * 1000, rate: P.act.rate, delay: P.delay * 1000, G: P.G, gyro: P.noise.gyro };
-  const maxes = presetId === 'rocket' ? { kp: 1, ki: 1, kd: 0.1 } : { kp: 6, ki: 4, kd: 1 };
+  const maxes = presetId === 'rocket' ? { kp: 3, ki: 1, kd: 0.6 } : { kp: 6, ki: 4, kd: 1 };
   $('#left').innerHTML = `
     <h3>Vehicle</h3>
     <div class="btn-row"><button data-v="rocket" class="${presetId === 'rocket' ? 'on' : ''}">Rocket</button><button data-v="monocopter" class="${presetId === 'monocopter' ? 'on' : ''}">Monocopter</button></div>
@@ -76,7 +70,7 @@ function plot(canvas, series, opts) {
   const W = canvas.clientWidth, H = canvas.height;
   canvas.width = W * dpr; canvas.style.height = H + 'px';
   const c = canvas.getContext('2d'); c.scale(dpr, dpr);
-  c.fillStyle = '#ffffff'; c.fillRect(0, 0, W, H);
+  c.fillStyle = '#f7f6f2'; c.fillRect(0, 0, W, H);
   const m = { l: 52, r: 12, t: 14, b: 26 };
   const all = series.flatMap((s) => s.y);
   let lo = Math.min(...all, 0), hi = Math.max(...all, 0);
@@ -84,12 +78,12 @@ function plot(canvas, series, opts) {
   const pad = (hi - lo) * 0.08 || 1; lo -= pad; hi += pad;
   const X = (t) => m.l + (t / opts.T) * (W - m.l - m.r);
   const Y = (v) => H - m.b - ((v - lo) / (hi - lo)) * (H - m.t - m.b);
-  c.strokeStyle = '#e5e5e5'; c.fillStyle = '#000'; c.font = '300 11px Inter, sans-serif'; c.lineWidth = 1;
+  c.strokeStyle = '#e2e2df'; c.fillStyle = '#000'; c.font = '500 11px DM Sans, sans-serif'; c.lineWidth = 1;
   for (let i = 0; i <= 4; i++) { const v = lo + ((hi - lo) * i) / 4; c.beginPath(); c.moveTo(m.l, Y(v)); c.lineTo(W - m.r, Y(v)); c.stroke(); c.fillText(v.toFixed(opts.dp ?? 1), 6, Y(v) + 4); }
   for (let t = 0; t <= opts.T; t += 0.5) { c.fillText(t.toFixed(1) + 's', X(t) - 8, H - 8); }
   c.strokeStyle = '#000'; c.beginPath(); c.moveTo(m.l, Y(0)); c.lineTo(W - m.r, Y(0)); c.stroke();
-  if (opts.lim) { c.setLineDash([4, 4]); c.strokeStyle = '#f0a800'; [opts.lim, -opts.lim].forEach((v) => { c.beginPath(); c.moveTo(m.l, Y(v)); c.lineTo(W - m.r, Y(v)); c.stroke(); }); c.setLineDash([]); }
-  if (opts.vline) { c.strokeStyle = '#0071bb'; c.beginPath(); c.moveTo(X(opts.vline), m.t); c.lineTo(X(opts.vline), H - m.b); c.stroke(); c.fillStyle = '#0071bb'; c.fillText('disturbance', X(opts.vline) + 4, m.t + 10); }
+  if (opts.lim) { c.setLineDash([4, 4]); c.strokeStyle = '#070607'; [opts.lim, -opts.lim].forEach((v) => { c.beginPath(); c.moveTo(m.l, Y(v)); c.lineTo(W - m.r, Y(v)); c.stroke(); }); c.setLineDash([]); }
+  if (opts.vline) { c.strokeStyle = '#fc5000'; c.beginPath(); c.moveTo(X(opts.vline), m.t); c.lineTo(X(opts.vline), H - m.b); c.stroke(); c.fillStyle = '#fc5000'; c.fillText('disturbance', X(opts.vline) + 4, m.t + 10); }
   series.forEach((s) => {
     c.strokeStyle = s.color; c.lineWidth = 1.8; c.beginPath();
     s.y.forEach((v, i) => { const x = X(s.t[i]), y = Y(v); i ? c.lineTo(x, y) : c.moveTo(x, y); });
@@ -109,7 +103,7 @@ function run() {
   const r = simulate(cfg);
   plot($('#c1'), [{ t: r.t, y: r.theta.map((v) => v / DEG), color: '#000' }], { T: 4, title: 'Attitude error (deg)', vline: P.disturb.t0, dp: 1 });
   const unitScale = presetId === 'rocket' ? 1 / DEG : 1;
-  plot($('#c2'), [{ t: r.t, y: r.u.map((v) => v * unitScale), color: '#b2b2b2' }, { t: r.t, y: r.delta.map((v) => v * unitScale), color: '#0071bb' }],
+  plot($('#c2'), [{ t: r.t, y: r.u.map((v) => v * unitScale), color: '#a8a7a2' }, { t: r.t, y: r.delta.map((v) => v * unitScale), color: '#fc5000' }],
     { T: 4, title: presetId === 'rocket' ? 'Gimbal angle (deg): command (grey) vs actual (orange)' : 'Vane command (normalised): command (grey) vs actual (orange)', lim: P.umax * unitScale, vline: P.disturb.t0, dp: 1 });
   const m = r.metrics;
   const card = (l, v, cls = '') => `<div class="card"><div style="color:var(--muted);font-size:12px">${l}</div><div style="font-size:24px;font-weight:300" class="${cls}">${v}</div></div>`;

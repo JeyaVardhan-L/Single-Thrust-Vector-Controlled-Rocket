@@ -60,7 +60,7 @@ Motor leads: 14 AWG silicone, short, twisted in pairs. A 1000 µF 35 V low-ESR c
 
 - [ ] RBF inserted: nothing powers (measure with a meter).
 - [ ] RBF out, arm off: logic powered, ESC outputs at 1000 µs, servos centred.
-- [ ] Both ESCs beep their arming tones only when armed; each motor spins the right way (props off, brief blip from the configurator).
+- [ ] Both ESCs play their start-up tones on power-up; each motor spins the right way (props off, a brief blip from the ESC configurator motor test).
 - [ ] Pack voltage readings on the console match a meter within 0.1 V.
 - [ ] All servo signs verified (see [06](06-firmware-and-gnc.md)).
 - [ ] Radio channels move as expected on the console; failsafe tested (switch the radio off: ESC to 1000 µs within 0.3 s).

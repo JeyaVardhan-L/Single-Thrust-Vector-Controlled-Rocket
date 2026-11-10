@@ -20,3 +20,8 @@ jobs:
         run: |
           node scripts/gen-bom.mjs
           git diff --exit-code hardware/bom docs/phase1-monocopter/02-bom.md docs/phase2-rocket/02-bom.md
+      - name: UI audit (console errors, requests, text contrast)
+        run: |
+          npm install --no-audit --no-fund
+          npm run audit
+        continue-on-error: true

@@ -35,7 +35,7 @@ const shots = [
   { file: 'ui-wiring.png',          url: 'web/wiring.html?model=rocket',            w: 1400, h: 1000 },
   { file: 'ui-sizing.png',          url: 'web/sizing.html?model=rocket',            w: 1400, h: 1000 },
   { file: 'ui-bom.png',             url: 'web/bom.html?model=rocket',               w: 1400, h: 1000 },
-  { file: 'ui-index.png',           url: 'index.html',                              w: 1400, h: 1300 },
+  { file: 'ui-index.png',           url: 'index.html',                              w: 1400, h: 1000, full: true },
   { file: 'ui-pid.png',             url: 'web/pid.html',                            w: 1400, h: 1000 },
   { file: 'ui-gimbal.png',          url: 'web/gimbal.html',                         w: 1400, h: 1000 },
 ];
@@ -58,7 +58,7 @@ try {
     await page.goto(url, { waitUntil: 'networkidle0' });
     await page.waitForFunction('window.__ready === true', { timeout: 30000 }).catch(() => errors.push('timeout waiting for __ready'));
     await new Promise((r) => setTimeout(r, 400));
-    await page.screenshot({ path: path.join(out, s.file) });
+    await page.screenshot({ path: path.join(out, s.file), fullPage: !!s.full });
     console.log(errors.length ? `! ${s.file}: ${errors.join(' | ')}` : `ok ${s.file}`);
     await page.close();
   }

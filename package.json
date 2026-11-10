@@ -10,6 +10,7 @@
     "test": "node --test",
     "bom": "node scripts/gen-bom.mjs",
     "screenshots": "node scripts/screenshot.mjs",
+    "audit": "node scripts/audit-ui.mjs",
     "test:firmware": "node scripts/test-firmware.mjs"
   },
   "devDependencies": {

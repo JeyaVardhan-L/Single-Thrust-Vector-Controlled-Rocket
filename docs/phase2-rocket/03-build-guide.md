@@ -40,7 +40,7 @@ Tools: those of [Phase 1](../phase1-monocopter/03-build-guide.md) plus a dial in
 1. Clamp the Ø42 mm carbon mount tube in the inner collar (clamp screws only: **do not glue**).
 2. Bolt motor A under the upper plate (shaft down) and motor B on the lower plate (shaft up). The three cage struts run outside the 114 mm prop radius from the upper plate to the lower plate; the guard ring ties them together.
 3. Mount the two ESCs on the tube. Solder motor leads (short, twisted). Fit 1000 µF capacitors at the power board.
-4. **Do not fit the propellers.** Balance them on a prop balancer now (sand the heavy blade or tape the light one) and put them in a labelled bag.
+4. **Do not fit the propellers.** Balance them on a prop balancer now (sand the heavy blade or tape the light one) and put them in a labelled bag. Both props must blow air **downward**: the upper prop sits below its motor, so it is a **pusher** type; the lower prop sits above its motor, so it is a **standard** type. Order them with the rotation directions of step 5.
 5. Set motor directions in the ESC configurator with the props off: motor A turns the prop clockwise seen from above, motor B counter-clockwise.
 
 **Check:** the assembly swings ±7° in both axes with ≥ 5 mm clearance to every part (landing frame, braces, legs); both shafts spin freely by hand.

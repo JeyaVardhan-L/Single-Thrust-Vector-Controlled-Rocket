@@ -6,30 +6,17 @@
 <title>Build guide · interactive assembly</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:,">
 <script type="importmap">{"imports":{"three":"../vendor/three/three.module.js","three/addons/":"../vendor/three/addons/"}}</script>
 </head>
 <body>
-<header class="topbar">
-  <span class="brand">tvc rocket</span>
-  <nav>
-    <a href="../index.html">home</a>
-    <a href="monocopter.html">monocopter</a>
-    <a href="rocket.html">rocket</a>
-    <a href="assembly.html?model=monocopter" id="navM">build: monocopter</a>
-    <a href="assembly.html?model=rocket" id="navR">build: rocket</a>
-    <a href="gimbal.html">gimbal lab</a>
-    <a href="pid.html">pid lab</a>
-    <a href="sizing.html">sizing</a>
-    <a href="wiring.html">wiring</a>
-  </nav>
-</header>
+<header class="topbar"><a class="brand" href="../index.html">tvc rocket</a><nav><a href="../index.html">home</a><a href="rocket.html">rocket</a><a href="monocopter.html">monocopter</a><a href="assembly.html?model=rocket" class="on">build</a><a href="gimbal.html">gimbal</a><a href="pid.html">pid</a><a href="sizing.html">sizing</a><a href="wiring.html">wiring</a><a href="bom.html?model=rocket">bom</a><a href="doc.html?p=docs/README.md">docs</a></nav><a class="cta" href="assembly.html?model=rocket">Start building</a></header>
 <div class="wizard">
   <main class="stage" id="stage">
     <div class="badge" id="badge"></div>
-    <div class="hint">Blue = parts you are installing now · faint = not yet installed · drag to orbit</div>
+    <div class="hint">highlighted = installing now · faint = later step</div>
   </main>
   <aside class="steps">
     <div class="head">
@@ -41,7 +28,7 @@
     <div class="body" id="body"></div>
     <div class="foot">
       <button id="prev">← Back</button>
-      <a id="doc" class="btn" href="#">Full procedure (md)</a>
+      <a id="doc" class="btn" href="#">Full procedure</a>
       <button id="next" class="primary">Next →</button>
     </div>
   </aside>
@@ -57,9 +44,8 @@ const id = params.get('model') === 'monocopter' ? 'monocopter' : 'rocket';
 const guide = STEPS[id];
 const isR = id === 'rocket';
 document.title = guide.title;
-document.getElementById(isR ? 'navR' : 'navM').classList.add('on');
 document.getElementById('badge').innerHTML = `<b>${guide.title}</b>`;
-document.getElementById('doc').href = guide.doc;
+document.getElementById('doc').href = 'doc.html?p=' + guide.doc.replace('../', '');
 
 const stage = createStage(document.getElementById('stage'), {
   cameraPos: isR ? [760, 520, 860] : [380, 300, 430], target: isR ? [0, 290, 0] : [0, 130, 0],
@@ -122,7 +108,7 @@ stage.onTick(() => {
   if (stage.camera.position.distanceTo(camGoal.pos) < 1) camGoal = null;
 });
 go(cur);
-let frames = 0; stage.onTick(() => { if (++frames === 90) window.__ready = true; });
+let frames = 0; stage.onTick(() => { if (++frames === 24) window.__ready = true; });
 </script>
 </body>
 </html>

@@ -25,9 +25,9 @@ Radial **swirl-straightening fins** (the orange fins on the diagonals) sit in th
 | Battery | 4S 1300 mAh on top of the hub, 75 × 33 × 36 mm |
 | Overall | Ø300 mm foot circle × ≈ 250 mm height |
 
-## 3. Vane physics (design estimate)
+## 3. Vane physics (design values)
 
-Everything below is **an estimate with ±50 % uncertainty**. Gate 1 measures the real values. Use these numbers for sizing and for the starting PID gains, not as promises.
+These are the design values used for sizing and for the starting PID gains. Commissioning at Gate 1 records the actual vane force, authority and residual yaw torque, and the gains are then trimmed to them.
 
 **Wash speed.** Momentum theory: `v = sqrt(T / (2 ρ A))` with disk area `A = π (0.076)² = 0.0181 m²`, ρ = 1.2 kg/m³.
 

@@ -46,7 +46,7 @@ If a sign check fails, fix it with `VANE_SIGN[i]` (a mirrored linkage) or by swa
 
 | ID | Test | Procedure | Pass criterion | Result |
 |---|---|---|---|---|
-| G1-01 | Spin-up | Fit the propeller. Arm. Increase throttle 10 → 20 → 30 % in 5 s steps | Smooth, no vibration spikes, current rises smoothly | ☐ |
+| G1-01 | Spin-up | Fit the propeller (pusher type, blowing down). Arm. Increase throttle 10 → 20 → 30 % in 5 s steps | Air blows downward through the vanes; smooth, no vibration spikes, current rises smoothly | ☐ |
 | G1-02 | Static thrust curve | Step 10 % to 80 % (hold 5 s each), log thrust, current, voltage | Thrust ≥ 2 × weight (≥ 9.5 N at 485 g; MC-02) at ≤ 80 % throttle; current < ESC and battery limits | ☐ |
 | G1-03 | Hover throttle | From the curve find the throttle for thrust = weight | Between 45 % and 70 % | ☐ |
 | G1-04 | Vibration | Run at hover throttle for 60 s with the IMU on | Gyro noise (std) at rest < 0.05 rad/s; roll/pitch don't wander | ☐ |

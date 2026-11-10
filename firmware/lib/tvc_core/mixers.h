@@ -27,7 +27,7 @@ inline void mixCoax(float throttle, float spin, float out[2]) {
 
 struct ServoMap {
   float centerUs = 1500.f;       // pulse at the mechanical centre (calibrate per servo)
-  float usPerDeg = 10.f;         // ~1000 us per 100 deg: measure it, datasheets are approximate
+  float usPerDeg = 10.f;         // ~1000 us per 100 deg: calibrate it per servo
   float trimDeg = 0.f;           // mechanical trim
   float minUs = 900.f, maxUs = 2100.f;
   float toUs(float servoDeg) const {

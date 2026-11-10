@@ -36,7 +36,7 @@ Purpose: validate the stand, the thrust measurement, the motors, ESCs, props and
 **Pre-test checklist** (read aloud, answer "check"):
 
 1. ☐ Weather and site: indoors or sheltered, wind ≤ 15 km/h, nothing flammable near the stand.
-2. ☐ Props inspected (no nicks or cracks), balanced, tight, correct rotation (A clockwise, B counter-clockwise).
+2. ☐ Props inspected (no nicks or cracks), balanced, tight, correct rotation (A clockwise, B counter-clockwise), upper prop pusher and lower prop standard. At 10 % throttle a paper streamer held 30 cm below the cage, from behind the shield, must blow downward.
 3. ☐ Vehicle: gimbal locked mechanically at centre; servo BEC unplugged; motor leads connected to the ESCs; arming loop **out**.
 4. ☐ Software commit and gains recorded: ______ ; radio link verified, throttle stick at zero.
 5. ☐ Load cell zeroed and calibrated; logging running.

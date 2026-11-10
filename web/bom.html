@@ -6,18 +6,12 @@
 <title>Bill of materials</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:,">
 </head>
 <body>
-<header class="topbar">
-  <span class="brand">tvc rocket</span>
-  <nav>
-    <a href="../index.html">home</a><a href="monocopter.html">monocopter</a><a href="rocket.html">rocket</a>
-    <a href="assembly.html?model=rocket">build guide</a><a href="sizing.html">sizing</a><a href="bom.html?model=monocopter" id="nm">bom · monocopter</a><a href="bom.html?model=rocket" id="nr">bom · rocket</a>
-  </nav>
-</header>
+<header class="topbar"><a class="brand" href="../index.html">tvc rocket</a><nav><a href="../index.html">home</a><a href="rocket.html">rocket</a><a href="monocopter.html">monocopter</a><a href="assembly.html?model=rocket">build</a><a href="gimbal.html">gimbal</a><a href="pid.html">pid</a><a href="sizing.html">sizing</a><a href="wiring.html">wiring</a><a href="bom.html?model=rocket" class="on">bom</a><a href="doc.html?p=docs/README.md">docs</a></nav><a class="cta" href="assembly.html?model=rocket">Start building</a></header>
 <div class="page">
   <h1 id="title">Bill of materials</h1>
   <p class="lead" id="note"></p>
@@ -30,7 +24,6 @@
 <script type="module">
 const $ = (s) => document.querySelector(s);
 const which = new URLSearchParams(location.search).get('model') === 'monocopter' ? 'monocopter' : 'rocket';
-$(which === 'rocket' ? '#nr' : '#nm').classList.add('on');
 const bom = await (await fetch(`../hardware/bom/${which}.json`)).json();
 $('#title').textContent = 'Bill of materials · ' + bom.project;
 $('#note').textContent = bom.note;

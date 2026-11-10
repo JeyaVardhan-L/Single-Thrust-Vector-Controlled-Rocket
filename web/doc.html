@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation · tvc rocket</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<header class="topbar"><a class="brand" href="../index.html">tvc rocket</a><nav><a href="../index.html">home</a><a href="rocket.html">rocket</a><a href="monocopter.html">monocopter</a><a href="assembly.html?model=rocket">build</a><a href="gimbal.html">gimbal</a><a href="pid.html">pid</a><a href="sizing.html">sizing</a><a href="wiring.html">wiring</a><a href="bom.html?model=rocket">bom</a><a href="doc.html?p=docs/README.md" class="on">docs</a></nav><a class="cta" href="assembly.html?model=rocket">Start building</a></header>
+<main class="doc"><article class="sheet"><div class="crumbs" id="crumbs"></div><div id="out">Loading…</div></article></main>
+<script type="module">
+import { marked } from '../vendor/marked/marked.esm.js';
+
+const params = new URLSearchParams(location.search);
+let path = (params.get('p') || 'docs/README.md').replace(/^\/+/, '');
+if (!/^[\w./-]+\.md$/.test(path) || path.includes('..')) path = 'docs/README.md';   // only repo markdown files
+
+const dirOf = (p) => p.slice(0, p.lastIndexOf('/') + 1);
+const resolve = (base, href) => new URL(href, 'https://x/' + base).pathname.slice(1);
+
+// repo-relative path -> URL usable from this page
+function mapHref(href) {
+  if (/^(https?:|mailto:|#)/.test(href)) return href;
+  const [file, hash = ''] = href.split('#');
+  const target = resolve(dirOf(path), file);
+  if (target.endsWith('.md')) return 'doc.html?p=' + target + (hash ? '#' + hash : '');
+  return '../' + target + (hash ? '#' + hash : '');
+}
+
+const text = await (await fetch('../' + path)).text();
+const renderer = new marked.Renderer();
+renderer.link = function (a, b, c) {
+  const href = typeof a === 'object' ? a.href : a;
+  const title = typeof a === 'object' ? a.title : b;
+  const inner = typeof a === 'object' ? this.parser.parseInline(a.tokens) : c;
+  return '<a href="' + mapHref(href) + '"' + (title ? ' title="' + title + '"' : '') + '>' + inner + '</a>';
+};
+renderer.image = function (a, b, c) {
+  const href = typeof a === 'object' ? a.href : a;
+  const alt = typeof a === 'object' ? a.text : c;
+  return '<img src="' + mapHref(href) + '" alt="' + (alt || '') + '">';
+};
+renderer.code = function (a, b) {
+  const code = typeof a === 'object' ? a.text : a;
+  const lang = typeof a === 'object' ? a.lang : b;
+  const esc = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  if (lang === 'mermaid') return '<pre class="mermaid-src"><code>' + esc + '</code></pre>';
+  return '<pre><code>' + esc + '</code></pre>';
+};
+const out = document.getElementById('out');
+out.innerHTML = marked.parse(text, { renderer, gfm: true, breaks: false });
+const h1 = out.querySelector('h1');
+document.title = (h1 ? h1.textContent : path) + ' · tvc rocket';
+document.getElementById('crumbs').innerHTML = path.split('/').map((s, i, arr) => i < arr.length - 1 ? s : '<b>' + s + '</b>').join(' / ');
+
+// mermaid diagrams: rendered when the library can be loaded, otherwise the source stays readable
+const blocks = [...out.querySelectorAll('pre.mermaid-src')];
+if (blocks.length) {
+  try {
+    const mod = await import('https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.esm.min.mjs');
+    const mermaid = mod.default;
+    mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'strict', fontFamily: 'DM Sans, sans-serif' });
+    let n = 0;
+    for (const pre of blocks) {
+      const src = pre.textContent;
+      try {
+        const { svg } = await mermaid.render('m' + (n++), src);
+        const div = document.createElement('div'); div.className = 'mermaid'; div.innerHTML = svg; pre.replaceWith(div);
+      } catch (e) { /* keep source */ }
+    }
+  } catch (e) { /* offline: keep source */ }
+}
+if (location.hash) { const el = document.getElementById(location.hash.slice(1)); if (el) el.scrollIntoView(); }
+window.__ready = true;
+</script>
+</body>
+</html>

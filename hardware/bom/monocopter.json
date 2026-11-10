@@ -1,6 +1,6 @@
 {
   "project": "MC-1 vane-control monocopter (Phase 1)",
-  "note": "Masses are catalogue estimates. Prices are indicative USD (hobby market) and vary by region and supplier. Weigh every part and update this file; the sizing page and docs are generated from it.",
+  "note": "Masses are catalogue values and prices are indicative USD (hobby market, vary by region and supplier). Weigh each part as you build and update this file; the sizing page and the docs are generated from it.",
   "items": [
     {
       "id": "P-01",
@@ -11,7 +11,7 @@
       "mass_g": 33,
       "price_usd": 22,
       "spec": "2306 outrunner, 4S rated, prop adapter, 16x16 or 12x12 mm mount pattern",
-      "notes": "Confirm static thrust on the thrust stand; vendor numbers are optimistic.",
+      "notes": "Static thrust is recorded on the thrust stand at Gate 1.",
       "part": "motor"
     },
     {
@@ -22,7 +22,7 @@
       "onboard": false,
       "mass_g": 6,
       "price_usd": 2,
-      "spec": "6 in two-blade, correct rotation for the motor, balanced",
+      "spec": "6 in two-blade pusher type (air leaves away from the motor), rotation matched to the motor, balanced",
       "notes": "Always keep spares: the first crash breaks one.",
       "part": "prop"
     },

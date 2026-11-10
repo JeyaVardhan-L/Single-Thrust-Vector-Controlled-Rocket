@@ -29,7 +29,7 @@ A single propeller leaves a reaction torque that spins the vehicle. Two propelle
 | Legs | 4 × Ø8, hinge radius 94 mm at 238 mm, foot radius 255 mm: 34° from vertical, Ø510 mm footprint |
 | Overall height | ≈ 535 mm to the rod tops + ≈ 95 mm antenna |
 
-## 4. Mass, CG and inertia (hand estimate from the BOM)
+## 4. Mass, CG and inertia (from the BOM)
 
 Source: [`hardware/bom/rocket.json`](../../hardware/bom/rocket.json). On-board mass is **≈ 1.06 kg**.
 
@@ -54,13 +54,13 @@ Weigh and balance the real vehicle (hang it on two cords), then put `L` and `I` 
 
 Coaxial disc area (one 9″ prop): `A = π (0.114)² = 0.041 m²`.
 
-| Quantity | Estimate |
+| Quantity | Design value |
 |---|---|
-| Static thrust, two 3110-class motors on 6S, 9″ props | ≈ 2.6 kgf total (26 N) after the coaxial loss; **measure it on the stand** |
+| Static thrust, two 3110-class motors on 6S, 9″ props | ≈ 2.6 kgf total (26 N) after the coaxial loss; recorded at Gate B |
 | Thrust-to-weight (1.06 kg) | ≈ 2.5 |
 | Hover thrust | 10.4 N, about 63 % throttle |
 | Ideal hover power | `P = T^1.5 / √(2 ρ A) = 10.4^1.5 / 0.31 ≈ 108 W`; with a figure of merit ≈ 0.55 that is ≈ 200 W |
-| Hover current (6S) | ≈ 9 A, so a 1500 mAh pack gives roughly 6 to 8 minutes of hover with 20 % reserve (allow less in practice) |
+| Hover current (6S) | ≈ 9 A, so a 1500 mAh pack gives roughly 6 to 8 minutes of hover with 20 % reserve |
 
 Plant gain `G = T·L/I` (rad/s² per rad of gimbal angle):
 

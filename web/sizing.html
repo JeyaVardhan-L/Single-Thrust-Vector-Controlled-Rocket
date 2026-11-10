@@ -6,18 +6,12 @@
 <title>Sizing calculator · mass and thrust</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:,">
 </head>
 <body>
-<header class="topbar">
-  <span class="brand">tvc rocket</span>
-  <nav>
-    <a href="../index.html">home</a><a href="monocopter.html">monocopter</a><a href="rocket.html">rocket</a>
-    <a href="assembly.html?model=rocket">build guide</a><a href="gimbal.html">gimbal lab</a><a href="pid.html">pid lab</a><a href="sizing.html" class="on">sizing</a><a href="bom.html?model=rocket">bom</a>
-  </nav>
-</header>
+<header class="topbar"><a class="brand" href="../index.html">tvc rocket</a><nav><a href="../index.html">home</a><a href="rocket.html">rocket</a><a href="monocopter.html">monocopter</a><a href="assembly.html?model=rocket">build</a><a href="gimbal.html">gimbal</a><a href="pid.html">pid</a><a href="sizing.html" class="on">sizing</a><a href="wiring.html">wiring</a><a href="bom.html?model=rocket">bom</a><a href="doc.html?p=docs/README.md">docs</a></nav><a class="cta" href="assembly.html?model=rocket">Start building</a></header>
 <div class="page">
   <h1>Mass and thrust sizing</h1>
   <p class="lead">The mass comes live from <code>hardware/bom/*.json</code>. Enter the thrust you measured (or the motor datasheet value) and see whether the vehicle meets the requirements.</p>
@@ -59,7 +53,7 @@ async function render() {
   const cats = {}; items.forEach((i) => { cats[i.cat] = (cats[i.cat] || 0) + i.mass_g * i.qty; });
   const max = Math.max(...Object.values(cats));
   $('#bars').innerHTML = Object.entries(cats).sort((a, b) => b[1] - a[1]).map(([c, m]) =>
-    `<div class="bar" style="grid-template-columns:130px 1fr 70px"><span>${c}</span><i><s style="left:0;width:${(m / max) * 100}%"></s></i><span>${m.toFixed(0)} g</span></div>`).join('');
+    `<div class="bar plain" style="grid-template-columns:130px 1fr 70px"><span>${c}</span><i><s style="left:0;width:${(m / max) * 100}%"></s></i><span>${m.toFixed(0)} g</span></div>`).join('');
   calc();
   function calc() {
     const m = (mass + (+$('#extra').value || 0)) / 1000, T = +$('#T').value || 0;

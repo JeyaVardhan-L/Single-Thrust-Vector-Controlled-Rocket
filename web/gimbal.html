@@ -6,19 +6,13 @@
 <title>Gimbal lab · TVC kinematics and gearing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:,">
 </head>
 <body>
-<header class="topbar">
-  <span class="brand">tvc rocket</span>
-  <nav>
-    <a href="../index.html">home</a><a href="monocopter.html">monocopter</a><a href="rocket.html">rocket</a>
-    <a href="assembly.html?model=rocket">build guide</a><a href="gimbal.html" class="on">gimbal lab</a><a href="pid.html">pid lab</a><a href="sizing.html">sizing</a><a href="wiring.html">wiring</a>
-  </nav>
-</header>
-<div class="app">
+<header class="topbar"><a class="brand" href="../index.html">tvc rocket</a><nav><a href="../index.html">home</a><a href="rocket.html">rocket</a><a href="monocopter.html">monocopter</a><a href="assembly.html?model=rocket">build</a><a href="gimbal.html" class="on">gimbal</a><a href="pid.html">pid</a><a href="sizing.html">sizing</a><a href="wiring.html">wiring</a><a href="bom.html?model=rocket">bom</a><a href="doc.html?p=docs/README.md">docs</a></nav><a class="cta" href="assembly.html?model=rocket">Start building</a></header>
+<div class="app two">
   <aside class="side left" id="left">
     <h3>Vehicle</h3>
     <div class="row"><label for="T">Thrust T at the current throttle (N)</label><output id="TO"></output></div><div class="row full"><input id="T" type="range" min="5" max="60" step="0.5" value="11"></div>
@@ -50,24 +44,24 @@ const v = (k) => +$('#' + k).value;
 
 function draw(c, { delta, T, L }) {
   const dpr = devicePixelRatio || 1, W = c.clientWidth, H = c.height; c.width = W * dpr; const x = c.getContext('2d'); x.scale(dpr, dpr);
-  x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#f7f6f2'; x.fillRect(0, 0, W, H);
   const cx = W / 2, pivotY = H - 130, cgY = pivotY - L * 600; // scale: 600 px per metre
-  x.strokeStyle = '#b2b2b2'; x.setLineDash([4, 4]); x.beginPath(); x.moveTo(cx, 20); x.lineTo(cx, H - 20); x.stroke(); x.setLineDash([]);
+  x.strokeStyle = '#a8a7a2'; x.setLineDash([4, 4]); x.beginPath(); x.moveTo(cx, 20); x.lineTo(cx, H - 20); x.stroke(); x.setLineDash([]);
   // body
-  x.fillStyle = '#e5e5e5'; x.strokeStyle = '#000'; x.lineWidth = 1.5;
+  x.fillStyle = '#e2e2df'; x.strokeStyle = '#000'; x.lineWidth = 1.5;
   x.fillRect(cx - 22, 40, 44, pivotY - 40); x.strokeRect(cx - 22, 40, 44, pivotY - 40);
   // motor assembly (rotates by delta, pivot at gimbal)
   x.save(); x.translate(cx, pivotY); x.rotate(-delta);
-  x.fillStyle = '#b2b2b2'; x.fillRect(-14, -50, 28, 130);
+  x.fillStyle = '#a8a7a2'; x.fillRect(-14, -50, 28, 130);
   x.fillStyle = '#000'; x.beginPath(); x.moveTo(-12, 80); x.lineTo(12, 80); x.lineTo(18, 96); x.lineTo(-18, 96); x.fill();
   // thrust arrow (acts along tube axis, pointing UP on the vehicle, i.e. exhaust points down)
   const len = 40 + T * 0.7;
-  x.strokeStyle = '#0071bb'; x.fillStyle = '#0071bb'; x.lineWidth = 3;
+  x.strokeStyle = '#fc5000'; x.fillStyle = '#fc5000'; x.lineWidth = 3;
   x.beginPath(); x.moveTo(0, 96); x.lineTo(0, 96 - len); x.stroke();
   x.beginPath(); x.moveTo(0, 96 - len - 8); x.lineTo(-7, 96 - len + 6); x.lineTo(7, 96 - len + 6); x.fill();
   x.restore();
   // pivot + CG
-  x.fillStyle = '#0071bb'; x.beginPath(); x.arc(cx, pivotY, 5, 0, 7); x.fill(); x.fillStyle = '#000'; x.fillText('gimbal pivot', cx + 10, pivotY + 4);
+  x.fillStyle = '#fc5000'; x.beginPath(); x.arc(cx, pivotY, 5, 0, 7); x.fill(); x.fillStyle = '#000'; x.fillText('gimbal pivot', cx + 12, pivotY + 24);
   x.strokeStyle = '#000'; x.beginPath(); x.arc(cx, cgY, 8, 0, 7); x.stroke(); x.beginPath(); x.moveTo(cx - 8, cgY); x.lineTo(cx + 8, cgY); x.moveTo(cx, cgY - 8); x.lineTo(cx, cgY + 8); x.stroke();
   x.fillStyle = '#000'; x.fillText('CG', cx + 12, cgY + 4);
   // lever arm
@@ -75,11 +69,11 @@ function draw(c, { delta, T, L }) {
   x.fillStyle = '#000'; x.fillText('L', cx + 56, (pivotY + cgY) / 2);
   // resulting side force at the pivot, pointing opposite to nozzle sweep
   const Fy = T * Math.sin(delta);
-  x.strokeStyle = '#f0a800'; x.fillStyle = '#000'; x.lineWidth = 3;
+  x.strokeStyle = '#070607'; x.fillStyle = '#070607'; x.lineWidth = 3;
   const dir = Math.sign(Fy) || 1, fl = Math.min(120, Math.abs(Fy) * 2.2);
   x.beginPath(); x.moveTo(cx, pivotY); x.lineTo(cx - dir * -fl, pivotY); x.stroke();
-  x.fillText('side force T·sin δ', cx + (Fy >= 0 ? 12 : -140), pivotY - 14);
-  x.fillStyle = '#000'; x.fillText('Exhaust points down. The thrust line is tilted by δ, the side force at the pivot x lever L gives the restoring torque.', 12, H - 12);
+  x.fillText('side force T·sin δ', cx + 60, pivotY - 34);
+  x.fillStyle = '#000'; x.fillText('Side force x lever L = restoring torque', 12, H - 12);
 }
 
 function update() {

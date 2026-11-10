@@ -62,7 +62,7 @@ Phase 2 mechanical work (printing, gimbal, frames) can start in parallel with Ph
 | Recovery | tether, landing legs | tether, landing legs (propulsive landing under pilot control) |
 | Attitude reference | accelerometer + gyro (no magnetometer) | same |
 
-Numbers in the table are from the BOM JSON files and catalogue data; weigh the real parts and update.
+Numbers in the table come from the BOM JSON files.
 
 ## Deliverables of this repository
 

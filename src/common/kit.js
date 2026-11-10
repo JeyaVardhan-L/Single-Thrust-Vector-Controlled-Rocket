@@ -1,5 +1,6 @@
 // Small geometry/material toolkit + part registry shared by both models.
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/RoundedBoxGeometry.js';
 
 export const MAT = {
   print:   new THREE.MeshStandardMaterial({ color: 0xb89a62, roughness: 0.55, metalness: 0.05 }), // tan PETG
@@ -23,22 +24,24 @@ export const MAT = {
 const shadowed = (m) => { m.castShadow = true; m.receiveShadow = true; return m; };
 
 export function box(w, h, d, mat = MAT.print, x = 0, y = 0, z = 0) {
-  const m = shadowed(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat));
+  const r = Math.min(0.9, Math.min(w, h, d) / 2.4);
+  const m = shadowed(new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 3, r), mat));
   m.position.set(x, y, z);
   return m;
 }
 export function cyl(rTop, rBot, h, mat = MAT.print, seg = 32, x = 0, y = 0, z = 0) {
-  const m = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBot, h, seg), mat));
+  const sg = Math.max(seg, Math.max(rTop, rBot) > 8 ? 72 : 32);
+  const m = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBot, h, sg), mat));
   m.position.set(x, y, z);
   return m;
 }
 export function torus(R, r, mat = MAT.print, seg = 64) {
-  const m = shadowed(new THREE.Mesh(new THREE.TorusGeometry(R, r, 12, seg), mat));
+  const m = shadowed(new THREE.Mesh(new THREE.TorusGeometry(R, r, 24, Math.max(seg, 128)), mat));
   m.rotation.x = Math.PI / 2; // lay flat (axis = Y)
   return m;
 }
 export function sphere(r, mat = MAT.print, x = 0, y = 0, z = 0) {
-  const m = shadowed(new THREE.Mesh(new THREE.SphereGeometry(r, 20, 14), mat));
+  const m = shadowed(new THREE.Mesh(new THREE.SphereGeometry(r, 40, 24), mat));
   m.position.set(x, y, z);
   return m;
 }
@@ -46,14 +49,14 @@ export function sphere(r, mat = MAT.print, x = 0, y = 0, z = 0) {
 export function strut(a, b, r = 2, mat = MAT.print, seg = 12) {
   const va = new THREE.Vector3(...a), vb = new THREE.Vector3(...b);
   const len = va.distanceTo(vb);
-  const m = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, seg), mat));
+  const m = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, Math.max(seg, 28)), mat));
   m.position.copy(va).add(vb).multiplyScalar(0.5);
   m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), vb.clone().sub(va).normalize());
   return m;
 }
 export function tubeAlong(points, r = 3, mat = MAT.print) {
   const curve = new THREE.CatmullRomCurve3(points.map((p) => new THREE.Vector3(...p)));
-  return shadowed(new THREE.Mesh(new THREE.TubeGeometry(curve, 40, r, 10, false), mat));
+  return shadowed(new THREE.Mesh(new THREE.TubeGeometry(curve, 80, r, 20, false), mat));
 }
 
 // Involute-ish spur gear (flat teeth) as an extruded shape. Axis = Z of the shape; thickness = t.
@@ -136,7 +139,7 @@ export class Parts {
   }
   setVisible(id, v) { const p = this.map.get(id); if (p) p.group.visible = v; }
   // Highlight uses emissive tint on cloned materials so shared MAT stays untouched.
-  setHighlight(id, on, color = 0x2f9bff) {
+  setHighlight(id, on, color = 0xfc5000) {
     const p = this.map.get(id);
     if (!p) return;
     p.group.traverse((o) => {
@@ -190,7 +193,7 @@ export function plate(size, thick, holes = [], mat = MAT.print, corner = 7) {
     p.absarc(x, z, rad, 0, Math.PI * 2, true);
     s.holes.push(p);
   }
-  const geo = new THREE.ExtrudeGeometry(s, { depth: thick, bevelEnabled: true, bevelThickness: 0.5, bevelSize: 0.5, bevelSegments: 1, curveSegments: 20 });
+  const geo = new THREE.ExtrudeGeometry(s, { depth: thick, bevelEnabled: true, bevelThickness: 0.5, bevelSize: 0.5, bevelSegments: 1, curveSegments: 36 });
   geo.rotateX(-Math.PI / 2);
   geo.translate(0, thick / 2, 0);
   const m = new THREE.Mesh(geo, mat);

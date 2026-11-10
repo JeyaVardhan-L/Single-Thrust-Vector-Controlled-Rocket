@@ -68,7 +68,7 @@ Filament: ≈ 180 g. The model parameters for every dimension are in `src/data/s
 3. Test fit every M3 screw in every hole before assembly.
 4. Check flatness of the frames on a table; sand high spots.
 5. Inspect: no layer separation, no stringing in holes, no warping > 0.5 mm.
-6. Weigh each part and write the mass on it; update the BOM if it differs from the estimate by more than 10 %.
+6. Weigh each part and write the mass on it; update the BOM if it differs from the BOM value by more than 10 %.
 
 ## Tolerances (starting values, tune per printer)
 

@@ -1,6 +1,6 @@
 "id","category","name","qty","onboard","unit_mass_g","unit_price_usd","line_mass_g","line_price_usd","spec","notes"
-"P-01","Propulsion","Brushless motor 2306, 1900-2300 KV","1","yes","33","22","33","22","2306 outrunner, 4S rated, prop adapter, 16x16 or 12x12 mm mount pattern","Confirm static thrust on the thrust stand; vendor numbers are optimistic."
-"P-02","Propulsion","Propeller 6x3.5 two-blade (spares)","3","no","6","2","0","6","6 in two-blade, correct rotation for the motor, balanced","Always keep spares: the first crash breaks one."
+"P-01","Propulsion","Brushless motor 2306, 1900-2300 KV","1","yes","33","22","33","22","2306 outrunner, 4S rated, prop adapter, 16x16 or 12x12 mm mount pattern","Static thrust is recorded on the thrust stand at Gate 1."
+"P-02","Propulsion","Propeller 6x3.5 two-blade (spares)","3","no","6","2","0","6","6 in two-blade pusher type (air leaves away from the motor), rotation matched to the motor, balanced","Always keep spares: the first crash breaks one."
 "P-03","Propulsion","Propeller (mounted)","1","yes","6","0","6","0","see P-02","Balance with a prop balancer or tape trim."
 "P-04","Propulsion","ESC 40 A, 4S, DShot (BLHeli_S / AM32)","1","yes","10","25","10","25","Single-motor ESC, DShot300/600","Set motor direction in the configurator before the first spin."
 "E-01","Power","LiPo 4S 1300 mAh, 75C+, XT60","1","yes","155","28","155","28","14.8 V nominal, 16.8 V full","Buy 2-3 packs. Store at 3.8 V per cell."

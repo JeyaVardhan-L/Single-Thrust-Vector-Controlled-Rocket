@@ -1,11 +1,12 @@
 // Shared three.js stage: renderer, camera, lights, ground grid, orbit controls, resize + loop.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/RoomEnvironment.js';
 
 export const COLORS = {
-  bg: 0x0f0e12,
-  grid: 0x2a2a30,
-  gridMajor: 0x3d3d46,
+  bg: 0xf7f6f2,        // Limestone
+  grid: 0xe6e5e0,
+  gridMajor: 0xd0cfc8,
 };
 
 export function createStage(container, opts = {}) {
@@ -15,20 +16,24 @@ export function createStage(container, opts = {}) {
     gridSize = 1200,
     shadows = true,
     preserveDrawingBuffer = false,
-    fov = 38,
+    fov = 36,
+    bg = COLORS.bg,
   } = opts;
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(COLORS.bg);
+  renderer.setClearColor(bg);
   renderer.shadowMap.enabled = shadows;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 1.0;
   container.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(COLORS.bg, gridSize * 1.6, gridSize * 4);
+  scene.fog = new THREE.Fog(bg, gridSize * 1.8, gridSize * 4.5);
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  scene.environmentIntensity = 0.85;
 
   const camera = new THREE.PerspectiveCamera(fov, 1, 5, 12000);
   camera.position.set(...cameraPos);
@@ -43,16 +48,16 @@ export function createStage(container, opts = {}) {
   controls.update();
 
   // Lighting: soft hemisphere + key light with shadows + cool rim light.
-  scene.add(new THREE.HemisphereLight(0xdfe8ff, 0x1a1f28, 0.9));
-  const key = new THREE.DirectionalLight(0xfff1dc, 2.4);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xcfcfca, 0.35));
+  const key = new THREE.DirectionalLight(0xfff4e6, 2.2);
   key.position.set(500, 900, 400);
   key.castShadow = shadows;
-  key.shadow.mapSize.set(2048, 2048);
+  key.shadow.mapSize.set(4096, 4096);
   Object.assign(key.shadow.camera, { left: -600, right: 600, top: 800, bottom: -300, near: 100, far: 2500 });
   key.shadow.bias = -0.0004;
   key.shadow.normalBias = 1.5;
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0x7fb2ff, 1.1);
+  const rim = new THREE.DirectionalLight(0xdfe6ff, 0.8);
   rim.position.set(-600, 300, -500);
   scene.add(rim);
 
@@ -62,7 +67,7 @@ export function createStage(container, opts = {}) {
   scene.add(grid);
   const catcher = new THREE.Mesh(
     new THREE.PlaneGeometry(gridSize, gridSize),
-    new THREE.ShadowMaterial({ opacity: 0.35 })
+    new THREE.ShadowMaterial({ opacity: 0.16 })
   );
   catcher.rotation.x = -Math.PI / 2;
   catcher.receiveShadow = true;

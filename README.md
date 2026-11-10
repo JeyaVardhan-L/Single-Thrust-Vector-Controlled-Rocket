@@ -1,6 +1,6 @@
-# TVC Rocket: baseline repo
+# TVC Rocket: open build guide
 
-A baseline for a **thrust-vector-controlled (TVC) rocket**, built in two phases.
+An open guide to build an **electric thrust-vector-controlled (TVC) rocket** in two phases: models, procedures, components, firmware and interactive tutorials.
 
 | Phase | Vehicle | Purpose |
 |---|---|---|
@@ -27,6 +27,7 @@ npm install          # only needed for screenshots (puppeteer-core)
 npm start            # http://localhost:5173
 npm test             # JS unit tests (sim + mixer)
 npm run test:firmware   # C++ host tests (needs g++ or clang++)
+npm run audit        # loads every page in headless Chrome: console errors, broken requests, text contrast
 ```
 
 Open <http://localhost:5173> for the hub. Pages (all in `web/`):
@@ -41,6 +42,7 @@ Open <http://localhost:5173> for the hub. Pages (all in `web/`):
 | [`sizing.html`](web/sizing.html) | Live mass budget from the BOM, thrust-to-weight, hover power and endurance |
 | [`wiring.html`](web/wiring.html) | Block diagrams and the Teensy 4.1 pin maps |
 | [`bom.html`](web/bom.html) | Searchable bill of materials with totals |
+| [`doc.html`](web/doc.html) | Reads any document in `docs/` inside the site (links, images and diagrams resolved) |
 
 The site is static: GitHub Pages works out of the box (see `.github/workflows/pages.yml`).
 
