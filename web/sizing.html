@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sizing calculator · mass and thrust</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">TVC<b>·</b>Rocket</span>
+  <nav>
+    <a href="../index.html">Home</a><a href="monocopter.html">Phase 1 · Monocopter</a><a href="rocket.html">Phase 2 · Rocket</a>
+    <a href="assembly.html?model=rocket">Build guide</a><a href="gimbal.html">Gimbal lab</a><a href="pid.html">PID lab</a><a href="sizing.html" class="on">Sizing</a><a href="bom.html?model=rocket">BOM</a>
+  </nav>
+</header>
+<div class="page">
+  <h1>Mass and thrust sizing</h1>
+  <p class="lead">The mass comes live from <code>hardware/bom/*.json</code>. Enter the thrust you measured (or the motor datasheet value) and see whether the vehicle meets the requirements.</p>
+  <div class="btn-row"><button id="bM">Phase 1 · Monocopter</button><button id="bR">Phase 2 · Rocket</button></div>
+  <div class="grid c2">
+    <div class="card" id="inputs"></div>
+    <div class="card"><h3>Result</h3><div class="kv" id="res"></div><div id="verdict"></div></div>
+  </div>
+  <h2>Mass budget by category</h2>
+  <div id="bars" class="bars"></div>
+  <h2>Equations used</h2>
+  <div class="grid c2">
+    <div class="card"><h3>Monocopter</h3>
+      <p><code>TWR = T<sub>max</sub> / (m g)</code> (need ≥ 2.0)<br><code>hover throttle ≈ √(m g / T<sub>max</sub>)</code> (thrust ∝ throttle², rough)<br><code>vane authority: τ = 2 F<sub>v</sub> h</code></p></div>
+    <div class="card"><h3>Rocket hop (no drag, constant thrust)</h3>
+      <p><code>a = T/m − g</code>, <code>v<sub>b</sub> = a t<sub>b</sub></code>, <code>h<sub>b</sub> = ½ a t<sub>b</sub>²</code>, <code>h<sub>coast</sub> = v<sub>b</sub>² / 2g</code><br>Real altitude is lower: drag, mass loss and thrust curve change it. Use OpenRocket / RASAero for flight predictions.</p></div>
+  </div>
+</div>
+<script type="module">
+const $ = (s) => document.querySelector(s);
+let which = new URLSearchParams(location.search).get('model') === 'monocopter' ? 'monocopter' : 'rocket';
+const cache = {};
+async function load(w) { return (cache[w] ??= await (await fetch(`../hardware/bom/${w}.json`)).json()); }
+const g = 9.81;
+
+async function render() {
+  const bom = await load(which);
+  const items = bom.items.filter((i) => i.onboard);
+  const mass = items.reduce((s, i) => s + i.mass_g * i.qty, 0);
+  const isR = which === 'rocket';
+  $('#bM').classList.toggle('on', !isR); $('#bR').classList.toggle('on', isR);
+  const def = isR ? { T: 30, tb: 1.2, extra: 0 } : { T: 14, tb: 0, extra: 0 };
+  $('#inputs').innerHTML = `<h3>${bom.project}</h3>
+    <div class="row"><label>On-board mass from BOM</label><output>${mass.toFixed(0)} g</output></div>
+    <div class="row"><label for="extra">Extra mass (payload, ballast) g</label><input id="extra" type="number" value="${def.extra}" style="width:90px"></div>
+    <div class="row"><label for="T">${isR ? 'Average motor thrust (N)' : 'Max static thrust (N)'}</label><input id="T" type="number" value="${def.T}" step="0.5" style="width:90px"></div>
+    ${isR ? `<div class="row"><label for="tb">Burn time (s)</label><input id="tb" type="number" value="${def.tb}" step="0.1" style="width:90px"></div>` : ''}`;
+  $('#inputs').querySelectorAll('input').forEach((i) => i.oninput = calc);
+  // bars
+  const cats = {}; items.forEach((i) => { cats[i.cat] = (cats[i.cat] || 0) + i.mass_g * i.qty; });
+  const max = Math.max(...Object.values(cats));
+  $('#bars').innerHTML = Object.entries(cats).sort((a, b) => b[1] - a[1]).map(([c, m]) =>
+    `<div class="bar" style="grid-template-columns:130px 1fr 70px"><span>${c}</span><i><s style="left:0;width:${(m / max) * 100}%"></s></i><span>${m.toFixed(0)} g</span></div>`).join('');
+  calc();
+  function calc() {
+    const m = (mass + (+$('#extra').value || 0)) / 1000, T = +$('#T').value || 0;
+    const twr = T / (m * g);
+    const rows = [['Take-off mass', (m * 1000).toFixed(0) + ' g'], ['Weight', (m * g).toFixed(2) + ' N'], ['Thrust-to-weight', twr.toFixed(2)]];
+    let ok = true, msgs = [];
+    if (isR) {
+      const tb = +$('#tb').value || 0, a = T / m - g, vb = Math.max(0, a * tb), hb = 0.5 * Math.max(0, a) * tb * tb, hc = (vb * vb) / (2 * g);
+      rows.push(['Net acceleration', a.toFixed(1) + ' m/s²'], ['Burnout speed', vb.toFixed(1) + ' m/s'], ['Burn height', hb.toFixed(1) + ' m'], ['Coast height (no drag)', hc.toFixed(1) + ' m'], ['Apogee (no drag, upper bound)', (hb + hc).toFixed(0) + ' m']);
+      if (twr < 2.5) { ok = false; msgs.push('TWR below 2.5: too little margin to lift off cleanly and to control.'); }
+      else if (twr < 5) msgs.push('TWR 2.5 to 5: acceptable for the first low hops (gimbal authority is lower). Aim for 5 or more with the G-class motor later.');
+      if (twr > 15) msgs.push('TWR above 15: very short burn, gimbal must be fast; consider a lower-impulse motor for the first tests.');
+    } else {
+      rows.push(['Hover throttle (est.)', (100 * Math.sqrt(1 / Math.max(twr, 0.01))).toFixed(0) + ' %'], ['Thrust margin at hover', ((twr - 1) * 100).toFixed(0) + ' %']);
+      if (twr < 2) { ok = false; msgs.push('TWR below 2: not enough margin for control authority and a heavier battery.'); }
+    }
+    $('#res').innerHTML = rows.map(([a, b]) => `<span>${a}</span><span>${b}</span>`).join('');
+    $('#verdict').innerHTML = (ok ? '<div class="note">Meets the baseline thrust requirement.</div>' : '') + msgs.map((x) => `<div class="note warn">${x}</div>`).join('');
+  }
+}
+$('#bM').onclick = () => { which = 'monocopter'; render(); };
+$('#bR').onclick = () => { which = 'rocket'; render(); };
+render();
+let f = 0; (function w() { if (++f === 8) window.__ready = true; else requestAnimationFrame(w); })();
+</script>
+</body>
+</html>

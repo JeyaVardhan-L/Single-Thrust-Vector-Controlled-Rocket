@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build guide · interactive assembly</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+<script type="importmap">{"imports":{"three":"../vendor/three/three.module.js","three/addons/":"../vendor/three/addons/"}}</script>
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">TVC<b>·</b>Rocket</span>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="monocopter.html">Phase 1 · Monocopter</a>
+    <a href="rocket.html">Phase 2 · Rocket</a>
+    <a href="assembly.html?model=monocopter" id="navM">Build: monocopter</a>
+    <a href="assembly.html?model=rocket" id="navR">Build: rocket</a>
+    <a href="gimbal.html">Gimbal lab</a>
+    <a href="pid.html">PID lab</a>
+    <a href="sizing.html">Sizing</a>
+    <a href="wiring.html">Wiring</a>
+  </nav>
+</header>
+<div class="wizard">
+  <main class="stage" id="stage">
+    <div class="badge" id="badge"></div>
+    <div class="hint">Blue = parts you are installing now · faint = not yet installed · drag to orbit</div>
+  </main>
+  <aside class="steps">
+    <div class="head">
+      <div id="stepNo" style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em"></div>
+      <h2 id="stepTitle" style="margin:.2em 0 0;font-size:20px"></h2>
+      <div class="progress"><i id="prog"></i></div>
+      <div class="stepdots" id="dots"></div>
+    </div>
+    <div class="body" id="body"></div>
+    <div class="foot">
+      <button id="prev">← Back</button>
+      <a id="doc" class="btn" href="#">Full procedure (md)</a>
+      <button id="next" class="primary">Next →</button>
+    </div>
+  </aside>
+</div>
+<script type="module">
+import { createStage } from '../src/common/stage.js';
+import { buildRocket } from '../src/models/rocket.js';
+import { buildMonocopter } from '../src/models/monocopter.js';
+import { STEPS } from '../src/data/steps.js';
+
+const params = new URLSearchParams(location.search);
+const id = params.get('model') === 'monocopter' ? 'monocopter' : 'rocket';
+const guide = STEPS[id];
+const isR = id === 'rocket';
+document.title = guide.title;
+document.getElementById(isR ? 'navR' : 'navM').classList.add('on');
+document.getElementById('badge').innerHTML = `<b>${guide.title}</b>`;
+document.getElementById('doc').href = guide.doc;
+
+const stage = createStage(document.getElementById('stage'), {
+  cameraPos: isR ? [760, 520, 860] : [380, 300, 430], target: isR ? [0, 290, 0] : [0, 130, 0],
+  gridSize: isR ? 1400 : 800, preserveDrawingBuffer: params.has('shot'),
+});
+const model = isR ? buildRocket() : buildMonocopter();
+stage.scene.add(model.root);
+stage.onTick((dt, t) => model.update && model.update(dt, t));
+if (!isR) model.setThrottle(0.3);
+const T = stage.THREE;
+
+let cur = Math.max(0, Math.min(guide.steps.length - 1, (+params.get('step') || 1) - 1));
+const dots = document.getElementById('dots');
+dots.innerHTML = guide.steps.map((_, i) => `<b data-i="${i}">${i + 1}</b>`).join('');
+dots.addEventListener('click', (e) => { if (e.target.dataset.i) go(+e.target.dataset.i); });
+document.getElementById('prev').onclick = () => go(cur - 1);
+document.getElementById('next').onclick = () => go(cur + 1);
+addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') go(cur + 1); if (e.key === 'ArrowLeft') go(cur - 1); });
+
+let camGoal = null;
+function go(i) {
+  cur = Math.max(0, Math.min(guide.steps.length - 1, i));
+  const s = guide.steps[cur];
+  const installed = new Set();
+  guide.steps.slice(0, cur + 1).forEach((st) => (st.adds || []).forEach((p) => installed.add(p)));
+  const focus = new Set(s.focus || s.adds || []);
+  for (const p of model.parts.list()) {
+    const on = installed.has(p.id);
+    model.parts.setVisible(p.id, true);
+    model.parts.setGhost(p.id, !on);
+    model.parts.setHighlight(p.id, focus.has(p.id));
+  }
+  // frame the focused parts
+  const box = new T.Box3();
+  const ids = [...focus].filter((x) => model.parts.get(x));
+  (ids.length ? ids : [...installed]).forEach((x) => box.expandByObject(model.parts.get(x).group));
+  if (!box.isEmpty()) {
+    const c = box.getCenter(new T.Vector3()); const size = box.getSize(new T.Vector3()).length();
+    const dir = stage.camera.position.clone().sub(stage.controls.target).normalize();
+    camGoal = { target: c, pos: c.clone().addScaledVector(dir, Math.max(size * 1.7, 260)) };
+  }
+  document.getElementById('stepNo').textContent = `Step ${cur + 1} of ${guide.steps.length}` + (s.gate ? ` · ${s.gate}` : '');
+  document.getElementById('stepTitle').textContent = s.title;
+  document.getElementById('prog').style.width = ((cur + 1) / guide.steps.length) * 100 + '%';
+  [...dots.children].forEach((d, k) => { d.className = k < cur ? 'done' : k === cur ? 'cur' : ''; });
+  const chips = (s.adds || s.focus || []).map((p) => `<span class="chip">${model.parts.get(p)?.name || p}</span>`).join('');
+  document.getElementById('body').innerHTML =
+    `<div style="color:var(--muted);font-size:12px">⏱ ${s.time || ''}</div><div class="chips">${chips}</div>` +
+    `<b>Do</b><ul>${s.do.map((x) => `<li>${x}</li>`).join('')}</ul>` +
+    (s.check ? `<b>Check before moving on</b><ul>${s.check.map((x) => `<li>${x}</li>`).join('')}</ul>` : '') +
+    (s.warn ? `<div class="note warn">${s.warn}</div>` : '');
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === guide.steps.length - 1;
+  history.replaceState(null, '', `?model=${id}&step=${cur + 1}` + (params.has('shot') ? '&shot' : ''));
+}
+stage.onTick(() => {
+  if (!camGoal) return;
+  stage.controls.target.lerp(camGoal.target, 0.08);
+  stage.camera.position.lerp(camGoal.pos, 0.08);
+  if (stage.camera.position.distanceTo(camGoal.pos) < 1) camGoal = null;
+});
+go(cur);
+let frames = 0; stage.onTick(() => { if (++frames === 90) window.__ready = true; });
+</script>
+</body>
+</html>

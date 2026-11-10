@@ -1,0 +1,21 @@
+{
+  "name": "tvc-rocket-baseline",
+  "version": "0.1.0",
+  "description": "Baseline repo for a TVC rocket (Phase 2) and the vane-controlled monocopter test vehicle (Phase 1): docs, three.js models, interactive tutorials, firmware skeleton.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node --test",
+    "bom": "node scripts/gen-bom.mjs",
+    "screenshots": "node scripts/screenshot.mjs",
+    "test:firmware": "node scripts/test-firmware.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^23.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bill of materials</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">TVC<b>·</b>Rocket</span>
+  <nav>
+    <a href="../index.html">Home</a><a href="monocopter.html">Phase 1 · Monocopter</a><a href="rocket.html">Phase 2 · Rocket</a>
+    <a href="assembly.html?model=rocket">Build guide</a><a href="sizing.html">Sizing</a><a href="bom.html?model=monocopter" id="nm">BOM · Monocopter</a><a href="bom.html?model=rocket" id="nr">BOM · Rocket</a>
+  </nav>
+</header>
+<div class="page">
+  <h1 id="title">Bill of materials</h1>
+  <p class="lead" id="note"></p>
+  <div class="grid c3" id="tot"></div>
+  <div class="btn-row"><label style="font-size:13px;color:var(--muted)">Filter <input id="q" type="text" placeholder="e.g. servo" style="background:#0b0f15;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:5px 8px"></label>
+    <label style="font-size:13px;color:var(--muted)"><input type="checkbox" id="onlyOn"> on-board only</label>
+    <a class="btn" id="csv" href="#">Download CSV</a></div>
+  <div style="overflow:auto"><table id="t"></table></div>
+</div>
+<script type="module">
+const $ = (s) => document.querySelector(s);
+const which = new URLSearchParams(location.search).get('model') === 'monocopter' ? 'monocopter' : 'rocket';
+$(which === 'rocket' ? '#nr' : '#nm').classList.add('on');
+const bom = await (await fetch(`../hardware/bom/${which}.json`)).json();
+$('#title').textContent = 'Bill of materials · ' + bom.project;
+$('#note').textContent = bom.note;
+$('#csv').href = `../hardware/bom/${which}.csv`;
+const onboard = bom.items.filter((i) => i.onboard);
+const mass = onboard.reduce((s, i) => s + i.mass_g * i.qty, 0), cost = bom.items.reduce((s, i) => s + i.price_usd * i.qty, 0);
+$('#tot').innerHTML = [['On-board mass', mass.toFixed(0) + ' g'], ['Total cost (indicative)', '$' + cost.toFixed(0)], ['Line items', bom.items.length]]
+  .map(([a, b]) => `<div class="card"><div style="color:var(--muted);font-size:12px">${a}</div><div style="font-size:26px;font-weight:700">${b}</div></div>`).join('');
+function draw() {
+  const q = $('#q').value.toLowerCase(), only = $('#onlyOn').checked;
+  const rows = bom.items.filter((i) => (!only || i.onboard) && (!q || (i.name + i.spec + i.notes + i.cat + i.id).toLowerCase().includes(q)));
+  let last = '';
+  $('#t').innerHTML = '<tr><th>ID</th><th>Item</th><th class="num">Qty</th><th class="num">g each</th><th class="num">$ each</th><th>On</th><th>Spec / notes</th></tr>' +
+    rows.map((i) => {
+      const head = i.cat !== last ? `<tr><td colspan="7" style="background:#101722;color:var(--accent);font-weight:600">${i.cat}</td></tr>` : ''; last = i.cat;
+      return head + `<tr><td>${i.id}</td><td>${i.name}</td><td class="num">${i.qty}</td><td class="num">${i.mass_g}</td><td class="num">${i.price_usd}</td><td>${i.onboard ? '●' : ''}</td><td style="color:var(--muted)">${[i.spec, i.notes].filter(Boolean).join(' · ')}</td></tr>`;
+    }).join('');
+}
+$('#q').oninput = draw; $('#onlyOn').onchange = draw; draw();
+window.__ready = true;
+</script>
+</body>
+</html>

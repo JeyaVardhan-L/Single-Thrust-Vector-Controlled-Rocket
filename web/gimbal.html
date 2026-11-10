@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gimbal lab · TVC kinematics and gearing</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">TVC<b>·</b>Rocket</span>
+  <nav>
+    <a href="../index.html">Home</a><a href="monocopter.html">Phase 1 · Monocopter</a><a href="rocket.html">Phase 2 · Rocket</a>
+    <a href="assembly.html?model=rocket">Build guide</a><a href="gimbal.html" class="on">Gimbal lab</a><a href="pid.html">PID lab</a><a href="sizing.html">Sizing</a><a href="wiring.html">Wiring</a>
+  </nav>
+</header>
+<div class="app">
+  <aside class="side left" id="left">
+    <h3>Vehicle</h3>
+    <div class="row"><label for="T">Thrust T (N)</label><output id="TO"></output></div><div class="row full"><input id="T" type="range" min="10" max="200" step="1" value="30"></div>
+    <div class="row"><label for="L">Pivot-to-CG lever L (m)</label><output id="LO"></output></div><div class="row full"><input id="L" type="range" min="0.05" max="0.5" step="0.005" value="0.14"></div>
+    <div class="row"><label for="I">Pitch inertia I (kg·m²)</label><output id="IO"></output></div><div class="row full"><input id="I" type="range" min="0.005" max="0.06" step="0.0005" value="0.025"></div>
+    <div class="row"><label for="m">Mass m (kg)</label><output id="mO"></output></div><div class="row full"><input id="m" type="range" min="0.5" max="2.5" step="0.01" value="0.95"></div>
+    <h3>Gimbal</h3>
+    <div class="row"><label for="d">Gimbal angle δ (deg)</label><output id="dO"></output></div><div class="row full"><input id="d" type="range" min="-10" max="10" step="0.1" value="5"></div>
+    <div class="row"><label for="tp">Pinion teeth</label><output id="tpO"></output></div><div class="row full"><input id="tp" type="range" min="10" max="36" step="1" value="18"></div>
+    <div class="row"><label for="ts">Sector teeth</label><output id="tsO"></output></div><div class="row full"><input id="ts" type="range" min="24" max="60" step="1" value="36"></div>
+    <div class="row"><label for="off">Thrust-line offset from pivot (mm)</label><output id="offO"></output></div><div class="row full"><input id="off" type="range" min="0" max="60" step="1" value="15"></div>
+  </aside>
+  <main class="stage" style="overflow:auto;padding:16px">
+    <h2 style="margin:0 0 8px">Thrust vectoring in one picture</h2>
+    <div class="grid c2">
+      <div class="canvas-wrap"><canvas id="cv" height="440"></canvas></div>
+      <div class="card"><h3>Live numbers</h3><div class="kv" id="out"></div><div id="msg"></div></div>
+    </div>
+    <h2>Why a 2:1 gear stage?</h2>
+    <p style="max-width:80ch;color:var(--muted)">A direct servo-to-gimbal link doubles every pulse-width quantisation step and every bit of servo slop into the thrust vector. The 18T pinion into a 36T sector halves both, and doubles the available torque at the gimbal, in exchange for half the angular speed. With ±7° of gimbal you only need ±14° of servo, which is well inside a standard servo's range.</p>
+    <table id="tbl"></table>
+  </main>
+</div>
+<script type="module">
+const $ = (s) => document.querySelector(s);
+const DEG = Math.PI / 180;
+const ids = ['T', 'L', 'I', 'm', 'd', 'tp', 'ts', 'off'];
+const v = (k) => +$('#' + k).value;
+
+function draw(c, { delta, T, L }) {
+  const dpr = devicePixelRatio || 1, W = c.clientWidth, H = c.height; c.width = W * dpr; const x = c.getContext('2d'); x.scale(dpr, dpr);
+  x.fillStyle = '#0b0f15'; x.fillRect(0, 0, W, H);
+  const cx = W / 2, pivotY = H - 130, cgY = pivotY - L * 600; // scale: 600 px per metre
+  x.strokeStyle = '#2a3442'; x.setLineDash([4, 4]); x.beginPath(); x.moveTo(cx, 20); x.lineTo(cx, H - 20); x.stroke(); x.setLineDash([]);
+  // body
+  x.fillStyle = '#24303f'; x.strokeStyle = '#5b6b80'; x.lineWidth = 1.5;
+  x.fillRect(cx - 22, 40, 44, pivotY - 40); x.strokeRect(cx - 22, 40, 44, pivotY - 40);
+  // motor tube (rotates by delta, pivot at gimbal)
+  x.save(); x.translate(cx, pivotY); x.rotate(-delta);
+  x.fillStyle = '#8a7246'; x.fillRect(-14, -50, 28, 130);
+  x.fillStyle = '#16181c'; x.beginPath(); x.moveTo(-12, 80); x.lineTo(12, 80); x.lineTo(18, 96); x.lineTo(-18, 96); x.fill();
+  // thrust arrow (acts along tube axis, pointing UP on the vehicle, i.e. exhaust points down)
+  const len = 40 + T * 0.7;
+  x.strokeStyle = '#ff7a2f'; x.fillStyle = '#ff7a2f'; x.lineWidth = 3;
+  x.beginPath(); x.moveTo(0, 96); x.lineTo(0, 96 - len); x.stroke();
+  x.beginPath(); x.moveTo(0, 96 - len - 8); x.lineTo(-7, 96 - len + 6); x.lineTo(7, 96 - len + 6); x.fill();
+  x.restore();
+  // pivot + CG
+  x.fillStyle = '#4aa8ff'; x.beginPath(); x.arc(cx, pivotY, 5, 0, 7); x.fill(); x.fillText('gimbal pivot', cx + 10, pivotY + 4);
+  x.strokeStyle = '#ffd34d'; x.beginPath(); x.arc(cx, cgY, 8, 0, 7); x.stroke(); x.beginPath(); x.moveTo(cx - 8, cgY); x.lineTo(cx + 8, cgY); x.moveTo(cx, cgY - 8); x.lineTo(cx, cgY + 8); x.stroke();
+  x.fillStyle = '#ffd34d'; x.fillText('CG', cx + 12, cgY + 4);
+  // lever arm
+  x.strokeStyle = '#3ecf8e'; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(cx + 50, pivotY); x.lineTo(cx + 50, cgY); x.stroke(); x.setLineDash([]);
+  x.fillStyle = '#3ecf8e'; x.fillText('L', cx + 56, (pivotY + cgY) / 2);
+  // resulting side force at the pivot, pointing opposite to nozzle sweep
+  const Fy = T * Math.sin(delta);
+  x.strokeStyle = '#ff5a5f'; x.fillStyle = '#ff5a5f'; x.lineWidth = 2.5;
+  const dir = Math.sign(Fy) || 1, fl = Math.min(120, Math.abs(Fy) * 2.2);
+  x.beginPath(); x.moveTo(cx, pivotY); x.lineTo(cx - dir * -fl, pivotY); x.stroke();
+  x.fillText('side force T·sin δ', cx + (Fy >= 0 ? 12 : -140), pivotY - 14);
+  x.fillStyle = '#8b98a9'; x.fillText('Exhaust points down. The thrust line is tilted by δ, the side force at the pivot x lever L gives the restoring torque.', 12, H - 12);
+}
+
+function update() {
+  ids.forEach((k) => { $('#' + k + 'O').textContent = v(k).toFixed(k === 'I' ? 4 : k === 'L' ? 3 : k === 'm' ? 2 : k === 'd' || k === 'T' ? 1 : 0); });
+  const T = v('T'), L = v('L'), I = v('I'), m = v('m'), d = v('d') * DEG, ratio = v('ts') / v('tp'), off = v('off') / 1000;
+  const side = T * Math.sin(d), torque = side * L, alpha = torque / I, twr = T / (m * 9.81);
+  const Kg = (T * L) / I;
+  const mod = 1, cd = ((v('tp') + v('ts')) * mod) / 2;
+  const holdTorque = T * off * Math.sin(d) + 0.02; // pivot-offset restoring torque + 0.02 N.m friction guess
+  const servoTorque = holdTorque / ratio;
+  const quant = (90 / 1000) / ratio; // servo 90 deg per 1000 us (typical) divided by ratio -> deg of gimbal per us
+  $('#out').innerHTML = [
+    ['Side force', side.toFixed(2) + ' N'], ['Control torque', torque.toFixed(3) + ' N·m'], ['Angular accel.', (alpha).toFixed(0) + ' rad/s² (' + (alpha / DEG).toFixed(0) + ' °/s²)'],
+    ['Plant gain G = T·L/I', Kg.toFixed(0) + ' rad/s² per rad'], ['Thrust / weight', twr.toFixed(1)], ['Gear ratio', ratio.toFixed(2) + ' : 1'],
+    ['Servo angle needed', (Math.abs(v('d')) * ratio).toFixed(1) + '°'], ['Gear centre distance', cd.toFixed(1) + ' mm (module 1)'],
+    ['Holding torque at gimbal', holdTorque.toFixed(3) + ' N·m'], ['Servo torque needed', (servoTorque * 10.197).toFixed(2) + ' kg·cm'],
+    ['Gimbal step per 1 µs', quant.toFixed(3) + '°'],
+  ].map(([a, b]) => `<span>${a}</span><span>${b}</span>`).join('');
+  const msgs = [];
+  if (twr < 5) msgs.push('<div class="note warn">Thrust/weight &lt; 5: the baseline requirement for a controllable first hop is TWR ≥ 5 at lift-off.</div>');
+  if (Math.abs(v('d')) * ratio > 40) msgs.push('<div class="note warn">Servo travel above ±40° is getting close to a typical servo limit once you add trim.</div>');
+  if (servoTorque * 10.197 > 3) msgs.push('<div class="note danger">Servo torque requirement above 3 kg·cm: reduce the thrust-line offset or increase the gear ratio.</div>');
+  msgs.push('<div class="note">Rule: put the gimbal pivot at the motor’s thrust centre so the offset (and the holding torque) is small.</div>');
+  $('#msg').innerHTML = msgs.join('');
+  draw($('#cv'), { delta: d, T, L });
+  const rows = [['Gimbal range', '±7°', 'mechanical stop'], ['Servo range needed', '±' + (7 * ratio).toFixed(0) + '°', 'ratio ' + ratio.toFixed(2)],
+    ['Backlash budget', '< 0.3° at the gimbal', 'shim washers + preload'], ['Software limit', '6.5°', 'always inside the stop']];
+  $('#tbl').innerHTML = '<tr><th>Item</th><th>Value</th><th>Note</th></tr>' + rows.map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+}
+ids.forEach((k) => $('#' + k).addEventListener('input', update));
+update(); addEventListener('resize', update);
+let f = 0; (function w() { if (++f === 5) window.__ready = true; else requestAnimationFrame(w); })();
+</script>
+</body>
+</html>

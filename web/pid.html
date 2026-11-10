@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PID lab · attitude control simulator</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">TVC<b>·</b>Rocket</span>
+  <nav>
+    <a href="../index.html">Home</a><a href="monocopter.html">Phase 1 · Monocopter</a><a href="rocket.html">Phase 2 · Rocket</a>
+    <a href="assembly.html?model=rocket">Build guide</a><a href="gimbal.html">Gimbal lab</a><a href="pid.html" class="on">PID lab</a><a href="sizing.html">Sizing</a><a href="wiring.html">Wiring</a>
+  </nav>
+</header>
+<div class="app">
+  <aside class="side left" id="left"></aside>
+  <main class="stage" style="overflow:auto;padding:16px">
+    <h2 style="margin:0 0 4px">Attitude control: what the gains actually do</h2>
+    <p style="color:var(--muted);margin:0 0 12px;max-width:80ch" id="note"></p>
+    <div class="canvas-wrap"><canvas id="c1" height="260"></canvas></div>
+    <div class="canvas-wrap" style="margin-top:12px"><canvas id="c2" height="200"></canvas></div>
+    <div class="grid c3" style="margin-top:14px" id="metrics"></div>
+    <div id="verdict"></div>
+  </main>
+  <aside class="side right">
+    <h3>How to tune (same on both vehicles)</h3>
+    <ol style="padding-left:18px;font-size:13px;line-height:1.55;margin:0">
+      <li>Set Ki = 0, Kd = 0. Raise <b>Kp</b> until the response just starts to ring, then reduce by 30 %.</li>
+      <li>Add <b>Kd</b> until the ringing is damped (overshoot &lt; 20 %). Too much Kd amplifies gyro noise and wears servos.</li>
+      <li>Add a little <b>Ki</b> only to remove steady offset (thrust misalignment, CG error).</li>
+      <li>Increase <b>latency</b> and <b>actuator lag</b>: watch the stable region shrink. This is why every millisecond of loop delay matters.</li>
+    </ol>
+    <h3>Reading the plots</h3>
+    <div class="note" style="font-size:13px">Top: attitude error (deg). The vehicle starts offset by the preset step and a short disturbance hits at 1.5 s. Bottom: actuator position (gimbal angle for the rocket, vane command for the monocopter). Flat tops = saturation.</div>
+    <div class="note warn" style="font-size:13px">This is a 1-axis, small-angle model with no aerodynamics, no slosh and no thrust curve. It teaches trends; tune the real vehicle from logged flights.</div>
+  </aside>
+</div>
+<script type="module">
+import { PRESETS, simulate } from '../src/sim/attitude.js';
+const $ = (s) => document.querySelector(s);
+const DEG = Math.PI / 180;
+let presetId = new URLSearchParams(location.search).get('model') === 'monocopter' ? 'monocopter' : 'rocket';
+let P = null;
+
+const sliders = [
+  ['kp', 'Kp', 0, 3, 0.01], ['ki', 'Ki', 0, 2, 0.01], ['kd', 'Kd', 0, 0.6, 0.001],
+  ['tau', 'Actuator lag τ (ms)', 5, 150, 1], ['rate', 'Actuator rate limit', 0.5, 40, 0.1],
+  ['delay', 'Loop latency (ms)', 0, 60, 1], ['G', 'Plant gain G (rad/s² per unit)', 5, 1500, 1], ['gyro', 'Gyro noise σ (rad/s)', 0, 0.2, 0.001],
+];
+function build() {
+  P = JSON.parse(JSON.stringify(PRESETS[presetId]));
+  $('#note').textContent = P.note;
+  const vals = { kp: P.pid.kp, ki: P.pid.ki, kd: P.pid.kd, tau: P.act.tau * 1000, rate: P.act.rate, delay: P.delay * 1000, G: P.G, gyro: P.noise.gyro };
+  const maxes = presetId === 'rocket' ? { kp: 1, ki: 1, kd: 0.1 } : { kp: 6, ki: 4, kd: 1 };
+  $('#left').innerHTML = `
+    <h3>Vehicle</h3>
+    <div class="btn-row"><button data-v="rocket" class="${presetId === 'rocket' ? 'on' : ''}">Rocket</button><button data-v="monocopter" class="${presetId === 'monocopter' ? 'on' : ''}">Monocopter</button></div>
+    <h3>Controller</h3>` + sliders.map(([k, l, mn, mx, st]) => {
+      const max = maxes[k] ?? mx;
+      return `<div class="row"><label for="${k}">${l}</label><output id="${k}O"></output></div><div class="row full"><input id="${k}" type="range" min="${mn}" max="${max}" step="${st}" value="${vals[k]}"></div>`;
+    }).join('') + `<div class="btn-row"><button id="reset">Reset to baseline</button></div>`;
+  $('#left').querySelectorAll('[data-v]').forEach((b) => b.onclick = () => { presetId = b.dataset.v; build(); run(); });
+  $('#left').querySelectorAll('input').forEach((i) => i.oninput = run);
+  $('#reset').onclick = () => { build(); run(); };
+}
+const g = (id) => +document.getElementById(id).value;
+
+function plot(canvas, series, opts) {
+  const dpr = devicePixelRatio || 1;
+  const W = canvas.clientWidth, H = canvas.height;
+  canvas.width = W * dpr; canvas.style.height = H + 'px';
+  const c = canvas.getContext('2d'); c.scale(dpr, dpr);
+  c.fillStyle = '#0b0f15'; c.fillRect(0, 0, W, H);
+  const m = { l: 52, r: 12, t: 14, b: 26 };
+  const all = series.flatMap((s) => s.y);
+  let lo = Math.min(...all, 0), hi = Math.max(...all, 0);
+  if (opts.lim) { lo = Math.min(lo, -opts.lim * 1.1); hi = Math.max(hi, opts.lim * 1.1); }
+  const pad = (hi - lo) * 0.08 || 1; lo -= pad; hi += pad;
+  const X = (t) => m.l + (t / opts.T) * (W - m.l - m.r);
+  const Y = (v) => H - m.b - ((v - lo) / (hi - lo)) * (H - m.t - m.b);
+  c.strokeStyle = '#1d2531'; c.fillStyle = '#8b98a9'; c.font = '11px sans-serif'; c.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) { const v = lo + ((hi - lo) * i) / 4; c.beginPath(); c.moveTo(m.l, Y(v)); c.lineTo(W - m.r, Y(v)); c.stroke(); c.fillText(v.toFixed(opts.dp ?? 1), 6, Y(v) + 4); }
+  for (let t = 0; t <= opts.T; t += 0.5) { c.fillText(t.toFixed(1) + 's', X(t) - 8, H - 8); }
+  c.strokeStyle = '#3b4758'; c.beginPath(); c.moveTo(m.l, Y(0)); c.lineTo(W - m.r, Y(0)); c.stroke();
+  if (opts.lim) { c.setLineDash([4, 4]); c.strokeStyle = '#7a3c1a'; [opts.lim, -opts.lim].forEach((v) => { c.beginPath(); c.moveTo(m.l, Y(v)); c.lineTo(W - m.r, Y(v)); c.stroke(); }); c.setLineDash([]); }
+  if (opts.vline) { c.strokeStyle = '#2f5d8a'; c.beginPath(); c.moveTo(X(opts.vline), m.t); c.lineTo(X(opts.vline), H - m.b); c.stroke(); c.fillStyle = '#4aa8ff'; c.fillText('disturbance', X(opts.vline) + 4, m.t + 10); }
+  series.forEach((s) => {
+    c.strokeStyle = s.color; c.lineWidth = 1.8; c.beginPath();
+    s.y.forEach((v, i) => { const x = X(s.t[i]), y = Y(v); i ? c.lineTo(x, y) : c.moveTo(x, y); });
+    c.stroke();
+  });
+  c.fillStyle = '#dfe6ee'; c.fillText(opts.title, m.l + 6, m.t + 12);
+}
+
+function run() {
+  const cfg = {
+    ...P, duration: 4,
+    pid: { kp: g('kp'), ki: g('ki'), kd: g('kd') },
+    act: { tau: g('tau') / 1000, rate: g('rate') },
+    delay: g('delay') / 1000, G: g('G'), noise: { gyro: g('gyro'), angle: P.noise.angle },
+  };
+  sliders.forEach(([k]) => { $('#' + k + 'O').textContent = (+$('#' + k).value).toFixed(k === 'kd' ? 3 : k === 'kp' || k === 'ki' ? 2 : 1); });
+  const r = simulate(cfg);
+  plot($('#c1'), [{ t: r.t, y: r.theta.map((v) => v / DEG), color: '#4aa8ff' }], { T: 4, title: 'Attitude error (deg)', vline: P.disturb.t0, dp: 1 });
+  const unitScale = presetId === 'rocket' ? 1 / DEG : 1;
+  plot($('#c2'), [{ t: r.t, y: r.u.map((v) => v * unitScale), color: '#7a8aa0' }, { t: r.t, y: r.delta.map((v) => v * unitScale), color: '#ff7a2f' }],
+    { T: 4, title: presetId === 'rocket' ? 'Gimbal angle (deg): command (grey) vs actual (orange)' : 'Vane command (normalised): command (grey) vs actual (orange)', lim: P.umax * unitScale, vline: P.disturb.t0, dp: 1 });
+  const m = r.metrics;
+  const card = (l, v, cls = '') => `<div class="card"><div style="color:var(--muted);font-size:12px">${l}</div><div style="font-size:24px;font-weight:700" class="${cls}">${v}</div></div>`;
+  $('#metrics').innerHTML = card('Settling time (2 %)', m.settleTime.toFixed(2) + ' s') + card('Overshoot', m.overshootPct.toFixed(0) + ' %') +
+    card('Disturbance peak', m.peakDisturbanceDeg.toFixed(1) + '°') + card('Time saturated', m.saturationPct.toFixed(0) + ' %') +
+    card('Peak actuator rate', m.peakActuatorRate.toFixed(1) + (presetId === 'rocket' ? ' rad/s' : ' /s'));
+  const ok = m.stable && m.overshootPct < 35 && m.settleTime < 1.5;
+  $('#verdict').innerHTML = !m.stable ? '<div class="note danger"><b>Unstable.</b> Gain is too high for the delay/lag, or there is not enough damping (Kd). On a real vehicle this is a crash.</div>'
+    : ok ? '<div class="note"><b>Good baseline.</b> Settles quickly with limited overshoot and rejects the disturbance.</div>'
+    : '<div class="note warn"><b>Stable but sloppy.</b> Check overshoot and settling time; try more Kd or less Kp.</div>';
+}
+build(); run();
+addEventListener('resize', run);
+let frames = 0; (function f() { if (++frames === 5) window.__ready = true; else requestAnimationFrame(f); })();
+</script>
+</body>
+</html>

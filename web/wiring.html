@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wiring diagrams</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+<style>
+  svg { width: 100%; height: auto; background: #0b0f15; border: 1px solid var(--line); border-radius: 10px; }
+  svg text { font-family: inherit; fill: #dfe6ee; font-size: 12px; }
+  svg .sub { fill: #8b98a9; font-size: 10.5px; }
+  svg .lbl { fill: #cfd8e3; font-size: 10px; paint-order: stroke; stroke: #0b0f15; stroke-width: 3px; }
+  .legend { display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin:8px 0 }
+  .legend i { display:inline-block; width:22px; height:4px; vertical-align:middle; margin-right:6px; border-radius:2px }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">TVC<b>·</b>Rocket</span>
+  <nav>
+    <a href="../index.html">Home</a><a href="monocopter.html">Phase 1 · Monocopter</a><a href="rocket.html">Phase 2 · Rocket</a>
+    <a href="assembly.html?model=rocket">Build guide</a><a href="gimbal.html">Gimbal lab</a><a href="pid.html">PID lab</a><a href="sizing.html">Sizing</a><a href="wiring.html" class="on">Wiring</a>
+  </nav>
+</header>
+<div class="page">
+  <h1>Wiring diagrams</h1>
+  <p class="lead">Block-level wiring for both vehicles, with the Teensy 4.1 pin assignment used by the firmware skeleton. The tables below are the same pin map as <code>firmware/*/include/pins.h</code>.</p>
+  <div class="btn-row"><button id="bM">Phase 1 · Monocopter</button><button id="bR">Phase 2 · Rocket</button></div>
+  <div class="legend"><span><i style="background:#ff5a5f"></i>battery / power (high current)</span><span><i style="background:#ffd34d"></i>5 V / 6 V rails</span><span><i style="background:#4aa8ff"></i>signal (digital)</span><span><i style="background:#3ecf8e"></i>bus (SPI / I²C / UART)</span></div>
+  <div id="svgwrap"></div>
+  <h2>Pin map</h2>
+  <div style="overflow:auto"><table id="pins"></table></div>
+  <h2>Wiring rules</h2>
+  <ul>
+    <li>One ground star point at the flight computer. Never daisy-chain servo ground through the logic board.</li>
+    <li>Servo power rail is separate from the logic rail; join grounds only. In the rocket the servos have their own battery (pack B).</li>
+    <li>Solder or use locking connectors. No bare Dupont jumpers in flight hardware: vibration will unseat them.</li>
+    <li>Twist motor phases and battery leads; keep them away from the IMU and receiver antenna.</li>
+    <li>The remove-before-flight pin/loop breaks the battery or pyro supply: the vehicle is inert with it in.</li>
+  </ul>
+</div>
+<script type="module">
+const $ = (s) => document.querySelector(s);
+const COL = { pwr: '#ff5a5f', rail: '#ffd34d', sig: '#4aa8ff', bus: '#3ecf8e' };
+
+const DIAGRAMS = {
+  monocopter: {
+    w: 1000, h: 560,
+    nodes: {
+      bat: [30, 220, 130, 60, 'LiPo 4S', '14.8 V 1300 mAh'], arm: [200, 220, 110, 60, 'Arm loop', 'XT30 / switch'], esc: [350, 150, 130, 70, 'ESC 40 A', 'PWM 400 Hz'], mot: [350, 40, 130, 60, 'Motor 2306', '3-phase'],
+      bec6: [350, 300, 130, 60, 'BEC 6 V / 5 A', 'servo rail'], bec5: [350, 400, 130, 60, 'BEC 5 V / 3 A', 'logic rail'],
+      mcu: [600, 220, 160, 130, 'Teensy 4.1', 'flight computer'], imu: [830, 60, 130, 56, 'IMU ICM-42688', 'SPI0'], baro: [830, 130, 130, 56, 'Baro BMP390', 'I²C'],
+      ina: [830, 200, 130, 56, 'INA226', 'I²C, V / I'], rx: [830, 270, 130, 56, 'ELRS RX', 'CRSF UART'], sd: [830, 340, 130, 56, 'microSD', 'SDIO'], buz: [830, 410, 130, 56, 'Buzzer + LED', 'GPIO'],
+      sv: [600, 440, 160, 90, '4× vane servos', 'front/right/rear/left'],
+    },
+    edges: [
+      ['bat', 'arm', 'pwr', ''], ['arm', 'esc', 'pwr', 'XT60'], ['esc', 'mot', 'pwr', '3 phases'], ['arm', 'bec6', 'pwr', ''], ['arm', 'bec5', 'pwr', ''],
+      ['bec5', 'mcu', 'rail', '5 V'], ['bec6', 'sv', 'rail', '6 V'], ['mcu', 'esc', 'sig', 'pin 2 PWM'], ['mcu', 'sv', 'sig', 'pins 3-6 PWM'],
+      ['mcu', 'imu', 'bus', ''], ['mcu', 'baro', 'bus', ''], ['mcu', 'ina', 'bus', ''], ['mcu', 'rx', 'bus', 'Serial1'], ['mcu', 'sd', 'bus', ''], ['mcu', 'buz', 'sig', ''],
+    ],
+    pins: [['Teensy pin', 'Function', 'Connected to'], ['10 / 11 / 12 / 13', 'SPI0 CS / MOSI / MISO / SCK', 'ICM-42688-P'], ['9', 'IMU INT', 'ICM-42688-P INT1'], ['18 / 19', 'I²C SDA / SCL', 'BMP390 (0x76), INA226 (0x40)'],
+      ['0 / 1', 'Serial1 RX / TX (420 000 baud)', 'ELRS receiver (CRSF)'], ['2', '400 Hz PWM output (DShot planned)', 'ESC signal'], ['3 / 4 / 5 / 6', 'Servo PWM 1 front, 2 right, 3 rear, 4 left', 'Vane servos'],
+      ['7', 'Buzzer', 'Active buzzer 5 V via transistor'], ['8', 'Status LED', 'LED + 330 Ω'], ['SDIO', 'microSD', 'on-board slot'], ['VIN / GND', '5 V in', 'Logic BEC']],
+  },
+  rocket: {
+    w: 1000, h: 640,
+    nodes: {
+      pA: [30, 120, 120, 60, 'Pack A 2S', '7.4 V avionics'], pB: [30, 420, 120, 60, 'Pack B 2S', '7.4 V servos'], rbf: [190, 120, 120, 60, 'RBF + arm', 'pin / switch'], fuse: [190, 420, 120, 60, 'Fuse 5 A', 'servo supply'],
+      reg: [350, 120, 120, 60, '5 V / 3 A reg', 'logic rail'],
+      mcu: [560, 200, 170, 150, 'Teensy 4.1', 'flight computer'],
+      imu: [820, 20, 150, 52, 'IMU ICM-42688', 'SPI0'], baro: [820, 82, 150, 52, 'Baro BMP390', 'I²C'], hg: [820, 144, 150, 52, 'ADXL375 (opt.)', 'I²C'], gps: [820, 206, 150, 52, 'GPS u-blox M10', 'Serial2'],
+      lora: [820, 268, 150, 52, 'LoRa radio', 'Serial4'], sd: [820, 330, 150, 52, 'microSD', 'SDIO'], buz: [820, 392, 150, 52, 'Buzzer + LED', 'GPIO'],
+      s1: [350, 420, 150, 52, 'Servo 1', 'gimbal axis 1'], s2: [350, 490, 150, 52, 'Servo 2', 'gimbal axis 2'], s3: [350, 560, 150, 52, 'Servo 3 (opt.)', 'chute release'],
+      py: [560, 440, 170, 70, 'Pyro driver 2 ch', 'MOSFET + continuity'], ign: [820, 440, 150, 52, 'Chute release', 'e-match / servo, not on the bench'],
+    },
+    edges: [
+      ['pA', 'rbf', 'pwr', ''], ['rbf', 'reg', 'pwr', ''], ['reg', 'mcu', 'rail', '5 V'], ['pB', 'fuse', 'pwr', ''], ['fuse', 's1', 'rail', ''], ['fuse', 's2', 'rail', ''], ['fuse', 's3', 'rail', ''],
+      ['mcu', 's1', 'sig', 'pin 3'], ['mcu', 's2', 'sig', 'pin 4'], ['mcu', 's3', 'sig', 'pin 5'], ['mcu', 'py', 'sig', 'pins 22/23'], ['py', 'ign', 'pwr', ''],
+      ['mcu', 'imu', 'bus', ''], ['mcu', 'baro', 'bus', ''], ['mcu', 'hg', 'bus', ''], ['mcu', 'gps', 'bus', ''], ['mcu', 'lora', 'bus', ''], ['mcu', 'sd', 'bus', ''], ['mcu', 'buz', 'sig', ''],
+    ],
+    pins: [['Teensy pin', 'Function', 'Connected to'], ['10 / 11 / 12 / 13', 'SPI0 CS / MOSI / MISO / SCK', 'ICM-42688-P'], ['9', 'IMU INT', 'ICM-42688-P INT1'], ['18 / 19', 'I²C SDA / SCL', 'BMP390 (0x76), ADXL375 (0x53)'],
+      ['7 / 8', 'Serial2 RX / TX (9600→115200)', 'GPS u-blox M10'], ['16 / 17', 'Serial4 RX / TX', 'LoRa module (UART)'], ['3 / 4', 'Servo PWM axis 1 / axis 2', 'Gimbal servos'], ['5', 'Servo PWM', 'Chute-release servo (optional)'],
+      ['22 / 23', 'Pyro gate 1 chute release / 2 spare', 'MOSFET gates, 10 k pull-down'], ['40 / 41', 'Continuity sense (ADC)', 'Pyro channels 1 / 2'], ['24 / 25', 'RBF sense / arm switch', 'Inputs, pull-up'],
+      ['38 / 39', 'Pack A / Pack B voltage (ADC)', '1:3 dividers'], ['6', 'Buzzer', ''], ['28', 'Status LED', '']],
+  },
+};
+
+function svg(d) {
+  const N = d.nodes;
+  const c = (k) => ({ x: N[k][0] + N[k][2] / 2, y: N[k][1] + N[k][3] / 2 });
+  let s = `<svg viewBox="0 0 ${d.w} ${d.h}" xmlns="http://www.w3.org/2000/svg">`;
+  for (const [a, b, kind, label] of d.edges) {
+    const A = c(a), B = c(b);
+    const midx = (A.x + B.x) / 2;
+    s += `<path d="M${A.x} ${A.y} C ${midx} ${A.y}, ${midx} ${B.y}, ${B.x} ${B.y}" fill="none" stroke="${COL[kind]}" stroke-width="${kind === 'pwr' ? 3.2 : 1.8}" opacity=".85"/>`;
+    if (label) s += `<text class="lbl" x="${midx}" y="${(A.y + B.y) / 2 - 4}" text-anchor="middle">${label}</text>`;
+  }
+  for (const k in N) {
+    const [x, y, w, h, t, sub] = N[k];
+    s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9" fill="#151b24" stroke="#3b4758"/><text x="${x + w / 2}" y="${y + h / 2 - 2}" text-anchor="middle" font-weight="600">${t}</text><text class="sub" x="${x + w / 2}" y="${y + h / 2 + 13}" text-anchor="middle">${sub}</text>`;
+  }
+  return s + '</svg>';
+}
+function show(w) {
+  const d = DIAGRAMS[w];
+  $('#svgwrap').innerHTML = svg(d);
+  $('#pins').innerHTML = d.pins.map((r, i) => `<tr>${r.map((c) => (i ? `<td>${c}</td>` : `<th>${c}</th>`)).join('')}</tr>`).join('');
+  $('#bM').classList.toggle('on', w === 'monocopter'); $('#bR').classList.toggle('on', w === 'rocket');
+  history.replaceState(null, '', '?model=' + w);
+}
+$('#bM').onclick = () => show('monocopter'); $('#bR').onclick = () => show('rocket');
+show(new URLSearchParams(location.search).get('model') === 'rocket' ? 'rocket' : 'monocopter');
+window.__ready = true;
+</script>
+</body>
+</html>

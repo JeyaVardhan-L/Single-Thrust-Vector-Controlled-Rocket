@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RK-1 TVC Rocket · 3D model</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+<script type="importmap">{"imports":{"three":"../vendor/three/three.module.js","three/addons/":"../vendor/three/addons/"}}</script>
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">TVC<b>·</b>Rocket</span>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="monocopter.html">Phase 1 · Monocopter</a>
+    <a href="rocket.html" class="on">Phase 2 · Rocket</a>
+    <a href="assembly.html?model=rocket">Build guide</a>
+    <a href="gimbal.html">Gimbal lab</a>
+    <a href="pid.html">PID lab</a>
+    <a href="sizing.html">Sizing</a>
+    <a href="bom.html?model=rocket">BOM</a>
+  </nav>
+</header>
+<div class="app">
+  <aside class="side left" id="left"></aside>
+  <main class="stage" id="stage">
+    <div class="badge"><b>RK-1 TVC Rocket</b> · Phase 2 · three.js model</div>
+    <div class="hint">Drag = orbit · Right-drag = pan · Wheel = zoom</div>
+  </main>
+  <aside class="side right" id="right"></aside>
+</div>
+<script type="module">
+  import { mountViewer } from '../src/common/viewer-app.js';
+  mountViewer({ model: 'rocket', stageEl: document.getElementById('stage'), leftEl: document.getElementById('left'), rightEl: document.getElementById('right') });
+</script>
+</body>
+</html>

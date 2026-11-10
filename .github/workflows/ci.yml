@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: JS tests (simulation, mixer)
+        run: node --test
+      - name: Firmware core host tests (g++)
+        run: node scripts/test-firmware.mjs
+      - name: BOM tables are up to date
+        run: |
+          node scripts/gen-bom.mjs
+          git diff --exit-code hardware/bom docs/phase1-monocopter/02-bom.md docs/phase2-rocket/02-bom.md

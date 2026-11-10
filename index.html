@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TVC Rocket · baseline project hub</title>
+<link rel="stylesheet" href="web/style.css">
+<link rel="icon" href="data:,">
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">TVC<b>·</b>Rocket</span>
+  <nav>
+    <a href="index.html" class="on">Home</a><a href="web/monocopter.html">Phase 1 · Monocopter</a><a href="web/rocket.html">Phase 2 · Rocket</a>
+    <a href="web/assembly.html?model=rocket">Build guide</a><a href="web/gimbal.html">Gimbal lab</a><a href="web/pid.html">PID lab</a><a href="web/sizing.html">Sizing</a><a href="web/wiring.html">Wiring</a><a href="docs/README.md">Docs</a>
+  </nav>
+</header>
+<div class="page">
+  <h1>TVC rocket: baseline project hub</h1>
+  <p class="lead">A thrust-vector-controlled rocket (Phase 2) preceded by a vane-controlled monocopter (Phase 1) that proves the avionics, control law, telemetry and operating procedures first. Everything here is open: models, documents, bill of materials, firmware skeleton and interactive tutorials.</p>
+  <div class="grid c2">
+    <div class="hero" id="h1"></div>
+    <div class="hero" id="h2"></div>
+  </div>
+  <h2>Start here</h2>
+  <div class="grid c3">
+    <a class="card link" href="web/monocopter.html"><span class="tag p1">Phase 1</span><h3>Monocopter 3D model</h3><p>Explode it, inspect parts and drive the four vanes with roll / pitch / yaw commands.</p></a>
+    <a class="card link" href="web/rocket.html"><span class="tag p2">Phase 2</span><h3>TVC rocket 3D model</h3><p>Gimbal sweep with the real 2:1 gear stage, burn animation, exploded view of the stack.</p></a>
+    <a class="card link" href="web/assembly.html?model=monocopter"><span class="tag p1">Phase 1</span><h3>Monocopter build wizard</h3><p>Ten steps from printing to tethered hover, each step highlighted on the model.</p></a>
+    <a class="card link" href="web/assembly.html?model=rocket"><span class="tag p2">Phase 2</span><h3>Rocket build wizard</h3><p>Eleven steps through gimbal, stack, test stand and the gates between them.</p></a>
+    <a class="card link" href="web/pid.html"><h3>PID lab</h3><p>Tune a single-axis attitude loop and see how latency and actuator lag break it.</p></a>
+    <a class="card link" href="web/gimbal.html"><h3>Gimbal lab</h3><p>Thrust, lever arm, gear ratio, servo torque and resolution in one interactive page.</p></a>
+    <a class="card link" href="web/sizing.html"><h3>Sizing calculator</h3><p>Live mass budget from the BOM, thrust-to-weight and a no-drag hop estimate.</p></a>
+    <a class="card link" href="web/wiring.html"><h3>Wiring diagrams</h3><p>Block diagrams and the Teensy pin map for both vehicles.</p></a>
+    <a class="card link" href="docs/README.md"><h3>Documentation</h3><p>Requirements, architecture, build guides, test procedures, safety, open decisions.</p></a>
+  </div>
+  <div class="note warn" style="margin-top:28px"><b>Safety first.</b> Spinning propellers and rocket motors injure people. Read <a href="docs/safety.md">docs/safety.md</a> before powering anything. Use certified motors only and follow your local rocketry rules.</div>
+</div>
+<script type="module">
+import { createStage } from './src/common/stage.js';
+import { buildRocket } from './src/models/rocket.js';
+import { buildMonocopter } from './src/models/monocopter.js';
+
+function hero(el, model, cam, tgt) {
+  const st = createStage(el, { cameraPos: cam, target: tgt, gridSize: 1200, shadows: false });
+  st.scene.add(model.root);
+  st.controls.autoRotate = true; st.controls.autoRotateSpeed = 1.2;
+  st.onTick((dt, t) => model.update && model.update(dt, t));
+  return st;
+}
+const r = buildRocket();
+hero(document.getElementById('h1'), r, [760, 520, 860], [0, 290, 0]);
+r.setGimbal(4, -3);
+const m = buildMonocopter(); m.setThrottle(0.35); m.setControl({ roll: 0.4, pitch: -0.25, yaw: 0.1 });
+const st2 = hero(document.getElementById('h2'), m, [400, 310, 450], [0, 130, 0]);
+let fr = 0; st2.onTick(() => { if (++fr === 10) window.__ready = true; });
+</script>
+</body>
+</html>
