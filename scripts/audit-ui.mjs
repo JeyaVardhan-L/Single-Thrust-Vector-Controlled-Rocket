@@ -12,7 +12,7 @@ if (!executablePath) { console.error('No Chrome found. Set CHROME_PATH.'); proce
 const pages = [
   'index.html', 'web/rocket.html', 'web/rocket.html?select=tvc', 'web/monocopter.html', 'web/monocopter.html?select=vanes',
   'web/assembly.html?model=rocket&step=4', 'web/assembly.html?model=monocopter&step=3', 'web/pid.html', 'web/pid.html?model=monocopter',
-  'web/gimbal.html', 'web/sizing.html', 'web/sizing.html?model=monocopter', 'web/bom.html?model=rocket', 'web/bom.html?model=monocopter',
+  'web/gimbal.html', 'web/sizing.html', 'web/sizing.html?model=monocopter', 'web/bom.html?model=rocket', 'web/parts.html', 'web/bom.html?model=monocopter',
   'web/wiring.html', 'web/wiring.html?model=rocket', 'web/doc.html?p=docs/README.md', 'web/doc.html?p=docs/phase2-rocket/03-build-guide.md',
   'web/doc.html?p=docs/safety.md',
 ];

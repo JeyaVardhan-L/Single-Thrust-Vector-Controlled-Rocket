@@ -7,6 +7,7 @@ This is a hardware + software project, so the rules are about keeping the **mode
 | Thing | Edit here | Then run |
 |---|---|---|
 | Geometry / design parameters | `src/data/spec.js` | `npm test`, `npm run screenshots`, update docs that quote the number |
+| Printable parts | `scripts/cad/*.mjs` (parametric) | `npm run cad`, `npm run cad:assembly`, `npm test` (commit the regenerated STL files) |
 | Parts, masses, prices | `hardware/bom/*.json` | `npm run bom` (regenerates CSV and `docs/*/02-bom.md`) |
 | Build steps shown in the wizard | `src/data/steps.js` | keep `docs/*/03-build-guide.md` in sync |
 | Pin assignments | `firmware/*/include/pins.h` | update `web/wiring.html` and `docs/*/04-wiring.md` |

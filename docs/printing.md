@@ -45,21 +45,22 @@ Filament: ≈ 105 g (BOM F-01). Print time: 8-10 h total on a 0.4 mm nozzle.
 
 ## Print list: RK-1 rocket
 
+The STL files are in [`hardware/cad/stl/rocket/`](../hardware/cad/stl/rocket/), already in print orientation. The complete table (quantity, size, material, mass, notes) is [cad-parts](cad-parts.md). Summary:
+
 | Part | Qty | Material | Orientation | Notes |
 |---|---|---|---|---|
-| Stack plates (telemetry, PCB, battery) | 3 | PETG / PA-CF | flat | 110 × 110 × 4 mm, rod bosses, lightening holes |
-| Landing frame: 133 mm diamond with 4 corner hinge lugs | 1 | PA-CF | flat | Heat and impact loads |
-| Gimbal fixed mount | 1 | PA-CF | flat | Four rod bosses |
-| Gimbal outer ring | 1 | PA-CF or Al | flat | Ø60 mm ring with 4 pin bosses |
-| Gimbal inner collar | 1 | PA-CF or Al | vertical | Grips the Ø42 mm mount tube |
-| Gear sectors 36T, module 1 | 2 | PA12 or machined acetal | flat | Check backlash. Printed gears wear; keep spares |
-| Pinions 18T, module 1 | 2 | Printed PA or bought metal | flat | Match the servo spline; metal pinions preferred |
-| Servo brackets | 2 | PA-CF | flat | |
-| Leg hinges and brackets | 4 | PA-CF | flat | |
-| Battery straps tabs / avionics standoffs | misc | PETG | flat | |
-| Motor cage plates (upper and lower) + 3 struts + guard ring segments | 1 set | PA-CF or PETG | flat | Prop radius 114 mm, cage radius 123 mm |
+| Stack plates (telemetry, PCB, battery) | 3 | PETG | flat | 110 × 110 × 8 mm; Ø6.2 rod holes with M3 clamp screw and nut slot |
+| Landing frame, 133 mm diamond, four hinge clevises | 1 | PA-CF | upside down (ears up) | 208 × 208 mm, heat and impact loads |
+| Gimbal mount | 1 | PA-CF or PETG | flat | Four rod bosses, two pivot bolt bores with nylock pockets |
+| Gimbal outer ring with 36T sector | 1 | PA-CF or PETG | upside down (sector fin up) | Ream the Ø7 bearing bores |
+| Gimbal collar with 36T sector | 1 | PA-CF or PETG | flat | Tube bore Ø42.3, four set screw pockets |
+| Pinions 18T, module 1 | 2 | PA12 or machined acetal, or bought metal | flat | Ø4.7 bore for a 25T servo spline; keep spares |
+| Servo brackets | 2 | PA-CF or PETG | on the plate face | 23 × 12 mm servo window |
+| Motor plates (upper with tube socket, lower) | 2 | PA-CF or PETG | flat | Motor pattern Ø19 |
+| Cage arms, struts, guard arcs | 6 + 3 + 3 | PA-CF or PETG | flat (struts standing) | Arms lap onto the plate stubs |
+| Leg hinge fittings, brace clips | 4 + 4 | PA-CF / PETG | flat | Ø8.2 socket for the carbon leg |
 
-Filament: ≈ 180 g. The model parameters for every dimension are in `src/data/spec.js`.
+Filament: see the mass column in [cad-parts](cad-parts.md). The model parameters for every dimension are in `src/data/spec.js` and `scripts/cad/rocket.mjs`.
 
 ## Post-processing
 
@@ -79,7 +80,10 @@ Filament: ≈ 180 g. The model parameters for every dimension are in `src/data/s
 | M3 heat-set insert (5.7 mm long) | | Ø4.2 mm hole, 6 mm deep |
 | M2 self-tap in servo mount | | Ø1.7 mm |
 | 683ZZ bearing (3×7×3) | press fit | Ø7.0 mm, test print first |
-| Ø2 mm hinge shaft | free spin | Ø2.2 mm |
+| Ø2 mm hinge shaft (monocopter vanes) | free spin | Ø2.2 mm |
+| M3 pivot / hinge bolt (rocket) | close fit | Ø3.2 mm |
+| Ø8 mm carbon leg in its socket | glued | Ø8.2 mm |
+| Ø42 mm carbon tube in collar / socket | clearance | Ø42.3 mm |
 | Gear centre distance (module 1, 18T + 36T) | 27.0 mm | 27.1 mm slot, adjustable |
 
 Print a **calibration coupon** with these holes first and measure it.

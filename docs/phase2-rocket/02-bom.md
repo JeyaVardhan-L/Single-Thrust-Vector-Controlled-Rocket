@@ -13,20 +13,20 @@ Interactive version with live mass budget: [web/bom.html?model=rocket](../../web
 
 | ID | Item | Qty | Mass (g, each) | Price ($, each) | On-board | Specification / notes |
 |---|---|---:|---:|---:|:---:|---|
-| R-01 | Carbon-fibre rods, 6 mm x 450 mm | 4 | 23 | 4 | yes | Solid or thick-wall tube, 6 mm dia - Cut to 425 mm, deburr, seal ends with CA. |
+| R-01 | Carbon-fibre rods, 6 mm x 400 mm | 4 | 23 | 4 | yes | Solid or thick-wall tube, 6 mm dia - Cut to 400 mm, deburr, seal ends with CA. |
 | R-02 | Stack plates (battery, PCB, telemetry) | 3 | 22 | 3 | yes | PETG/PA-CF, 110 mm square, 4 mm thick - Print flat, 4 perimeters, 40% gyroid. |
 | R-03 | Landing frame (diamond plate with four hinge lugs) | 1 | 38 | 4 | yes | PA-CF recommended: landing loads - 133 mm diamond, corners on the leg axes |
-| R-04 | Landing legs 8 mm x 300 mm + rubber feet | 4 | 22 | 4 | yes | Carbon or aluminium tube, hinged at the corner lugs - 34 deg from vertical, footprint 510 mm |
+| R-04 | Landing legs 8 mm x 260 mm + rubber feet (hinge fittings printed) | 4 | 22 | 4 | yes | Carbon or aluminium tube, hinged at the corner lugs - 34 deg from vertical, footprint 510 mm |
 | R-05 | Leg braces (1.6 mm steel or CF rod) | 4 | 3 | 1 | yes | From gimbal mount to leg mid-point |
 
 ## Gimbal
 
 | ID | Item | Qty | Mass (g, each) | Price ($, each) | On-board | Specification / notes |
 |---|---|---:|---:|---:|:---:|---|
-| G-01 | Gimbal printed parts (mount, outer ring, collar) | 1 | 48 | 6 | yes | PA-CF or machined 6061 aluminium - Collar grips the 42 mm motor-mount tube. |
-| G-02 | Gear sector 36T + pinion 18T, module 1 (set) | 2 | 8 | 5 | yes | Acetal, nylon or printed PA; CAD names gear36t1 / gear36t2 - 2:1 reduction: servo travel = 2x gimbal travel. |
+| G-01 | Gimbal printed parts (mount, outer ring, collar, two servo brackets) | 1 | 48 | 6 | yes | PA-CF or machined 6061 aluminium - STL files in hardware/cad/stl/rocket. See docs/cad-parts.md. |
+| G-02 | Pinion 18T, module 1 (printed PA12 / acetal, or metal) | 2 | 8 | 5 | yes | Acetal, nylon or printed PA; CAD names gear36t1 / gear36t2 - The two 36T sectors are printed into the outer ring and the collar. Check backlash; keep spares. |
 | G-03 | Digital metal-gear servo, 20 g class, HV | 2 | 22 | 18 | yes | >= 4.5 kg.cm @ 7.4 V, <= 0.08 s/60 deg, 6-8.4 V rated - Buy a spare. |
-| G-04 | Pivot pins M3 x 60 + 683ZZ bearings | 4 | 3 | 1 | yes | Hardened pins, 3x7x3 mm bearings - Zero play is a requirement: shim until backlash < 0.3 deg. |
+| G-04 | Pivot hardware: M3 bolts (2 x 20 mm, 2 x 16 mm), nylock nuts, 683ZZ bearings | 4 | 3 | 1 | yes | Stainless button-head M3, 3x7x3 mm bearings (one per pivot) - Bolt is clamped to the fixed part, the bearing rides in the moving boss. Tighten until the bearing just drags, back off 1/8 turn. |
 | G-05 | Service-loop cable for servo 2 | 1 | 3 | 1 | yes | Silicone wire, strain-relieved - Servo 2 rides on the outer ring. |
 
 ## Propulsion
@@ -37,7 +37,7 @@ Interactive version with live mass budget: [web/bom.html?model=rocket](../../web
 | M-02 | Propellers 9x4.5, one CW and one CCW | 2 | 13 | 6 | yes | Matched pair, balanced. Upper prop (below its motor) is a pusher type, lower prop (above its motor) is a standard type; both blow air downward - Contra-rotating pair: reaction torques cancel. |
 | M-03 | Spare propellers 9x4.5 (2 CW + 2 CCW) | 4 | 13 | 6 | no | Same as M-02 - The first crash breaks one. |
 | M-04 | ESC 40 A, 6S, 400 Hz PWM (BLHeli_S / AM32) | 2 | 12 | 20 | yes | One per motor - Set the directions in the configurator before the first spin. |
-| M-05 | Motor mount: Ø42 carbon tube, cage struts, guard ring | 1 | 52 | 10 | yes | Carbon tube 58 mm + printed plates, 3 struts and a Ø246 mm guard ring - Holds motor A above the props and motor B below. |
+| M-05 | Motor mount: Ø42 carbon tube, printed plates, arms, struts and guard ring | 1 | 52 | 10 | yes | Carbon tube 58 mm + printed plates, 3 struts and a Ø246 mm guard ring - Holds motor A above the props and motor B below. |
 | M-06 | Power distribution board + 1000 uF 35 V capacitors + XT60 | 1 | 12 | 8 | yes | Two ESC feeds, capacitor close to each ESC |
 
 ## Power
@@ -67,7 +67,7 @@ Interactive version with live mass budget: [web/bom.html?model=rocket](../../web
 
 | ID | Item | Qty | Mass (g, each) | Price ($, each) | On-board | Specification / notes |
 |---|---|---:|---:|---:|:---:|---|
-| H-01 | Fasteners (M3/M4/M5, nylock, washers, inserts) | 1 | 40 | 14 | yes |  |
+| H-01 | Fasteners (M3/M4/M5, nylock, washers, inserts) | 1 | 40 | 14 | yes | Counts per part are in docs/cad-parts.md (hardware list). About 23 M3 inserts, 75 M3 screws, 50 M3 nuts (8 nylock). |
 
 ## Test equipment
 

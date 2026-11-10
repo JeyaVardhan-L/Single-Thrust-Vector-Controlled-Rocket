@@ -52,7 +52,7 @@ export function buildRocket() {
     }
     parts.add('rods', g, {
       name: 'Rods (×4)', category: 'structure', cad: 'rods:1', explode: [0, -25, 0],
-      desc: 'Four Ø6 mm carbon-fibre rods, 425 mm, capped at both ends. They carry the stack and the thrust load from the gimbal mount.',
+      desc: 'Four Ø6 mm carbon-fibre rods, 400 mm, capped at both ends. They carry the stack and the thrust load from the gimbal mount.',
     });
   }
 
@@ -259,7 +259,7 @@ export function buildRocket() {
     g.add(box(4, 4, 24, MAT.black, 67, gy - (rpS + rpP) + 4, 0));
     parts.add('gear36t1', g, {
       name: 'gear36t1 + axis-1 servo', category: 'actuation', cad: 'gear36t1:1', explode: [110, -110, 0],
-      desc: '36-tooth gear sector on the outer ring pin, driven by an 18-tooth pinion on the servo (2:1). Servo travel is 2× gimbal travel.',
+      desc: '36-tooth gear sector printed into the outer ring, driven by an 18-tooth pinion on the servo (2:1). Servo travel is 2× gimbal travel.',
     });
   }
 
@@ -284,7 +284,7 @@ export function buildRocket() {
     g.add(pivotX2);
     parts.add('gear36t2', g, {
       name: 'gear36t2 + axis-2 servo', category: 'actuation', cad: 'gear36t2:1', explode: [0, -110, 110],
-      desc: 'Second 36T/18T stage. Servo rides on the outer ring (cable service loop required) and drives the inner collar about Z.',
+      desc: 'Second 36T/18T stage. The sector is printed into the inner collar; the servo rides on the outer ring (cable service loop required).',
     });
   }
 

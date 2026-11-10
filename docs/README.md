@@ -14,7 +14,8 @@ Read in this order the first time. Afterwards use it as a lookup.
 |---|---|
 | [01-requirements.md](01-requirements.md) | Numbered requirements for both vehicles, traceable to tests |
 | [02-architecture.md](02-architecture.md) | Mechanical, electrical, software and data-flow architecture with diagrams |
-| [cad-mapping.md](cad-mapping.md) | Fusion browser tree ↔ three.js part ids ↔ BOM lines |
+| [cad-mapping.md](cad-mapping.md) | CAD browser tree ↔ three.js part ids ↔ BOM lines ↔ STL files |
+| [cad-parts.md](cad-parts.md) | Printable STL files: sizes, materials, quantities |
 | [printing.md](printing.md) | Materials, print settings, per-part print list and orientation |
 | [glossary.md](glossary.md) | Terms and abbreviations |
 

@@ -37,21 +37,23 @@ The monocopter parts are:
 - **Rocket:** reproduced from the CAD screenshot: four rods on the diagonals; three square stack plates above a diamond-shaped landing frame whose corners carry the hinge lugs; gimbal at the bottom with gear sectors; four legs splayed with thin braces; a central test-stand column below the nozzle. Dimensions follow standard parts and the proportions of the screenshot; the choices are listed in [design choices](design-choices.md).
 - **Monocopter:** reproduced from the photograph: guard ring, central motor with the propeller *below* it pushing air down, a lower deck with four servos and orange vanes, three legs, battery on top with a strap, LEDs around the ring.
 
-## Replacing the procedural model with real CAD
+## Printable files per CAD component
 
-1. Export from Fusion: STEP for archive, STL or glTF per component into `hardware/cad/export/` using the same names as the first column.
-2. Convert to glTF if needed (`.glb` loads faster).
-3. In `src/models/rocket.js`, replace a part's procedural group by a loaded glTF (GLTFLoader is available in three.js examples; vendor it like OrbitControls), keeping the same `parts.add(id, group, meta)` call so the viewer, explode and wizard keep working.
-4. Keep `spec.js` values consistent with the CAD parameters (dimensions in mm), or generate `spec.js` from a CAD parameter export.
+The printable STL files are in [`hardware/cad/stl/rocket/`](../hardware/cad/stl/rocket/); the full list is [cad-parts](cad-parts.md).
 
-## File naming for CAD artefacts
+| CAD component | STL files |
+|---|---|
+| `tvc` | `gimbal-mount`, `gimbal-ring`, `gimbal-collar` |
+| `gear36t1`, `gear36t2` | the 36T sectors are part of `gimbal-ring` and `gimbal-collar`; `pinion-18t` (×2), `servo-bracket-1`, `servo-bracket-2` |
+| `landing-frame` | `landing-frame` |
+| `battery-frame`, `pcb-frame`, `telemetry-frame` | `stack-plate-battery`, `stack-plate-pcb`, `stack-plate-telemetry` |
+| `landing-gear` | `leg-hinge` (×4), `leg-clip` (×4); the legs are Ø8 × 260 mm carbon rod |
+| `rods` | bought: Ø6 × 400 mm carbon rod |
+| `test-stand` | fabricated from sheet and bar stock (see the test stand procedure) |
+| *(motor assembly)* | `motor-plate-upper`, `motor-plate-lower`, `cage-arm-upper` (×3), `cage-arm-lower` (×3), `cage-strut` (×3), `guard-arc` (×3) |
 
-```
-hardware/cad/
-  rera-final.f3d            Fusion archive (large: consider Git LFS)
-  export/
-    tvc.step  tvc.stl
-    gear36t1.step ...
-  drawings/
-    gimbal-assembly.pdf
-```
+## Printable geometry and the web models
+
+The web models in `src/models/` are visual models. The STL files are generated from [`scripts/cad/`](../scripts/cad/), which uses the same `src/data/spec.js`. To show the exact printable geometry in the viewer, load an STL into a Parts entry (a small binary STL reader is enough, see [`web/parts.html`](../web/parts.html)) and keep the same `parts.add(id, group, meta)` call so the viewer, explode and wizard keep working.
+
+If you model the vehicle in your own CAD, export STEP for archive and STL for printing into `hardware/cad/` and keep the part names from the table above. Keep the dimensions in `src/data/spec.js` consistent with your CAD.

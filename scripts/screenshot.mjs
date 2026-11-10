@@ -34,6 +34,7 @@ const shots = [
   { file: 'ui-assembly-monocopter.png', url: 'web/assembly.html?model=monocopter&step=3', w: 1600, h: 900 },
   { file: 'ui-wiring.png',          url: 'web/wiring.html?model=rocket',            w: 1400, h: 1000 },
   { file: 'ui-sizing.png',          url: 'web/sizing.html?model=rocket',            w: 1400, h: 1000 },
+  { file: 'ui-parts.png',           url: 'web/parts.html?part=gimbal-ring',         w: 1400, h: 900 },
   { file: 'ui-bom.png',             url: 'web/bom.html?model=rocket',               w: 1400, h: 1000 },
   { file: 'ui-index.png',           url: 'index.html',                              w: 1400, h: 1000, full: true },
   { file: 'ui-pid.png',             url: 'web/pid.html',                            w: 1400, h: 1000 },

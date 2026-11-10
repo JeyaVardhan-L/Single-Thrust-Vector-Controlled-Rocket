@@ -16,7 +16,7 @@ An open guide to build an **electric thrust-vector-controlled (TVC) rocket** in 
 </tr>
 </table>
 
-> The 3D models are procedural three.js code (`src/models/`), driven by one parameter file (`src/data/spec.js`). They mirror the CAD browser tree of the Fusion project (`tvc`, `gear36t1`, `gear36t2`, `rods`, `landing-frame`, `battery-frame`, `pcb-frame`, `telemetry-frame`, `landing-gear`, `test-stand`). They are visualisation and teaching models, **not** manufacturing files. See [docs/cad-mapping.md](docs/cad-mapping.md).
+> The 3D models are procedural three.js code (`src/models/`), driven by one parameter file (`src/data/spec.js`). They mirror the CAD browser tree of the Fusion project (`tvc`, `gear36t1`, `gear36t2`, `rods`, `landing-frame`, `battery-frame`, `pcb-frame`, `telemetry-frame`, `landing-gear`, `test-stand`). They are visualisation and teaching models. The printable parts are separate, generated files: **[18 STL files for the rocket](hardware/cad/stl/rocket/)**, listed in [docs/cad-parts.md](docs/cad-parts.md) and downloadable from [web/parts.html](web/parts.html). See also [docs/cad-mapping.md](docs/cad-mapping.md).
 
 ## Quick start
 

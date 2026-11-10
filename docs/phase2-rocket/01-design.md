@@ -21,7 +21,7 @@ A single propeller leaves a reaction torque that spins the vehicle. Two propelle
 | Item | Value |
 |---|---|
 | Stack plates | 3 × 110 × 110 × 4 mm, 84 mm pitch; landing frame: 133 mm diamond |
-| Rods | 4 × Ø6 mm carbon, 425 mm, on the diagonals at ±47 mm |
+| Rods | 4 × Ø6 mm carbon, 400 mm, on the diagonals at ±47 mm |
 | Plate heights (to centre) | landing 238, battery 322, PCB 406, telemetry 490 mm |
 | Gimbal pivot | 150 mm above the ground plane; range ±7° mechanical, ±6.5° software |
 | Gears | 18T pinion, 36T sector, module 1, centre distance 27 mm, ratio 2:1 |
@@ -75,7 +75,7 @@ Gimbal authority is `M = T·L·sin δ`: at hover and δ = 6.5° it is 10.4 × 0.
 
 | Check | Result / method |
 |---|---|
-| Rod buckling | Four Ø6 mm carbon rods, 425 mm. Euler: `P = π² E I / (K L)²`, `I = π d⁴/64 = 63.6 mm⁴`, E ≈ 100 GPa (lower bound), K = 1 → ≈ 350 N per rod, ≈ 1400 N for four. Thrust is ≤ 30 N: a wide margin. Plates at every 84 mm shorten the free length |
+| Rod buckling | Four Ø6 mm carbon rods, 400 mm. Euler: `P = π² E I / (K L)²`, `I = π d⁴/64 = 63.6 mm⁴`, E ≈ 100 GPa (lower bound), K = 1 → ≈ 390 N per rod, ≈ 1570 N for four. Thrust is ≤ 30 N: a wide margin. Plates at every 84 mm shorten the free length |
 | Leg tip-over | Foot radius 255 mm, CG 243 mm: tip-over angle ≈ atan(255/243) = 46° |
 | Landing load | Drop-test from 0.3 m with a dummy mass before flying |
 | Gimbal pins | M3 hardened pins in 683ZZ bearings: radial load ≈ thrust/2 per pin, far below rating |

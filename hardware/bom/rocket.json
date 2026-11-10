@@ -5,13 +5,13 @@
     {
       "id": "R-01",
       "cat": "Structure",
-      "name": "Carbon-fibre rods, 6 mm x 450 mm",
+      "name": "Carbon-fibre rods, 6 mm x 400 mm",
       "qty": 4,
       "onboard": true,
       "mass_g": 23,
       "price_usd": 4,
       "spec": "Solid or thick-wall tube, 6 mm dia",
-      "notes": "Cut to 425 mm, deburr, seal ends with CA.",
+      "notes": "Cut to 400 mm, deburr, seal ends with CA.",
       "part": "rods"
     },
     {
@@ -41,7 +41,7 @@
     {
       "id": "R-04",
       "cat": "Structure",
-      "name": "Landing legs 8 mm x 300 mm + rubber feet",
+      "name": "Landing legs 8 mm x 260 mm + rubber feet (hinge fittings printed)",
       "qty": 4,
       "onboard": true,
       "mass_g": 22,
@@ -65,25 +65,25 @@
     {
       "id": "G-01",
       "cat": "Gimbal",
-      "name": "Gimbal printed parts (mount, outer ring, collar)",
+      "name": "Gimbal printed parts (mount, outer ring, collar, two servo brackets)",
       "qty": 1,
       "onboard": true,
       "mass_g": 48,
       "price_usd": 6,
       "spec": "PA-CF or machined 6061 aluminium",
-      "notes": "Collar grips the 42 mm motor-mount tube.",
+      "notes": "STL files in hardware/cad/stl/rocket. See docs/cad-parts.md.",
       "part": "tvc"
     },
     {
       "id": "G-02",
       "cat": "Gimbal",
-      "name": "Gear sector 36T + pinion 18T, module 1 (set)",
+      "name": "Pinion 18T, module 1 (printed PA12 / acetal, or metal)",
       "qty": 2,
       "onboard": true,
       "mass_g": 8,
       "price_usd": 5,
       "spec": "Acetal, nylon or printed PA; CAD names gear36t1 / gear36t2",
-      "notes": "2:1 reduction: servo travel = 2x gimbal travel.",
+      "notes": "The two 36T sectors are printed into the outer ring and the collar. Check backlash; keep spares.",
       "part": "gear36t1"
     },
     {
@@ -101,13 +101,13 @@
     {
       "id": "G-04",
       "cat": "Gimbal",
-      "name": "Pivot pins M3 x 60 + 683ZZ bearings",
+      "name": "Pivot hardware: M3 bolts (2 x 20 mm, 2 x 16 mm), nylock nuts, 683ZZ bearings",
       "qty": 4,
       "onboard": true,
       "mass_g": 3,
       "price_usd": 1,
-      "spec": "Hardened pins, 3x7x3 mm bearings",
-      "notes": "Zero play is a requirement: shim until backlash < 0.3 deg.",
+      "spec": "Stainless button-head M3, 3x7x3 mm bearings (one per pivot)",
+      "notes": "Bolt is clamped to the fixed part, the bearing rides in the moving boss. Tighten until the bearing just drags, back off 1/8 turn.",
       "part": "tvc"
     },
     {
@@ -173,7 +173,7 @@
     {
       "id": "M-05",
       "cat": "Propulsion",
-      "name": "Motor mount: Ø42 carbon tube, cage struts, guard ring",
+      "name": "Motor mount: Ø42 carbon tube, printed plates, arms, struts and guard ring",
       "qty": 1,
       "onboard": true,
       "mass_g": 52,
@@ -359,7 +359,7 @@
       "mass_g": 40,
       "price_usd": 14,
       "spec": "",
-      "notes": "",
+      "notes": "Counts per part are in docs/cad-parts.md (hardware list). About 23 M3 inserts, 75 M3 screws, 50 M3 nuts (8 nylock).",
       "part": "landing-frame"
     },
     {

@@ -29,7 +29,7 @@ export const ROCKET = {
   frameThickness: 4,
   rodOffset: 47,          // rod position from axis (x and z), 4 rods on the diagonals
   rodRadius: 3,           // 6 mm rods
-  rodBottomY: 110,
+  rodBottomY: 135,           // 8 mm below the gimbal mount; rod length 400 mm
   rodTopY: 535,
   gimbalY: 150,           // gimbal pivot height
   landingFrameY: 238,

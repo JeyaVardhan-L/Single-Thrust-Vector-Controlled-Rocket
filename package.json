@@ -11,9 +11,13 @@
     "bom": "node scripts/gen-bom.mjs",
     "screenshots": "node scripts/screenshot.mjs",
     "audit": "node scripts/audit-ui.mjs",
-    "test:firmware": "node scripts/test-firmware.mjs"
+    "test:firmware": "node scripts/test-firmware.mjs",
+    "cad": "node scripts/gen-cad.mjs",
+    "cad:check": "node scripts/gen-cad.mjs --check",
+    "cad:assembly": "node scripts/check-assembly.mjs"
   },
   "devDependencies": {
+    "manifold-3d": "^3.5.4",
     "puppeteer-core": "^23.0.0"
   },
   "engines": {

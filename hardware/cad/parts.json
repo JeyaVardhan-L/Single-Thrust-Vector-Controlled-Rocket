@@ -1,0 +1,336 @@
+{
+  "generated_by": "scripts/gen-cad.mjs",
+  "units": "mm",
+  "bed_min_mm": [
+    220,
+    220,
+    250
+  ],
+  "note": "mass_solid_g is the mass of the part printed 100 % solid, an upper bound. At the baseline settings a part weighs roughly 55 to 80 % of it; weigh the real parts.",
+  "parts": [
+    {
+      "id": "stack-plate-telemetry",
+      "vehicle": "rocket",
+      "name": "Stack plate, telemetry (top)",
+      "qty": 1,
+      "material": "PETG",
+      "bom": "R-02",
+      "file": "hardware/cad/stl/rocket/stack-plate-telemetry.stl",
+      "note": "Ø6.2 rod holes with M3 clamp screws and nut slots; three M3 insert holes for the receiver / GPS standoffs.",
+      "size_mm": [
+        110,
+        110,
+        8
+      ],
+      "volume_cm3": 43.87,
+      "mass_solid_g": 56,
+      "triangles": 10772
+    },
+    {
+      "id": "stack-plate-pcb",
+      "vehicle": "rocket",
+      "name": "Stack plate, flight computer (middle)",
+      "qty": 1,
+      "material": "PETG",
+      "bom": "R-02",
+      "file": "hardware/cad/stl/rocket/stack-plate-pcb.stl",
+      "note": "Four M3 insert holes at (±38, ±22) for the 9 mm standoffs under the carrier board.",
+      "size_mm": [
+        110,
+        110,
+        8
+      ],
+      "volume_cm3": 44.2,
+      "mass_solid_g": 56,
+      "triangles": 11344
+    },
+    {
+      "id": "stack-plate-battery",
+      "vehicle": "rocket",
+      "name": "Stack plate, batteries (bottom of the stack)",
+      "qty": 1,
+      "material": "PETG",
+      "bom": "R-02",
+      "file": "hardware/cad/stl/rocket/stack-plate-battery.stl",
+      "note": "Two strap slots 12 × 3 mm at y = ±36.",
+      "size_mm": [
+        110,
+        110,
+        8
+      ],
+      "volume_cm3": 44.52,
+      "mass_solid_g": 57,
+      "triangles": 7904
+    },
+    {
+      "id": "landing-frame",
+      "vehicle": "rocket",
+      "name": "Landing frame (diamond, 4 hinge clevises)",
+      "qty": 1,
+      "material": "PA-CF (or PETG for a first set)",
+      "bom": "R-03",
+      "file": "hardware/cad/stl/rocket/landing-frame.stl",
+      "note": "Printed upside down so the clevis ears point up. Hinge bore Ø3.2 for an M3 bolt.",
+      "size_mm": [
+        208,
+        208,
+        26.5
+      ],
+      "volume_cm3": 89.54,
+      "mass_solid_g": 107,
+      "triangles": 10790
+    },
+    {
+      "id": "gimbal-mount",
+      "vehicle": "rocket",
+      "name": "Gimbal mount (square frame on the rods)",
+      "qty": 1,
+      "material": "PA-CF (or PETG for a first set)",
+      "bom": "G-01",
+      "file": "hardware/cad/stl/rocket/gimbal-mount.stl",
+      "note": "Carries the outer ring on two M3 pivots (X axis), the servo-1 bracket underneath and four leg-brace anchor holes.",
+      "size_mm": [
+        110,
+        110,
+        14
+      ],
+      "volume_cm3": 69.71,
+      "mass_solid_g": 84,
+      "triangles": 7370
+    },
+    {
+      "id": "gimbal-ring",
+      "vehicle": "rocket",
+      "name": "Gimbal outer ring (with 36T sector, axis 1)",
+      "qty": 1,
+      "material": "PA-CF (or PETG for a first set)",
+      "bom": "G-01, G-02",
+      "file": "hardware/cad/stl/rocket/gimbal-ring.stl",
+      "note": "Printed upside down: sector fin points up. Two 683ZZ bearings in the X bosses; Y pads carry the collar pivots. Ream the Ø7 bearing bores.",
+      "size_mm": [
+        82,
+        76,
+        25
+      ],
+      "volume_cm3": 15.81,
+      "mass_solid_g": 19,
+      "triangles": 5718
+    },
+    {
+      "id": "gimbal-collar",
+      "vehicle": "rocket",
+      "name": "Gimbal inner collar (with 36T sector, axis 2)",
+      "qty": 1,
+      "material": "PA-CF (or PETG for a first set)",
+      "bom": "G-01, G-02",
+      "file": "hardware/cad/stl/rocket/gimbal-collar.stl",
+      "note": "Clamps the Ø42 tube with four M3 set screws. Two 683ZZ bearings in the Y bosses.",
+      "size_mm": [
+        50,
+        59.2,
+        32
+      ],
+      "volume_cm3": 14.87,
+      "mass_solid_g": 18,
+      "triangles": 4712
+    },
+    {
+      "id": "pinion-18t",
+      "vehicle": "rocket",
+      "name": "Pinion, 18 teeth, module 1",
+      "qty": 2,
+      "material": "PA12 / acetal (or metal)",
+      "bom": "G-02",
+      "file": "hardware/cad/stl/rocket/pinion-18t.stl",
+      "note": "Ø4.7 bore for the 25T servo spline. Rotate on the spline until it meshes (gap centred on the sector tooth).",
+      "size_mm": [
+        19.99,
+        19.78,
+        4
+      ],
+      "volume_cm3": 0.91,
+      "mass_solid_g": 1,
+      "triangles": 1728
+    },
+    {
+      "id": "servo-bracket-1",
+      "vehicle": "rocket",
+      "name": "Servo bracket, axis 1 (under the mount)",
+      "qty": 1,
+      "material": "PA-CF (or PETG for a first set)",
+      "bom": "G-01",
+      "file": "hardware/cad/stl/rocket/servo-bracket-1.stl",
+      "note": "Two M3 × 10 into the mount inserts; four M2 self-tap holes for a 23 × 12 mm servo.",
+      "size_mm": [
+        31.5,
+        36,
+        14.5
+      ],
+      "volume_cm3": 3.92,
+      "mass_solid_g": 5,
+      "triangles": 1220
+    },
+    {
+      "id": "servo-bracket-2",
+      "vehicle": "rocket",
+      "name": "Servo bracket, axis 2 (on top of the ring)",
+      "qty": 1,
+      "material": "PA-CF (or PETG for a first set)",
+      "bom": "G-01",
+      "file": "hardware/cad/stl/rocket/servo-bracket-2.stl",
+      "note": "Two M3 × 10 into the ring inserts; four M2 self-tap holes for the servo.",
+      "size_mm": [
+        36,
+        32.5,
+        11.1
+      ],
+      "volume_cm3": 3.84,
+      "mass_solid_g": 5,
+      "triangles": 1236
+    },
+    {
+      "id": "motor-plate-upper",
+      "vehicle": "rocket",
+      "name": "Motor plate, upper (tube socket + motor A)",
+      "qty": 1,
+      "material": "PA-CF (or PETG for a first set)",
+      "bom": "M-05",
+      "file": "hardware/cad/stl/rocket/motor-plate-upper.stl",
+      "note": "Ø42.3 socket for the carbon tube (epoxy + two M3 set screws). Motor pattern Ø19, four M3, reached through the tube bore.",
+      "size_mm": [
+        78.06,
+        90.14,
+        13
+      ],
+      "volume_cm3": 16.36,
+      "mass_solid_g": 20,
+      "triangles": 5280
+    },
+    {
+      "id": "motor-plate-lower",
+      "vehicle": "rocket",
+      "name": "Motor plate, lower (motor B)",
+      "qty": 1,
+      "material": "PA-CF (or PETG for a first set)",
+      "bom": "M-05",
+      "file": "hardware/cad/stl/rocket/motor-plate-lower.stl",
+      "note": "Motor B stands on it; screws from below.",
+      "size_mm": [
+        78.06,
+        90.14,
+        5
+      ],
+      "volume_cm3": 12.07,
+      "mass_solid_g": 14,
+      "triangles": 3566
+    },
+    {
+      "id": "cage-arm-upper",
+      "vehicle": "rocket",
+      "name": "Cage arm, upper",
+      "qty": 3,
+      "material": "PA-CF (or PETG for a first set)",
+      "bom": "M-05",
+      "file": "hardware/cad/stl/rocket/cage-arm-upper.stl",
+      "note": "Half-lap onto the plate stub, two M3 × 12 with nuts; tip bolts to the strut.",
+      "size_mm": [
+        105,
+        16,
+        7.8
+      ],
+      "volume_cm3": 6.46,
+      "mass_solid_g": 8,
+      "triangles": 1180
+    },
+    {
+      "id": "cage-arm-lower",
+      "vehicle": "rocket",
+      "name": "Cage arm, lower",
+      "qty": 3,
+      "material": "PA-CF (or PETG for a first set)",
+      "bom": "M-05",
+      "file": "hardware/cad/stl/rocket/cage-arm-lower.stl",
+      "note": "Same as the upper arm, on the lower plate.",
+      "size_mm": [
+        105,
+        16,
+        7.8
+      ],
+      "volume_cm3": 6.46,
+      "mass_solid_g": 8,
+      "triangles": 1180
+    },
+    {
+      "id": "cage-strut",
+      "vehicle": "rocket",
+      "name": "Cage strut (60 mm)",
+      "qty": 3,
+      "material": "PA-CF (or PETG for a first set)",
+      "bom": "M-05",
+      "file": "hardware/cad/stl/rocket/cage-strut.stl",
+      "note": "M3 inserts in both ends (screws M3 × 10 through the arms) and two on the outer face for the guard-ring tabs.",
+      "size_mm": [
+        7.5,
+        14,
+        60
+      ],
+      "volume_cm3": 5.97,
+      "mass_solid_g": 7,
+      "triangles": 1164
+    },
+    {
+      "id": "guard-arc",
+      "vehicle": "rocket",
+      "name": "Guard-ring arc (120°)",
+      "qty": 3,
+      "material": "PETG",
+      "bom": "M-05",
+      "file": "hardware/cad/stl/rocket/guard-arc.stl",
+      "note": "Tabs screw onto the struts with M3 × 10.",
+      "size_mm": [
+        195,
+        125.98,
+        10
+      ],
+      "volume_cm3": 6.73,
+      "mass_solid_g": 9,
+      "triangles": 920
+    },
+    {
+      "id": "leg-hinge",
+      "vehicle": "rocket",
+      "name": "Leg hinge fitting",
+      "qty": 4,
+      "material": "PA-CF (or PETG for a first set)",
+      "bom": "R-04",
+      "file": "hardware/cad/stl/rocket/leg-hinge.stl",
+      "note": "Ø8.2 socket for the Ø8 carbon leg (epoxy), Ø3.2 pin bore. Tongue 12.6 mm sits between the frame lug ears.",
+      "size_mm": [
+        41.5,
+        15,
+        12.6
+      ],
+      "volume_cm3": 6.28,
+      "mass_solid_g": 8,
+      "triangles": 716
+    },
+    {
+      "id": "leg-clip",
+      "vehicle": "rocket",
+      "name": "Brace clip",
+      "qty": 4,
+      "material": "PETG",
+      "bom": "R-05",
+      "file": "hardware/cad/stl/rocket/leg-clip.stl",
+      "note": "Slides onto the leg, M3 grub screw; Ø2.2 eyelet for the Ø1.6 brace wire.",
+      "size_mm": [
+        27,
+        18,
+        10
+      ],
+      "volume_cm3": 2.63,
+      "mass_solid_g": 3,
+      "triangles": 1220
+    }
+  ]
+}
