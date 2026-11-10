@@ -5,7 +5,7 @@ A baseline for a **thrust-vector-controlled (TVC) rocket**, built in two phases.
 | Phase | Vehicle | Purpose |
 |---|---|---|
 | **1** | **MC-1 vane-control monocopter**: one motor, one prop, four servo-driven vanes in the prop wash | Prove the flight computer, attitude estimation, control loop, actuators, logging, failsafes and operating procedures on a vehicle you can crash cheaply |
-| **2** | **RK-1 TVC rocket**: stacked-frame airframe, 2-axis gear-driven gimbal, four splayed legs | The main goal. Reuses the Phase 1 electronics, software core and procedures |
+| **2** | **RK-1 TVC rocket**: coaxial brushless motors in a 2-axis gear-driven gimbal steered by servos, three-plate stack, four splayed legs | The main goal. Reuses the Phase 1 electronics, software core and procedures |
 
 ![RK-1 TVC rocket, three.js model](assets/screenshots/rocket-hero.png)
 
@@ -33,12 +33,12 @@ Open <http://localhost:5173> for the hub. Pages (all in `web/`):
 
 | Page | What it teaches |
 |---|---|
-| [`rocket.html`](web/rocket.html) | Inspect every part, exploded view, live gimbal with the 2:1 gear stage, motor-burn animation |
+| [`rocket.html`](web/rocket.html) | Inspect every part, exploded view, live gimbal with the 2:1 gear stage, spinning contra-rotating props |
 | [`monocopter.html`](web/monocopter.html) | Inspect parts, exploded view, drive the four vanes with roll / pitch / yaw |
 | [`assembly.html?model=rocket`](web/assembly.html?model=rocket) · [`?model=monocopter`](web/assembly.html?model=monocopter) | Step-by-step build wizard with the current step highlighted on the model |
 | [`pid.html`](web/pid.html) | Single-axis attitude PID lab: gains, latency, actuator lag, noise |
 | [`gimbal.html`](web/gimbal.html) | Thrust, lever arm, gear ratio, servo torque and resolution |
-| [`sizing.html`](web/sizing.html) | Live mass budget from the BOM, thrust-to-weight, no-drag hop estimate |
+| [`sizing.html`](web/sizing.html) | Live mass budget from the BOM, thrust-to-weight, hover power and endurance |
 | [`wiring.html`](web/wiring.html) | Block diagrams and the Teensy 4.1 pin maps |
 | [`bom.html`](web/bom.html) | Searchable bill of materials with totals |
 

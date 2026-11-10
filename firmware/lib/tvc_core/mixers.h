@@ -15,6 +15,16 @@ inline void mixMonocopter(float roll, float pitch, float yaw, float out[4]) {
   for (int i = 0; i < 4; ++i) out[i] = d[i] / peak;   // scale together: preserves the mix ratio when saturating
 }
 
+// Coaxial contra-rotating pair: spin command differs the two motors so the reaction torques no longer cancel.
+// out[0] = upper motor, out[1] = lower motor, both 0..1. The spin command is limited so neither motor clips.
+inline void mixCoax(float throttle, float spin, float out[2]) {
+  const float t = std::clamp(throttle, 0.f, 1.f);
+  const float lim = std::min(t, 1.f - t);
+  const float s = std::clamp(spin, -lim, lim);
+  out[0] = t + s;
+  out[1] = t - s;
+}
+
 struct ServoMap {
   float centerUs = 1500.f;       // pulse at the mechanical centre (calibrate per servo)
   float usPerDeg = 10.f;         // ~1000 us per 100 deg: measure it, datasheets are approximate

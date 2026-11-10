@@ -2,7 +2,7 @@
 
 ## What thrust vector control does
 
-A rocket normally flies straight because fins keep the centre of pressure behind the centre of gravity. At low speed (launch, hover, landing) fins do nothing. Thrust vector control tilts the thrust line relative to the vehicle so the thrust creates a torque instead of just pushing straight. The vehicle then steers itself through any speed, including zero.
+A rocket normally flies straight because fins keep the centre of pressure behind the centre of gravity. At low speed (lift-off, hover, landing) fins do nothing. Thrust vector control tilts the thrust line relative to the vehicle so the thrust creates a torque instead of just pushing straight. The vehicle then steers itself through any speed, including zero.
 
 ```
          ▲ CG

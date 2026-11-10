@@ -4,11 +4,15 @@ Interactive diagram: [web/wiring.html?model=rocket](../../web/wiring.html?model=
 
 ```mermaid
 flowchart LR
-  PA[Pack A 2S] --> RBF[RBF pin + arm switch] --> REG[5 V / 3 A reg] --> MCU[Teensy 4.1]
-  PB[Pack B 2S] --> FUSE[5 A fuse] --> SV[Servos 1, 2, chute]
-  MCU -->|3, 4, 5| SV
-  MCU -->|22| PY[Pyro driver: chute release]
-  MCU --- IMU & BARO & GPS & LORA & SD[(SD)]
+  MAIN[Main pack 6S] --> RBF[RBF pin + arm switch] --> PDB[Power board + caps]
+  PDB --> ESCU[ESC upper] --> MOTA[Motor A]
+  PDB --> ESCL[ESC lower] --> MOTB[Motor B]
+  PDB --> BEC[Servo BEC 7.4 V, fused] --> SV[Servo 1, Servo 2]
+  AVI[Avionics pack 2S] --> REG[5 V regulator] --> MCU[Teensy 4.1]
+  MCU -->|pin 2| ESCU
+  MCU -->|pin 5| ESCL
+  MCU -->|pins 3, 4| SV
+  MCU --- IMU & BARO & RX[ELRS RX] & GPS & SD[(SD)]
 ```
 
 ## Pin map (Teensy 4.1)
@@ -17,50 +21,47 @@ flowchart LR
 |---|---|---|
 | 10 / 11 / 12 / 13 | SPI0 CS / MOSI / MISO / SCK | ICM-42688-P |
 | 9 | IMU INT | ICM-42688-P INT1 |
-| 18 / 19 | I²C SDA / SCL | BMP390 (0x76), ADXL375 (0x53, optional) |
+| 18 / 19 | I²C SDA / SCL | BMP390 (0x76) |
+| 0 / 1 | Serial1 RX / TX, 420 000 baud | ELRS receiver (CRSF) |
 | 7 / 8 | Serial2 RX / TX | GPS u-blox M10 |
-| 16 / 17 | Serial4 RX / TX | LoRa module (UART mode) |
+| 2 | ESC upper, 400 Hz PWM | ESC A (clockwise prop) |
+| 5 | ESC lower, 400 Hz PWM | ESC B (counter-clockwise prop) |
 | 3 | Servo axis 1 | Gimbal servo 1 |
 | 4 | Servo axis 2 | Gimbal servo 2 |
-| 5 | Servo chute | Release servo (optional) |
-| 22 | Pyro gate 1: chute release | MOSFET gate, 10 kΩ pull-down |
-| 23 | Pyro gate 2: spare | MOSFET gate, 10 kΩ pull-down |
-| 40 / 41 | Continuity sense | Pyro channels 1 / 2 (ADC) |
 | 24 | RBF sense | Pull-up; pin inserted = grounds the input |
 | 25 | Arm switch | Pull-up; switch on = grounds the input |
-| 38 / 39 | Pack A / B voltage | 1:3 dividers (ADC) |
+| 38 / 39 | Main / avionics pack voltage | 1:10 and 1:3 dividers (ADC) |
 | 6 / 28 | Buzzer / status LED | |
+
+The flight computer arms only when **both** the on-board arm switch and the radio arm channel (AUX1 > 1700 µs) are on: the radio switch doubles as the kill switch.
 
 ## Power
 
 | Rail | Source | Loads |
 |---|---|---|
-| 7.4 V (A) | 2S 850 mAh | via RBF + arm → 5 V regulator → Teensy, sensors, GPS, LoRa, buzzer |
-| 7.4 V (B) | 2S 850 mAh | via 5 A fuse → servos (HV-rated), chute servo |
-| 5 V logic | regulator 3 A | Teensy VIN |
+| 22.2 V main | 6S 1500 mAh via RBF + arm → power board | two ESCs, servo BEC |
+| 7.4 V servo | BEC 5 A from the main pack, 5 A fuse | two HV servos |
+| 7.4 V avionics | 2S 450 mAh | 5 V regulator → Teensy, IMU, baro, GPS, ELRS receiver, buzzer |
 
-Why two packs: gimbal servos stall-peak at 1 to 2 A each when the gimbal fights a load; on a shared supply that dips the logic rail. Separate packs remove the problem and give a hardware kill for the servos.
+Why two packs: the ESCs and servos make large current spikes and electrical noise. A separate small avionics pack keeps the flight computer, the log and the receiver alive and clean even if the main pack sags or the RBF pin is pulled.
 
-## Pyro and ignition rules
+Motor leads: 14 AWG silicone, short, twisted in pairs. A 1000 µF 35 V low-ESR capacitor sits across each ESC's power pads. Keep them ≥ 20 mm from the IMU and the receiver antenna.
 
-- **The flight computer never ignites the motor.** The ground ignition controller does.
-- Pyro channel 1 only releases the parachute (e-match or servo). Outputs are LOW at boot, held low by 10 kΩ pull-downs, and wired through the RBF pin, so the channel is physically dead with the pin inserted.
-- Continuity sense lines let you verify the e-match on the pad (small sense current, below e-match no-fire).
-- Test with **LED dummy loads only**; connect an e-match only at the range after the vehicle is on the stand/pad.
+## Rules
 
-## Harness rules
-
-1. One ground star point on the flight-computer board.
-2. Locking connectors (JST-GH / Molex) everywhere; no bare Dupont leads.
-3. Servo cables tie-wrapped along the rods; service loop at the axis 2 servo.
-4. Keep power leads and servo leads ≥ 20 mm from the IMU and antenna.
-5. Label every connector and photograph the harness before and after changes.
+- The **RBF pin or loop breaks the main-pack supply**: with it inserted the motors and the servos cannot move.
+- ESC signal lines have 10 kΩ pull-downs so a floating pin never commands thrust; the firmware sets both outputs to zero before anything else.
+- Props off for every wiring test; disconnect the motor leads from the ESCs when testing software.
+- One ground star point on the flight-computer board.
+- Locking connectors everywhere; no bare Dupont leads.
+- Photograph the harness before and after every change.
 
 ## Verification checklist
 
 - [ ] RBF inserted: nothing powers (measure with a meter).
-- [ ] RBF out, arm off: logic powered, servo outputs idle (no pulses), pyro outputs LOW.
+- [ ] RBF out, arm off: logic powered, ESC outputs at 1000 µs, servos centred.
+- [ ] Both ESCs beep their arming tones only when armed; each motor spins the right way (props off, brief blip from the configurator).
 - [ ] Pack voltage readings on the console match a meter within 0.1 V.
 - [ ] All servo signs verified (see [06](06-firmware-and-gnc.md)).
-- [ ] Continuity sense shows open with no e-match, closed with a 1 Ω dummy.
-- [ ] LoRa packets received at the ground station; GPS fix outdoors.
+- [ ] Radio channels move as expected on the console; failsafe tested (switch the radio off: ESC to 1000 µs within 0.3 s).
+- [ ] GPS fix outdoors.

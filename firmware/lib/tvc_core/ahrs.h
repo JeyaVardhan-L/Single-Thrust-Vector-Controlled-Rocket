@@ -16,7 +16,7 @@ class Mahony {
   // gx,gy,gz in rad/s; ax,ay,az in any consistent unit (normalised internally); dt in s.
   void update(float gx, float gy, float gz, float ax, float ay, float az, float dt) {
     const float n = std::sqrt(ax * ax + ay * ay + az * az);
-    // Skip the correction during high-g events (motor burn, impact): accelerometer is no longer a gravity reference.
+    // Skip the correction during high-g events (full throttle, impact): accelerometer is no longer a gravity reference.
     const bool accelValid = n > 0.5f * g_ref_ && n < 1.5f * g_ref_;
     if (accelValid) {
       ax /= n; ay /= n; az /= n;

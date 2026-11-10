@@ -25,7 +25,7 @@ Gate 3 decides whether Phase 2 **powered** tests may start. Hold the review with
 | 10 | IMU driver and mounting practice validated (noise, vibration) | Rocket FC | ☐ |
 | 11 | Servo power architecture validated (no brown-out) | Gimbal servos | ☐ |
 | 12 | Logging rate and file system validated (no dropped samples) | Rocket logging | ☐ |
-| 13 | Operating discipline: roles, call-outs, checklists used and refined | Static fires | ☐ |
+| 13 | Operating discipline: roles, call-outs, checklists used and refined | Stand tests | ☐ |
 | 14 | Design choices D-01 (propulsion) and D-03 (recovery) confirmed | Phase 2 build | ☐ |
 
 ### Gaps to carry into Phase 2

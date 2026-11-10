@@ -104,8 +104,9 @@ export function mountViewer({ model: id, stageEl, leftEl, rightEl }) {
       <div class="kv"><span>Gear ratio</span><span>${GEAR_RATIO}:1 (36T / 18T)</span>
         <span>Servo 1 angle</span><span id="s1">0.0°</span>
         <span>Servo 2 angle</span><span id="s2">0.0°</span></div>
-      <div class="btn-row"><button id="sweep">Circle sweep</button><button id="flame">Motor burn</button><button id="zero">Zero</button></div>
-      <div class="note">The servo moves ${GEAR_RATIO}× the gimbal angle. Mechanical limit is ±7° per axis.</div>`;
+      ${slider('thr', 'Throttle (visual)', 0, 1, 0.01, 0)}
+      <div class="btn-row"><button id="sweep">Circle sweep</button><button id="zero">Zero</button></div>
+      <div class="note">The servo moves ${GEAR_RATIO}× the gimbal angle. Mechanical limit is ±7° per axis. The two props counter-rotate.</div>`;
     let sweep = false, ph = 0;
     const apply = () => {
       const r = m.setGimbal(+$('#gx').value, +$('#gz').value);
@@ -113,11 +114,12 @@ export function mountViewer({ model: id, stageEl, leftEl, rightEl }) {
       $('#gzO').textContent = (+$('#gz').value).toFixed(1) + '°';
       $('#s1').textContent = r.servo1Deg.toFixed(1) + '°';
       $('#s2').textContent = r.servo2Deg.toFixed(1) + '°';
+      m.setThrottle(+$('#thr').value);
+      $('#thrO').textContent = (+$('#thr').value).toFixed(2);
     };
     controls.addEventListener('input', apply);
     $('#sweep').addEventListener('click', (e) => { sweep = !sweep; e.target.classList.toggle('on', sweep); });
-    $('#flame').addEventListener('click', (e) => { const on = !m.state.flame; m.setFlame(on); e.target.classList.toggle('on', on); });
-    $('#zero').addEventListener('click', () => { $('#gx').value = 0; $('#gz').value = 0; apply(); });
+    $('#zero').addEventListener('click', () => { $('#gx').value = 0; $('#gz').value = 0; $('#thr').value = 0; apply(); });
     stage.onTick((dt) => {
       if (!sweep) return;
       ph += dt * 1.8;
@@ -126,7 +128,7 @@ export function mountViewer({ model: id, stageEl, leftEl, rightEl }) {
       apply();
     });
     if (params.has('pose')) { $('#gx').value = 4; $('#gz').value = -3; apply(); }
-    if (params.has('burn')) { m.setFlame(true); }
+    if (params.has('spin')) { $('#thr').value = 0.5; apply(); }
   } else {
     controls.innerHTML = `
       <h3>Vane control (live)</h3>

@@ -41,7 +41,7 @@ Read in this order the first time. Afterwards use it as a lookup.
 | 4 | [Wiring](phase2-rocket/04-wiring.md) |
 | 5 | [Gimbal design](phase2-rocket/05-gimbal-design.md): kinematics, gears, torque, backlash, calibration |
 | 6 | [Firmware and GNC](phase2-rocket/06-firmware-and-gnc.md): states, attitude error, control, sign convention |
-| 7 | [Test stand procedure](phase2-rocket/07-test-stand-procedure.md): static fire, gimbal sweeps, abort criteria |
+| 7 | [Test stand procedure](phase2-rocket/07-test-stand-procedure.md): static thrust, gimbal sweeps, closed loop on a rig, abort criteria |
 | 8 | [Flight test plan](phase2-rocket/08-flight-test-plan.md): from tethered hop to free flight |
 
 ## 4. Theory (short, practical)

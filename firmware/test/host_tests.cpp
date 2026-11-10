@@ -94,8 +94,19 @@ static void test_mixers() {
   NEAR(g.toServoDeg(20.f), 13.f, 1e-6f, "software limit 6.5 deg -> 13 deg servo");
 }
 
+static void test_coax_mixer() {
+  std::printf("mixers: coaxial pair\n");
+  float o[2];
+  tvc::mixCoax(0.5f, 0.1f, o);
+  NEAR(o[0], 0.6f, 1e-6f, "upper motor up"); NEAR(o[1], 0.4f, 1e-6f, "lower motor down");
+  tvc::mixCoax(0.05f, 0.5f, o);
+  CHECK(o[1] >= -1e-6f && o[0] <= 0.1f + 1e-6f, "spin limited near zero throttle");
+  tvc::mixCoax(0.95f, -0.5f, o);
+  CHECK(o[0] >= 0.9f - 1e-6f && o[1] <= 1.f + 1e-6f, "spin limited near full throttle");
+}
+
 static void test_flight_sequence() {
-  std::printf("flight state: nominal sequence\n");
+  std::printf("flight state: nominal hop\n");
   using namespace tvc;
   FlightStateMachine fsm;
   FlightInputs in;
@@ -103,20 +114,15 @@ static void test_flight_sequence() {
   auto run = [&](float secs) { for (float t = 0; t < secs; t += dt) fsm.update(in, dt); };
 
   in.armSwitch = true; in.rbfInserted = true; run(0.5f);
-  CHECK(fsm.state() == FlightState::Safe, "stays SAFE while RBF pin is in");
+  CHECK(fsm.state() == FlightState::Safe, "stays SAFE while the RBF pin is in");
   in.rbfInserted = false; run(0.1f);
-  CHECK(fsm.state() == FlightState::Armed, "ARMED when switch on and RBF removed");
-  in.axialG = 3.f; run(0.2f);
-  CHECK(fsm.state() == FlightState::Boost, "launch detected");
-  CHECK(fsm.gimbalEnabled(), "gimbal enabled in BOOST");
-  in.axialG = 0.1f; in.vertSpeed = 30.f; run(0.6f);
-  CHECK(fsm.state() == FlightState::Coast, "burnout detected");
-  CHECK(!fsm.gimbalEnabled(), "gimbal locked in COAST");
-  in.vertSpeed = -3.f; run(1.0f);
-  CHECK(fsm.state() == FlightState::Descent, "apogee detected");
-  CHECK(fsm.chuteRequested(), "chute requested at apogee");
-  in.vertSpeed = 0.f; in.axialG = 1.f; run(2.5f);
-  CHECK(fsm.state() == FlightState::Landed, "landed detected");
+  CHECK(fsm.state() == FlightState::Armed, "ARMED with switch on and RBF removed");
+  CHECK(!fsm.motorsEnabled() && !fsm.gimbalEnabled(), "motors and gimbal off in ARMED");
+  in.throttle = 0.3f; run(0.3f);
+  CHECK(fsm.state() == FlightState::Flight, "throttle up enters FLIGHT");
+  CHECK(fsm.motorsEnabled() && fsm.gimbalEnabled(), "motors and gimbal on in FLIGHT");
+  in.throttle = 0.0f; run(1.5f);
+  CHECK(fsm.state() == FlightState::Armed, "idle throttle after landing returns to ARMED");
 }
 
 static void test_flight_abort_and_arming_rules() {
@@ -126,13 +132,25 @@ static void test_flight_abort_and_arming_rules() {
   FlightInputs in; in.armSwitch = true; in.rbfInserted = false; in.tiltDeg = 20.f;
   for (int i = 0; i < 50; ++i) fsm.update(in, 0.01f);
   CHECK(fsm.state() == FlightState::Safe, "refuses to arm when tilted 20 deg");
-  in.tiltDeg = 2.f; for (int i = 0; i < 50; ++i) fsm.update(in, 0.01f);
-  CHECK(fsm.state() == FlightState::Armed, "arms when vertical");
-  in.axialG = 3.f; for (int i = 0; i < 20; ++i) fsm.update(in, 0.01f);
-  CHECK(fsm.state() == FlightState::Boost, "boost");
+  in.tiltDeg = 2.f; in.throttle = 0.3f;
+  for (int i = 0; i < 50; ++i) fsm.update(in, 0.01f);
+  CHECK(fsm.state() == FlightState::Safe, "refuses to arm with throttle up");
+  in.throttle = 0.f;
+  for (int i = 0; i < 50; ++i) fsm.update(in, 0.01f);
+  CHECK(fsm.state() == FlightState::Armed, "arms when vertical with throttle low");
+  in.throttle = 0.4f; for (int i = 0; i < 30; ++i) fsm.update(in, 0.01f);
+  CHECK(fsm.state() == FlightState::Flight, "flight");
   in.tiltDeg = 40.f; fsm.update(in, 0.01f);
-  CHECK(fsm.state() == FlightState::Abort, "tilt > 35 deg in boost aborts");
-  CHECK(!fsm.gimbalEnabled() && fsm.chuteRequested(), "abort: gimbal off, chute requested");
+  CHECK(fsm.state() == FlightState::Abort, "tilt > 35 deg aborts");
+  CHECK(!fsm.motorsEnabled() && !fsm.gimbalEnabled(), "abort: motors off, gimbal off");
+  in.tiltDeg = 0.f; in.armSwitch = false; fsm.update(in, 0.01f);
+  CHECK(fsm.state() == FlightState::Safe, "disarm returns to SAFE");
+
+  FlightStateMachine f2; FlightInputs i2; i2.armSwitch = true; i2.rbfInserted = false;
+  for (int i = 0; i < 20; ++i) f2.update(i2, 0.01f);
+  i2.throttle = 0.4f; for (int i = 0; i < 30; ++i) f2.update(i2, 0.01f);
+  i2.rcOk = false; f2.update(i2, 0.01f);
+  CHECK(f2.state() == FlightState::Abort, "link loss in FLIGHT aborts (motors cut)");
 }
 
 static void test_crsf() {
@@ -164,6 +182,7 @@ int main() {
   test_mahony_gyro_integration();
   test_nose_tilt();
   test_mixers();
+  test_coax_mixer();
   test_flight_sequence();
   test_flight_abort_and_arming_rules();
   std::printf("\n%d checks, %d failed\n", g_run, g_fail);

@@ -21,10 +21,10 @@
 <div class="app">
   <aside class="side left" id="left">
     <h3>Vehicle</h3>
-    <div class="row"><label for="T">Thrust T (N)</label><output id="TO"></output></div><div class="row full"><input id="T" type="range" min="10" max="200" step="1" value="30"></div>
-    <div class="row"><label for="L">Pivot-to-CG lever L (m)</label><output id="LO"></output></div><div class="row full"><input id="L" type="range" min="0.05" max="0.5" step="0.005" value="0.11"></div>
-    <div class="row"><label for="I">Pitch inertia I (kg·m²)</label><output id="IO"></output></div><div class="row full"><input id="I" type="range" min="0.005" max="0.06" step="0.0005" value="0.018"></div>
-    <div class="row"><label for="m">Mass m (kg)</label><output id="mO"></output></div><div class="row full"><input id="m" type="range" min="0.5" max="2.5" step="0.01" value="0.95"></div>
+    <div class="row"><label for="T">Thrust T at the current throttle (N)</label><output id="TO"></output></div><div class="row full"><input id="T" type="range" min="5" max="60" step="0.5" value="11"></div>
+    <div class="row"><label for="L">Pivot-to-CG lever L (m)</label><output id="LO"></output></div><div class="row full"><input id="L" type="range" min="0.05" max="0.5" step="0.005" value="0.093"></div>
+    <div class="row"><label for="I">Pitch inertia I (kg·m²)</label><output id="IO"></output></div><div class="row full"><input id="I" type="range" min="0.005" max="0.06" step="0.0005" value="0.019"></div>
+    <div class="row"><label for="m">Mass m (kg)</label><output id="mO"></output></div><div class="row full"><input id="m" type="range" min="0.5" max="2.5" step="0.01" value="1.06"></div>
     <h3>Gimbal</h3>
     <div class="row"><label for="d">Gimbal angle δ (deg)</label><output id="dO"></output></div><div class="row full"><input id="d" type="range" min="-10" max="10" step="0.1" value="5"></div>
     <div class="row"><label for="tp">Pinion teeth</label><output id="tpO"></output></div><div class="row full"><input id="tp" type="range" min="10" max="36" step="1" value="18"></div>
@@ -56,7 +56,7 @@ function draw(c, { delta, T, L }) {
   // body
   x.fillStyle = '#e5e5e5'; x.strokeStyle = '#000'; x.lineWidth = 1.5;
   x.fillRect(cx - 22, 40, 44, pivotY - 40); x.strokeRect(cx - 22, 40, 44, pivotY - 40);
-  // motor tube (rotates by delta, pivot at gimbal)
+  // motor assembly (rotates by delta, pivot at gimbal)
   x.save(); x.translate(cx, pivotY); x.rotate(-delta);
   x.fillStyle = '#b2b2b2'; x.fillRect(-14, -50, 28, 130);
   x.fillStyle = '#000'; x.beginPath(); x.moveTo(-12, 80); x.lineTo(12, 80); x.lineTo(18, 96); x.lineTo(-18, 96); x.fill();
@@ -99,7 +99,7 @@ function update() {
     ['Gimbal step per 1 µs', quant.toFixed(3) + '°'],
   ].map(([a, b]) => `<span>${a}</span><span>${b}</span>`).join('');
   const msgs = [];
-  if (twr < 5) msgs.push('<div class="note warn">Thrust/weight &lt; 5: the baseline requirement for a controllable first hop is TWR ≥ 5 at lift-off.</div>');
+  if (twr < 1) msgs.push('<div class="note warn">Thrust below the weight: this is the thrust at the current throttle, not enough to hover. Hover needs T ≥ m g.</div>');
   if (Math.abs(v('d')) * ratio > 40) msgs.push('<div class="note warn">Servo travel above ±40° is getting close to a typical servo limit once you add trim.</div>');
   if (servoTorque * 10.197 > 3) msgs.push('<div class="note danger">Servo torque requirement above 3 kg·cm: reduce the thrust-line offset or increase the gear ratio.</div>');
   msgs.push('<div class="note">Rule: put the gimbal pivot at the motor’s thrust centre so the offset (and the holding torque) is small.</div>');

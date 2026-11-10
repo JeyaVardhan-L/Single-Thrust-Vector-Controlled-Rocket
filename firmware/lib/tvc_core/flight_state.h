@@ -1,47 +1,44 @@
-// Rocket flight-state machine (pure logic, host-testable).
+// Rocket flight-state machine (pure logic, host-testable) for the electric TVC vehicle.
 //
-//   SAFE --arm--> ARMED --launch detect--> BOOST --burnout--> COAST --apogee--> DESCENT --stationary--> LANDED
-//                                            |                                       ^
-//                                            +--tilt > limit--> ABORT ---------------+
+//   SAFE --arm--> ARMED --throttle up--> FLIGHT --throttle low (touch-down)--> ARMED
+//                   \________________________ tilt / fault / link loss / disarm ___/
+//                                              |
+//                                              v
+//                                            ABORT --arm switch off--> SAFE
 //
-// Ignition is NOT part of this state machine: the motor is lit by the ground ignition controller.
-// The vehicle only detects that it has launched. Gimbal control is enabled only in BOOST.
+// Motors run only in FLIGHT; the gimbal is closed-loop only in FLIGHT. ABORT cuts the motors and centres the gimbal.
 #pragma once
 #include <cmath>
 
 namespace tvc {
 
-enum class FlightState { Safe, Armed, Boost, Coast, Descent, Landed, Abort };
+enum class FlightState { Safe, Armed, Flight, Abort };
 
 inline const char* stateName(FlightState s) {
   switch (s) {
     case FlightState::Safe: return "SAFE";
     case FlightState::Armed: return "ARMED";
-    case FlightState::Boost: return "BOOST";
-    case FlightState::Coast: return "COAST";
-    case FlightState::Descent: return "DESCENT";
-    case FlightState::Landed: return "LANDED";
+    case FlightState::Flight: return "FLIGHT";
     case FlightState::Abort: return "ABORT";
   }
   return "?";
 }
 
 struct FlightInputs {
-  float axialG = 1.f;        // specific force along the nose axis, in g (1.0 at rest on the pad, nose up)
+  float throttle = 0.f;      // pilot throttle 0..1
   float tiltDeg = 0.f;       // nose angle from vertical
-  float vertSpeed = 0.f;     // m/s, up positive (baro/IMU fused)
-  bool armSwitch = false;    // operator arm switch
-  bool rbfInserted = true;   // remove-before-flight pin still in
-  bool fault = false;        // any health fault (IMU lost, low battery...)
+  bool armSwitch = false;    // operator arm switch (also the kill switch)
+  bool rbfInserted = true;   // remove-before-flight pin or loop still in
+  bool rcOk = true;          // control link alive
+  bool fault = false;        // health fault (IMU lost, low battery, ...)
 };
 
 struct FlightConfig {
-  float launchG = 2.0f, launchHold = 0.05f;
-  float burnoutG = 0.5f, burnoutHold = 0.10f, minBoost = 0.25f, maxBoost = 8.0f;
-  float apogeeVz = -1.0f, apogeeHold = 0.2f, minCoast = 0.5f;
-  float landedHold = 2.0f, landedVz = 0.5f, landedGBand = 0.25f;
-  float abortTiltDeg = 35.f;
+  float armMaxThrottle = 0.05f;   // refuse to arm with throttle above this
   float armMaxTiltDeg = 10.f;     // refuse to arm if the rocket is not near vertical
+  float spoolThrottle = 0.12f, spoolHold = 0.10f;      // ARMED -> FLIGHT
+  float idleThrottle = 0.05f, idleHold = 1.0f;         // FLIGHT -> ARMED (landed, throttle at idle)
+  float abortTiltDeg = 35.f;
 };
 
 class FlightStateMachine {
@@ -49,34 +46,29 @@ class FlightStateMachine {
   explicit FlightStateMachine(FlightConfig c = {}) : c_(c) {}
   FlightState state() const { return s_; }
   float timeInState() const { return tIn_; }
-  bool gimbalEnabled() const { return s_ == FlightState::Boost; }
-  bool servosPowered() const { return s_ != FlightState::Safe && s_ != FlightState::Landed; }
-  bool chuteRequested() const { return chute_; }
+  bool gimbalEnabled() const { return s_ == FlightState::Flight; }
+  bool motorsEnabled() const { return s_ == FlightState::Flight; }
+  bool servosPowered() const { return s_ != FlightState::Safe; }
 
   void update(const FlightInputs& in, float dt) {
     tIn_ += dt;
-    const bool flying = s_ == FlightState::Boost || s_ == FlightState::Coast || s_ == FlightState::Descent;
-    if (flying && in.fault && s_ == FlightState::Boost) { go(FlightState::Abort); chute_ = true; return; }
     switch (s_) {
       case FlightState::Safe:
-        if (in.armSwitch && !in.rbfInserted && !in.fault && in.tiltDeg < c_.armMaxTiltDeg) go(FlightState::Armed);
+        if (in.armSwitch && !in.rbfInserted && in.rcOk && !in.fault &&
+            in.throttle < c_.armMaxThrottle && in.tiltDeg < c_.armMaxTiltDeg) go(FlightState::Armed);
         break;
       case FlightState::Armed:
         if (!in.armSwitch || in.rbfInserted) { go(FlightState::Safe); break; }
-        hold(in.axialG > c_.launchG, c_.launchHold, dt) ? go(FlightState::Boost) : void();
+        if (!in.rcOk || in.fault) { go(FlightState::Abort); break; }
+        if (hold(in.throttle > c_.spoolThrottle, c_.spoolHold, dt)) go(FlightState::Flight);
         break;
-      case FlightState::Boost:
-        if (in.tiltDeg > c_.abortTiltDeg) { go(FlightState::Abort); chute_ = true; break; }
-        if ((tIn_ > c_.minBoost && hold(in.axialG < c_.burnoutG, c_.burnoutHold, dt)) || tIn_ > c_.maxBoost) go(FlightState::Coast);
-        break;
-      case FlightState::Coast:
-        if (tIn_ > c_.minCoast && hold(in.vertSpeed < c_.apogeeVz, c_.apogeeHold, dt)) { go(FlightState::Descent); chute_ = true; }
+      case FlightState::Flight:
+        if (!in.armSwitch || !in.rcOk || in.fault || in.tiltDeg > c_.abortTiltDeg) { go(FlightState::Abort); break; }
+        if (hold(in.throttle < c_.idleThrottle, c_.idleHold, dt)) go(FlightState::Armed);
         break;
       case FlightState::Abort:
-      case FlightState::Descent:
-        if (hold(std::fabs(in.vertSpeed) < c_.landedVz && std::fabs(in.axialG - 1.f) < c_.landedGBand, c_.landedHold, dt)) go(FlightState::Landed);
+        if (!in.armSwitch) go(FlightState::Safe);
         break;
-      case FlightState::Landed: break;
     }
   }
 
@@ -89,7 +81,6 @@ class FlightStateMachine {
   FlightConfig c_;
   FlightState s_ = FlightState::Safe;
   float tIn_ = 0.f, held_ = 0.f;
-  bool chute_ = false;
 };
 
 }  // namespace tvc

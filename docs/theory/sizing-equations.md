@@ -19,14 +19,14 @@ TWR = T / (m g)           g = 9.81 m/s²
 a   = T/m − g             (vertical, at lift-off)
 ```
 
-## Hop height without drag (upper bound)
+## Electric hover (RK-1)
 
 ```
-v_b = a t_b                   h_b = ½ a t_b²                h_coast = v_b² / (2 g)
-apogee ≈ h_b + h_coast        (ignores drag and mass loss, so the real value is lower)
+A      = π R_prop²                          disk area of one prop (coaxial pair: use one disc)
+P_ideal = T^{3/2} / √(2 ρ A)                ideal hover power
+P_elec ≈ P_ideal / FoM                      FoM ≈ 0.55 for a coaxial pair with 9 in props
+flight time ≈ 0.8 · capacity (Ah) / (P_elec / V)
 ```
-
-Use OpenRocket for predictions, then compare with logs.
 
 ## Propeller wash and vane force (monocopter)
 
@@ -71,6 +71,8 @@ C-rating needed = peak current / capacity (Ah)
 
 m = 0.485 kg → weight 4.76 N. T_max = 14 N → TWR 2.9. Hover throttle ≈ √(1/2.9) ≈ 59 %. Wash at hover ≈ 10.5 m/s, `q ≈ 66 Pa`, `F_vane ≈ 0.13 N`, `τ_roll ≈ 0.022 N·m`, `α ≈ 7 to 9 rad/s²` with `I ≈ 0.003 kg·m²`.
 
-## Worked example: RK-1 F-class gimbal
+## Worked example: RK-1 hover
 
-T = 25 N, L = 0.11 m, I = 0.018 kg·m² → `G = 153 rad/s²`. At δ = 6.5°: `M = 25 × 0.11 × 0.113 = 0.31 N·m`, `α = 17 rad/s²`. Servo needs ±13° (ratio 2).
+m = 1.06 kg → weight 10.4 N. T_max = 26 N → TWR 2.5, hover throttle ≈ 63 %. A = π (0.114)² = 0.041 m², `P_ideal = 10.4^1.5 / √(2 × 1.2 × 0.041) ≈ 107 W`, `P_elec ≈ 195 W` → 8.8 A on 6S → ≈ 8 min with 80 % of 1.5 Ah.
+
+Gimbal: L = 0.093 m, I = 0.019 kg·m² → `G = T L / I = 51 rad/s²` at hover. At δ = 6.5°: `M = 10.4 × 0.093 × 0.113 = 0.11 N·m`, `α = 6 rad/s²`. Servo needs ±13° (ratio 2).

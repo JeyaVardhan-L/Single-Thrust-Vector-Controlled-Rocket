@@ -11,10 +11,10 @@ The source CAD is a Fusion project named `rera-final` ("Read-only file" banner, 
 | `landing-frame:1` | `landing-frame` | `rocket.js` | R-03 | Diamond plate with four corner hinge lugs |
 | `battery-frame1:1`, `battery-frame2:1` | `battery-frame` | `rocket.js` | E-01, E-02, R-02 | One plate carrying both packs (A white tag, B orange tag) |
 | `pcb-frame:1` | `pcb-frame` | `rocket.js` | A-01..A-09, E-03..E-05, R-02 | Flight-computer board frame |
-| `telemetry-frame:1` | `telemetry-frame` | `rocket.js` | A-05, A-06, A-08, R-02 | Radio, GPS, antenna |
+| `telemetry-frame:1` | `telemetry-frame` | `rocket.js` | A-04, A-05, A-06, R-02 | ELRS receiver, GPS, antenna |
 | `landing-gear:1` | `landing-gear` | `rocket.js` | R-04, R-05 | Four legs, feet, braces |
-| `test-stand:1` | `test-stand` | `rocket.js` | T-01 | Base, deflector, load cell |
-| *(motor tube and motor)* | `motor` | `rocket.js` | M-01..M-03 | Motor tube and motor |
+| `test-stand:1` | `test-stand` | `rocket.js` | T-01 | Base, column, load cell, cradle |
+| *(motor assembly)* | `motor` | `rocket.js` | M-01..M-06 | Coaxial brushless pair, props, cage, ESCs |
 
 The monocopter parts are:
 

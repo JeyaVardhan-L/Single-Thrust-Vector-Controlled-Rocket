@@ -6,7 +6,7 @@ Each requirement has an ID, a verification method (**T**est, **A**nalysis, **I**
 
 | ID | Requirement | Ver. | Gate |
 |---|---|---|---|
-| SYS-01 | The vehicle shall be electrically inert (no actuator motion, no motor output, no pyro output) until powered with the RBF loop/pin removed **and** the arm switch on | T | 0 / A |
+| SYS-01 | The vehicle shall be electrically inert (no actuator motion, no motor output) until powered with the RBF loop/pin removed **and** the arm switch on | T | 0 / A |
 | SYS-02 | The flight computer shall run its control loop at ≥ 500 Hz with worst-case jitter < 10 % | T | 0 |
 | SYS-03 | Total sensor-to-actuator latency shall be ≤ 15 ms | T | 0 / A |
 | SYS-04 | All flight-relevant signals (attitude, rates, commands, actuator positions, state, battery V) shall be logged ≥ 100 Hz to non-volatile storage | T | 0 |
@@ -34,21 +34,21 @@ Each requirement has an ID, a verification method (**T**est, **A**nalysis, **I**
 
 | ID | Requirement | Ver. | Gate |
 |---|---|---|---|
-| RK-01 | Loaded mass ≤ 1.5 kg (BOM baseline 914 g) | I | B |
-| RK-02 | Lift-off thrust-to-weight ≥ 2.5 for first flights (F-class motor), ≥ 5 before any G-class flight | A / T | B |
+| RK-01 | Take-off mass ≤ 1.3 kg (BOM baseline 1.06 kg) | I | B |
+| RK-02 | Static thrust ≥ 2.0 × take-off weight on a fresh 6S pack (baseline 2.5) | T | B |
 | RK-03 | Gimbal range ±7° mechanical, software limit ±6.5°, both axes | T | A |
-| RK-04 | Gimbal backlash < 0.3° at the motor tube, measured | T | A |
+| RK-04 | Gimbal backlash < 0.3° at the mount tube, measured | T | A |
 | RK-05 | Gimbal step response: ≤ 60 ms to 90 % for a 3° step, unloaded | T | A |
-| RK-06 | Gimbal shall remain centred (and servos unpowered by the state machine) in SAFE, ARMED, COAST, DESCENT, LANDED | T | 0 / A |
-| RK-07 | The flight-state machine shall refuse to arm with RBF inserted, tilt > 10°, or fault | T | A |
-| RK-08 | Launch detection shall use axial acceleration > 2 g held 50 ms; false-trigger test on handling and transport shall pass | T | B |
-| RK-09 | Tilt > 35° in BOOST shall centre the gimbal and request recovery | T | C |
-| RK-10 | Ignition shall be by the ground ignition controller only; no onboard ignition output in the baseline | I | all |
+| RK-06 | Gimbal shall remain centred and both ESC outputs at idle in SAFE, ARMED and ABORT | T | 0 / A |
+| RK-07 | The flight-state machine shall refuse to arm with the RBF pin inserted, throttle up, tilt > 10°, no link, or a fault | T | A |
+| RK-08 | FLIGHT shall start only when the throttle exceeds 12 % for 0.1 s; there shall be no motor output before that | T | A |
+| RK-09 | Tilt > 35° in FLIGHT shall cut the motors and centre the gimbal | T | D |
+| RK-10 | Link loss > 250 ms or the arm switch off in FLIGHT shall cut the motors within 0.3 s | T | A / B |
 | RK-11 | The rocket shall be restrained on the stand such that loss of restraint of one tether does not release the vehicle | I | B |
-| RK-12 | Stand thrust trace shall match the motor datasheet within ±15 % average thrust | T | B |
+| RK-12 | Static thrust at 90 % throttle ≥ 2.2 × weight and monotonic with throttle; both motors within 10 % | T | B |
 | RK-13 | Closed-loop stand test shall reject a commanded 2° attitude offset within 0.5 s without gimbal saturation > 20 % of the time | T | D |
-| RK-14 | Recovery (decision D-03) shall be ground-tested (deployment test with a dummy mass) before any free flight | T | E |
-| RK-15 | The CG shall sit above the gimbal pivot (nozzle below the CG) at the designed height, about 256 mm above the ground plane with an empty motor tube; verify with a balance test within ±10 mm | I | A |
+| RK-14 | With the yaw stick centred, spin about the vertical axis shall stay within ±30°/s (stand, closed loop) | T | D |
+| RK-15 | The CG shall sit above the gimbal pivot at the designed height, about 243 mm above the ground plane without props; verify with a balance test within ±10 mm | I | A |
 
 ## Traceability
 

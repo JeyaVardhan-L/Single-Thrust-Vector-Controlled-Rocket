@@ -1,115 +1,107 @@
 # Test stand procedure (Gates B, C, D)
 
-Read [safety](../safety.md) in full first. This procedure is a **template to be reviewed** by an experienced rocketry mentor or your association before the first live firing. Nothing here replaces their rules or your local law.
+Read [safety](../safety.md) in full first. These tests spin real propellers at 8 000 to 12 000 rpm. Treat the stand as a hazard zone.
 
 ![Test stand](../../assets/screenshots/rocket-hero.png)
 
 ## 1. The stand
 
-Model part `test-stand`: base plate, centre column with a flame deflector cone under the nozzle, load cell. Baseline (decision D-11): a **fixed stand**: the rocket is restrained on the plate and thrust is read by a load cell, while the gimbal moves freely. A fixed stand cannot test closed-loop attitude (the vehicle cannot rotate), so Gate D uses a **tilting rig** (see §6).
+Model part `test-stand`: base plate, centre column with a load cell and a cradle plate under the motor cage. Baseline (decision D-11): a **fixed stand**: the vehicle is restrained on the plate and the thrust is read by the load cell while the gimbal moves freely. A fixed stand cannot test closed-loop attitude, so Gate D uses a **tilting rig** (§6).
 
 | Requirement | How |
 |---|---|
-| Anchored | Plate bolted to a concrete pad or staked/ballasted > 10× thrust weight |
-| Restraint | Rocket held by **two independent** straps/tethers rated ≥ 3× peak thrust; failure of one must not release the vehicle (RK-11). Keep them clear of the exhaust and the gimbal motion |
+| Anchored | Plate bolted down or ballasted > 10× the thrust weight |
+| Restraint | Two independent straps rated ≥ 3× the full thrust (≥ 80 N) from the rods to the plate; failure of one must not release the vehicle (RK-11). Keep them clear of the props and the gimbal motion |
 | Thrust measurement | 20 kg load cell + HX711 at ≥ 80 Hz, calibrated with known weights the same day |
-| Flame deflector | Steel/aluminium cone, nozzle exit ≥ 50 mm above it |
-| Clear zone | Bare ground or gravel, no dry grass within 5 m (wet it down), no overhead branches |
-| Safety line | Marked on the ground per your association's table; project minimum for first fires ≥ 10 m (suggested) |
-| Ignition | Remote controller with keyed safety, continuity check, leads ≥ the safety distance, shorted when not in use |
+| Prop shield | Polycarbonate panel or net between the vehicle and every person, rated for a blade fragment; no one stands in the plane of the props |
+| Clear zone | No loose objects, cables or dust within 3 m; wear eye protection |
+| Safety line | ≥ 5 m behind the shield; the operator holds the radio with the arm switch |
+| Power | 6S pack, fused, XT60 with a **removable arming loop** that the operator inserts last |
 
 ## 2. Roles
 
-Test Director (calls everything) · RSO (independent; can stop the test) · Operator at the ignition box · Data person (logs thrust, telemetry, video) · Spotter (eyes on the vehicle). One person may not hold two of the safety roles.
+Test Director (calls everything) · Operator (radio, arm switch, throttle) · Data person (load cell, log, video) · Spotter (eyes on the vehicle and the zone). One person may not hold two of these roles.
 
 ## 3. Documents to have on site
 
-- This procedure and the pre-test checklist printed.
-- Motor datasheet and thrust curve, certification marks.
-- Test log template ([phase 1 template](../phase1-monocopter/06-bench-tests.md) works).
-- Emergency numbers and the site address/coordinates.
+- This procedure and the pre-test checklist, printed.
+- The Gate A log (gimbal calibration and sign checks).
+- The test log template ([phase 1 template](../phase1-monocopter/06-bench-tests.md) works).
+- Emergency numbers and the site address.
 
-## 4. Gate B: static fire, gimbal **locked** at centre
+## 4. Gate B: static thrust with the gimbal **locked** at centre
 
-Purpose: validate the stand, thrust measurement, the motor, and the structure under thrust. **No control, no gimbal movement.**
-
-Prerequisites: Gate A passed. Dry run done (see §7). F-class motor (D-01).
+Purpose: validate the stand, the thrust measurement, the motors, ESCs, props and the structure under thrust. **No control, gimbal clamped.**
 
 **Pre-test checklist** (read aloud, answer "check"):
 
-1. ☐ Weather: wind ≤ 15 km/h, no rain, no lightning within 20 km.
-2. ☐ Site clear; spotters in place; safety line marked; extinguisher, water, first-aid at the stand.
-3. ☐ Vehicle: inspected; gimbal locked mechanically at centre (pin or clamp); servos **unpowered**; flight computer armed? **no**: logging only (SAFE state; RBF inserted)
-4. ☐ Software commit and gains recorded: ______ ; telemetry link verified.
-5. ☐ Load cell zeroed and calibrated; data logging running.
-6. ☐ Restraints inspected, tight; stand anchored.
+1. ☐ Weather and site: indoors or sheltered, wind ≤ 15 km/h, nothing flammable near the stand.
+2. ☐ Props inspected (no nicks or cracks), balanced, tight, correct rotation (A clockwise, B counter-clockwise).
+3. ☐ Vehicle: gimbal locked mechanically at centre; servo BEC unplugged; motor leads connected to the ESCs; arming loop **out**.
+4. ☐ Software commit and gains recorded: ______ ; radio link verified, throttle stick at zero.
+5. ☐ Load cell zeroed and calibrated; logging running.
+6. ☐ Restraints and anchors inspected; shield in place.
 7. ☐ Everyone not required has moved behind the safety line.
-8. ☐ Motor (certified, in date) installed **by the person who will then retire to the line**, per the manufacturer's instructions. Ignition leads **shorted**.
-9. ☐ Igniter installed last; leads connected to the (still shorted) ignition cable; clips not touching metal.
-10. ☐ Everyone confirms "clear" **by name**. Director announces: "Ignition in 5".
+8. ☐ 6S pack inspected (voltage ≥ 24.0 V) and connected; fire extinguisher and LiPo bag at hand.
+9. ☐ Everyone confirms "clear" **by name**. Director: "Arming in 5".
 
-**Sequence:** Director: "Arming ignition" → operator inserts the safety key and checks continuity (a light/tone) → countdown from 5 → fire.
+**Sequence:** insert the arming loop → radio arm switch on → ARMED (LED) → throttle steps 10 %, 20 %, 30 %, … up to 90 %, hold 5 s each, back to 0 → arm off → loop out.
 
-**Hang-fire:** if nothing happens: operator removes the **safety key**, disconnects the leads at the box and shorts them, then **everyone waits ≥ 60 s**. Only then does one person (Director's call) approach, not directly over the nozzle.
-
-**After the burn:** wait until the motor has fully stopped and cooled (≥ 5 min or per datasheet); inspect: stand, restraints, rocket, heat damage, nozzle; log everything, photograph.
+**Abort immediately** for: unusual noise or vibration, a prop touching anything, smoke or smell, a restraint moving, a person entering the zone, battery below 3.3 V per cell. Abort = throttle zero, arm switch off, then loop out.
 
 **Gate B pass criteria**
 
-- ☐ Ignition and burn nominal (no chuffing, no case burn-through, no structural failure)
-- ☐ Average thrust within ±15 % of the datasheet (RK-12); curve saved
-- ☐ No loose or damaged hardware; heat-affected parts inspected and still sound
-- ☐ Launch-detect logic: with the board powered in ARMED on a *dummy* rig (no motor), shaking or handling does **not** trigger BOOST (RK-08)
+- ☐ Thrust at 90 % ≥ 2.2 × weight (≥ 23 N) and monotonic with throttle (RK-12)
+- ☐ Current < ESC and battery limits; battery above 3.4 V per cell under full load
+- ☐ Both motors give similar thrust (difference < 10 %); the **spin torque** with equal throttle is small
+- ☐ Vibration: IMU noise (gyro σ) < 0.05 rad/s at hover throttle
+- ☐ ESCs and motors warm, not hot (< 70 °C) after 60 s at hover throttle
+- ☐ No loose or damaged hardware, restraints intact
 - ☐ Data and video archived
 
-## 5. Gate C: static fire with open-loop gimbal sweeps
+## 5. Gate C: gimbal sweeps under thrust, open loop
 
-Purpose: verify the gimbal under thrust and heat, and measure thrust-vector response.
+Purpose: verify the gimbal, gears and servos under load, and measure the plant gain.
 
-Additional prerequisites: Gate B passed; all of Gate A's calibration still valid after the first burn (re-check backlash and centre).
+Additional prerequisites: Gate B passed; Gate A calibration re-checked.
 
-Changes to the pre-test checklist:
+Changes to the checklist: gimbal **unlocked**, servo BEC connected, a pre-programmed sweep (±3° then ±5° on each axis, 0.5 Hz) at **hover throttle (≈ 60 %)**, closed loop **off**.
 
-- Gimbal **unlocked**, servos powered from pack B, commanded by a **pre-programmed sweep** (±3° then ±5° on each axis in sequence, 0.5 Hz), triggered by launch detection or a timer at 0.3 s after ignition.
-- Closed-loop control **off** (a software flag): the gimbal follows the script only.
-- Load cell must be able to see lateral force: use a 2-axis stand or at least video + IMU.
-- Abort conditions in §8 apply.
-
-**Pass criteria:** gimbal tracks the script within 1° under load; no servo stall or brown-out (log pack B voltage ≥ 6.4 V); no skipped gear teeth afterwards; measured side force vs commanded angle agrees with `T sin δ` within 25 %; gains for Gate D updated with the measured `G`.
+**Pass criteria:** the gimbal tracks the script within 1° under load; no servo stall or brown-out (servo BEC voltage ≥ 6.8 V, no Teensy reset); no skipped gear teeth afterwards; the measured side force vs commanded angle matches `T sin δ` within 25 % (lateral load cell or video + IMU); the measured `G` goes into the PID lab.
 
 ## 6. Gate D: closed loop on a tilting rig
 
-A fixed stand cannot respond to attitude. Use a **pivoting rig** instead: the vehicle hangs/stands on a single low-friction pivot (ball joint or a gimbal bearing) near its CG so that it can pitch/yaw ±20° but cannot leave the rig, with a travel limiter and a restraining line. Build and test the rig **with no motor** first (hand-tilt it and check the controller reacts).
+A fixed stand cannot respond to attitude. Use a **pivoting rig**: the vehicle sits on a single low-friction pivot (ball joint or a gimbal bearing) near its CG so that it can pitch and yaw ±20° but cannot leave the rig, with a travel limiter and a restraining line. Build and test the rig **with the props off** first (hand-tilt it and check that the controller reacts as in the sign test).
 
-Procedure: as Gate B, plus closed-loop enabled, with a commanded attitude offset of 2° applied at 0.4 s after ignition (software step). Abort rules from §8; the Director stays at the ignition box with the key.
+Procedure: as Gate B, with closed loop enabled and a commanded attitude offset of 2° applied after the vehicle reaches hover throttle (software step). The Director stays beside the operator with the shield between them and the rig.
 
-**Pass criteria (RK-13):** the offset is rejected within 0.5 s; gimbal saturation (±6.5°) less than 20 % of the burn; no divergence; log comparison with the PID lab (natural frequency within 30 %).
+**Pass criteria (RK-13):** the offset is rejected within 0.5 s; gimbal saturation (±6.5°) is below 20 % of the run; no divergence; the log matches the PID lab (natural frequency within 30 %). Spin about the vertical axis stays within ±30°/s with the yaw stick centred.
 
-## 7. Dry run (mandatory before each gate's first live fire)
+## 7. Dry run (mandatory before the first live run of each gate)
 
-Run the **entire** procedure with the dummy casing: roles, calls, checklist, lead handling, hang-fire drill, extinguisher access, data logging. Time it. Fix every confusion in this document. Record who attended.
+Run the **entire** procedure with the props off: roles, calls, checklist, radio, abort calls, extinguisher access, logging. Time it. Fix every confusion in this document and record who attended.
 
 ## 8. Abort criteria (any person may call, immediately obeyed)
 
-Before ignition: anyone enters the zone; wind or weather exceeds limits; any restraint or stand anomaly; any smell, leak or damage; software/telemetry fault; unclear communication.
+Before powering: anyone enters the zone; weather outside limits; any restraint or stand anomaly; smell, leak, swollen battery; radio or software fault; unclear communication.
 
-During the burn: structural failure; the vehicle moves unexpectedly; abnormal flame, smoke or noise (chuffing, spitting); tilt > 35° on the rig; loss of data.
+During a run: structural failure; unexpected motion; abnormal noise or vibration; smoke; prop contact; tilt > 35° on the rig; loss of data; link loss (the vehicle cuts the motors by itself).
 
-On abort: **do not approach** for at least 60 s after the last event; fire extinguisher only by the person assigned, from upwind, only if safe.
+On abort: throttle zero, arm off, wait for the props to stop, loop out. **Do not approach until the props have stopped.** Battery fire: extinguisher, only from a safe distance and only if trained.
 
 ## 9. After-test routine
 
-1. Make the vehicle safe: igniter leads shorted, key removed, RBF pin inserted.
-2. Cool-down, then inspect.
-3. Save logs, photos, video; fill the test log; update gains, parameters, `G` in the PID lab.
+1. Make the vehicle safe: arming loop out, RBF pin in, pack disconnected.
+2. Cool-down, then inspect (props, motors, ESCs, bolts, gears, cables, restraints).
+3. Save logs, photos and video; fill the test log; update gains, `G`, hover throttle in the PID lab and the sizing page.
 4. Debrief: what went wrong or nearly did; update this procedure.
 
-## 10. Gate checklist summary
+## 10. Gate summary
 
 | Gate | Needs | Output |
 |---|---|---|
-| A | Bench, dummy motor | Calibrated gimbal ([05](05-gimbal-design.md)) |
-| B | Fixed stand, F motor, gimbal locked | Stand and motor validated |
+| A | Bench, props off | Calibrated gimbal ([05](05-gimbal-design.md)) |
+| B | Fixed stand, props on, gimbal locked | Stand, thrust and power validated |
 | C | Fixed stand, open-loop sweeps | Gimbal under thrust, measured `G` |
 | D | Tilting rig, closed loop | Control validated |
 | E | [Flight test plan](08-flight-test-plan.md) | First free flight |

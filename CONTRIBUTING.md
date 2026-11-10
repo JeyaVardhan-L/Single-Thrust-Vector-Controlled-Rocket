@@ -29,4 +29,4 @@ Real test results are the most valuable content. Put them in `docs/test-logs/YYY
 
 ## Safety rule
 
-No change that touches arming, failsafes, the flight-state machine, ignition or recovery is merged without (a) a host-side test and (b) a written bench-test procedure.
+No change that touches arming, failsafes, the flight-state machine, motor outputs or the arm interlocks is merged without (a) a host-side test and (b) a written bench-test procedure.

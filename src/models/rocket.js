@@ -62,7 +62,7 @@ export function buildRocket() {
     const g = new THREE.Group();
     g.add(stackPlate(y));
     for (const [x, z] of [[-34, 22], [34, 22], [-34, -22]]) standoff(g, x, top, z, 6);
-    // LoRa module with shield can and SMA connector
+    // ELRS receiver with shield can and antenna connector
     g.add(box(34, 1.4, 22, blueMat, -22, top + 6.7, 12));
     g.add(box(14, 2.4, 11, MAT.steel, -26, top + 8.6, 12));
     const sma = cyl(2.8, 2.8, 8, MAT.gold, 16, -40, top + 8, 12);
@@ -83,7 +83,7 @@ export function buildRocket() {
     lead(g, [[22, top + 1, -26], [30, top + 14, -40], [38, y - 2, -46]], 0xd8321e);
     parts.add('telemetry-frame', g, {
       name: 'Telemetry frame', category: 'avionics', cad: 'telemetry-frame:1', explode: [0, 190, 0],
-      desc: 'Top plate: LoRa radio with SMA, GPS puck, 90 mm whip antenna, buzzer and three status LEDs. Highest point for the best RF and GPS view.',
+      desc: 'Top plate: ELRS receiver with antenna lead, GPS puck, 90 mm whip antenna, buzzer and three status LEDs. Highest point for the best RF and GPS view.',
     });
   }
 
@@ -107,7 +107,7 @@ export function buildRocket() {
     g.add(box(5, 1.2, 5, MAT.black, 30, by + 2.4, 12));
     g.add(box(10, 1.2, 10, blueMat, 30, by + 1.4, -10));
     g.add(box(3.5, 1, 3.5, MAT.steel, 30, by + 2.3, -10));
-    // pyro screw terminals + JST servo connectors
+    // ESC signal and servo header blocks + JST connectors
     for (const z of [-20, -13]) g.add(box(8, 8, 6.4, blueMat, 36, by + 4.8, z));
     for (let i = 0; i < 4; i++) g.add(box(9, 5, 6, MAT.white, -40, by + 3.3, 17 - i * 6.5));
     // capacitors, regulator, fuse
@@ -126,7 +126,7 @@ export function buildRocket() {
     lead(g, [[-40, by + 6, 10.5], [-52, by + 2, 34], [-47, y - 2, 46]], 0x2a6ee8);
     parts.add('pcb-frame', g, {
       name: 'PCB frame (flight computer)', category: 'avionics', cad: 'pcb-frame:1', explode: [0, 100, 0],
-      desc: 'Carrier board on brass standoffs: Teensy 4.1 with microSD, IMU and baro boards, servo JST ports, pyro terminals, regulator, fuse, RBF pin and arm switch. The IMU sits on the stack axis.',
+      desc: 'Carrier board on brass standoffs: Teensy 4.1 with microSD, IMU and baro boards, servo JST ports, ESC signal headers, regulators, fuse, RBF pin and arm switch. The IMU sits on the stack axis.',
     });
   }
 
@@ -190,7 +190,7 @@ export function buildRocket() {
     }
     parts.add('landing-frame', g, {
       name: 'Landing frame', category: 'structure', cad: 'landing-frame:1', explode: [0, -40, 0],
-      desc: 'Diamond plate (rotated 45°) whose four corners carry the leg hinge lugs; the rods pass through bosses on its edges. Also the upper guide for the motor tube.',
+      desc: 'Diamond plate (rotated 45°) whose four corners carry the leg hinge lugs; the rods pass through bosses on its edges. Also the upper guide for the motor mount tube.',
     });
   }
 
@@ -212,7 +212,6 @@ export function buildRocket() {
       bearing.rotation.z = PI / 2;
       g.add(bearing);
     }
-    g.add(cyl(42, 42, 1.6, MAT.alu, 48, 0, gy - 44, 0));   // heat-shield disc under the gimbal
     // servo A bracket (pitch axis servo, at +X)
     g.add(box(14, 3, 24, MAT.printDk, 56, gy - 18, 0));
     g.add(box(4, 30, 22, MAT.printDk, 49, gy - 24, 0));
@@ -226,14 +225,14 @@ export function buildRocket() {
       boss.rotation.x = PI / 2;
       outerPivot.add(boss);
     }
-    // Inner collar (rotates about Z) carrying the motor tube
+    // Inner collar (rotates about Z) carrying the motor mount tube
     innerPivotTVC.add(cyl(19, 19, 26, MAT.printDk, 40));
     const pinZ = cyl(2.4, 2.4, 82, MAT.steel, 14); pinZ.rotation.x = PI / 2; innerPivotTVC.add(pinZ);
     outerPivot.add(innerPivotTVC);
     g.add(outerPivot);
     parts.add('tvc', g, {
       name: 'TVC gimbal (mount + rings)', category: 'actuation', cad: 'tvc:1', explode: [0, -110, 0],
-      desc: 'Two-axis gimbal. Fixed square mount on the rods, outer ring about X, inner collar about Z. Collar grips the motor tube.',
+      desc: 'Two-axis gimbal. Fixed square mount on the rods, outer ring about X, inner collar about Z. Collar grips the motor mount tube.',
     });
   }
 
@@ -289,31 +288,67 @@ export function buildRocket() {
     });
   }
 
-  // ---------------- motor ----------------
+  // ---------------- propulsion: coaxial contra-rotating brushless pair on the gimbal ----------------
+  // Motor A (top) pushes prop A down, motor B (bottom) pushes prop B down from below; props sit 14 mm apart.
   const motorPivot = new THREE.Group();
-  let flame;
+  let propUp, propDn;
   {
     const g = new THREE.Group();
     motorPivot.position.set(0, gy, 0);
-    const t = S.motorTube;
-    const yc = t.y0 + t.length / 2 - gy;
-    motorPivot.add(cyl(t.od / 2, t.od / 2, t.length, MAT.tube, 40, 0, yc, 0));
-    const caseR = t.id / 2 - 0.2;
-    motorPivot.add(cyl(caseR, caseR, 22, MAT.alu, 40, 0, t.y0 - gy - 4, 0));       // visible motor case end
-    motorPivot.add(cyl(caseR - 4, caseR, 10, MAT.black, 40, 0, t.y0 - gy - 18, 0)); // nozzle
-    motorPivot.add(cyl(t.od / 2 + 3, t.od / 2 + 3, 5, MAT.steel, 40, 0, t.y0 + 4 - gy, 0)); // retainer
-    flame = new THREE.Mesh(
-      new THREE.ConeGeometry(16, 150, 20, 1, true),
-      new THREE.MeshBasicMaterial({ color: 0xff8a2a, transparent: true, opacity: 0.75, blending: THREE.AdditiveBlending, depthWrite: false })
-    );
-    flame.rotation.x = PI;
-    flame.position.set(0, t.y0 - gy - 18 - 75, 0);
-    flame.visible = false;
-    motorPivot.add(flame);
+    const rel = (y) => y - gy;
+    const PR = 114;                                            // 9 inch props, radius in mm
+    // mount tube through the inner collar and the upper motor plate
+    motorPivot.add(cyl(21, 21, 58, MAT.carbon, 40, 0, rel(152), 0));
+    motorPivot.add(cyl(26, 26, 4, MAT.printDk, 40, 0, rel(122), 0));
+    // motor A: bell, red stator ring, shaft down
+    motorPivot.add(cyl(17, 17, 18, MAT.black, 40, 0, rel(112), 0));
+    motorPivot.add(cyl(17.5, 17.5, 2, MAT.red, 40, 0, rel(104), 0));
+    motorPivot.add(cyl(2, 2, 14, MAT.steel, 12, 0, rel(101), 0));
+    // motor B: mirrored below, shaft up
+    motorPivot.add(cyl(17, 17, 18, MAT.black, 40, 0, rel(68), 0));
+    motorPivot.add(cyl(17.5, 17.5, 2, MAT.red, 40, 0, rel(76), 0));
+    motorPivot.add(cyl(2, 2, 14, MAT.steel, 12, 0, rel(81), 0));
+    motorPivot.add(cyl(26, 26, 4, MAT.printDk, 40, 0, rel(56), 0));
+    // cage: three arms over prop A, three struts outside the prop disc, three arms under motor B, guard ring
+    for (let i = 0; i < 3; i++) {
+      const a = (30 + i * 120) * DEG, c = Math.cos(a), s = Math.sin(a);
+      const rr = PR + 9;
+      motorPivot.add(strut([c * 24, rel(123), s * 24], [c * rr, rel(123), s * rr], 2.6, MAT.printDk));
+      motorPivot.add(strut([c * rr, rel(123), s * rr], [c * rr, rel(56), s * rr], 2.6, MAT.printDk));
+      motorPivot.add(strut([c * rr, rel(56), s * rr], [c * 24, rel(56), s * 24], 2.6, MAT.printDk));
+    }
+    const guard = torus(PR + 9, 1.8, MAT.printDk, 96);
+    guard.position.y = rel(91);
+    motorPivot.add(guard);
+    // ESCs on the tube, motor wires
+    for (const sx of [-1, 1]) {
+      motorPivot.add(box(30, 7, 14, MAT.black, sx * 31, rel(150), 0));
+      motorPivot.add(box(18, 1.2, 10, MAT.pcb, sx * 31, rel(154.5), 0));
+    }
+    const wire = (pts, col) => motorPivot.add(tubeAlong(pts.map(([x, y, z]) => [x, rel(y), z]), 0.9, new THREE.MeshStandardMaterial({ color: col, roughness: 0.6 })));
+    wire([[15, 146, 6], [20, 124, 12], [14, 114, 10]], 0x2a6ee8);
+    wire([[-15, 146, 6], [-24, 120, 24], [-30, 90, 30], [-20, 70, 14]], 0xe8b400);
+    // props: two blades each, opposite pitch
+    const makeProp = (y, col, dir) => {
+      const p = new THREE.Group();
+      p.position.y = rel(y);
+      for (let i = 0; i < 2; i++) {
+        const b = new THREE.Mesh(new THREE.BoxGeometry(PR - 6, 1.8, 17), col);
+        b.castShadow = true;
+        b.position.x = (PR / 2 + 3) * (i ? -1 : 1);
+        b.rotation.x = (i ? -1 : 1) * dir * 14 * DEG;
+        p.add(b);
+      }
+      p.add(cyl(7, 7, 6, MAT.black, 24));
+      return p;
+    };
+    propUp = makeProp(98, MAT.orange, 1);
+    propDn = makeProp(84, MAT.white, -1);
+    motorPivot.add(propUp, propDn);
     g.add(motorPivot);
     parts.add('motor', g, {
-      name: 'Motor tube + 29 mm solid motor', category: 'propulsion', cad: '(motor tube and motor)', explode: [0, -230, 0],
-      desc: 'Certified 29 mm composite reload in a 32 mm G10/phenolic tube clamped by the gimbal collar. See docs/design-choices.md.',
+      name: 'Coaxial brushless pair + props', category: 'propulsion', cad: '(motor assembly)', explode: [0, -210, 0],
+      desc: 'Two 3110-class brushless motors (≈ 900 KV) back to back with 9″ contra-rotating props, so their reaction torques cancel. Mounted in the gimbal collar; differential throttle gives control about the vertical axis. 6S supply, two 40 A ESCs.',
     });
   }
 
@@ -336,7 +371,7 @@ export function buildRocket() {
     }
     parts.add('landing-gear', g, {
       name: 'Landing gear (×4)', category: 'structure', cad: 'landing-gear:1', explode: [0, -150, 0],
-      desc: 'Four splayed legs (Ø8, 34° from vertical, 470 mm footprint) with rubber pads and a brace to the gimbal mount.',
+      desc: 'Four splayed legs (Ø8, 34° from vertical, 510 mm footprint) with rubber pads and a brace to the gimbal mount.',
     });
   }
 
@@ -345,16 +380,16 @@ export function buildRocket() {
     const g = new THREE.Group();
     g.add(cyl(130, 130, 8, MAT.slate, 64, 0, 4, 0));
     g.add(cyl(11, 11, 34, MAT.steel, 20, 0, 25, 0));
-    g.add(cyl(46, 8, 14, MAT.printDk, 32, 0, 48, 0)); // flame deflector cone
+    g.add(cyl(34, 34, 5, MAT.printDk, 40, 0, 40, 0)); // cradle plate
     g.add(box(48, 12, 18, MAT.black, 0, 12, 0));      // load cell
     parts.add('test-stand', g, {
-      name: 'Test stand (thrust + deflector)', category: 'test', cad: 'test-stand:1', explode: [0, 0, 0],
-      desc: 'Steel/aluminium base with a flame deflector and load cell. Used for static fires and gimbal sweeps with the rocket restrained.',
+      name: 'Test stand (thrust + load cell)', category: 'test', cad: 'test-stand:1', explode: [0, 0, 0],
+      desc: 'Base with a centre column, load cell and cradle plate. Used for static thrust tests and gimbal sweeps with the rocket restrained.',
     });
   }
 
   // ---------------- runtime ----------------
-  const state = { x: 0, z: 0, flame: false };
+  const state = { x: 0, z: 0, throttle: 0 };
   const qx = new THREE.Quaternion(), qz = new THREE.Quaternion();
 
   /** Set gimbal angles in degrees (x: axis 1, z: axis 2). Clamped to mechanical limits. */
@@ -375,14 +410,13 @@ export function buildRocket() {
     pinionB.rotation.z = -z * GEAR_RATIO;
     return { servo1Deg: -state.x * GEAR_RATIO, servo2Deg: -state.z * GEAR_RATIO };
   }
-  function setFlame(on) { state.flame = on; flame.visible = on; }
-  function update(dt, t) {
-    if (state.flame) {
-      const k = 1 + 0.12 * Math.sin(t * 60) + 0.06 * Math.sin(t * 131);
-      flame.scale.set(1, k, 1);
-    }
+  /** Throttle 0..1 (visual only): spins the two props in opposite directions. */
+  function setThrottle(t) { state.throttle = t; }
+  function update(dt) {
+    propUp.rotation.y += dt * state.throttle * 70;
+    propDn.rotation.y -= dt * state.throttle * 70;
   }
   setGimbal(0, 0);
 
-  return { root, parts, state, setGimbal, setFlame, update, spec: S, id: 'rocket' };
+  return { root, parts, state, setGimbal, setThrottle, update, spec: S, id: 'rocket' };
 }

@@ -10,7 +10,7 @@ Printed parts are **structure**, not decoration. Print them well, inspect them, 
 | **PA-CF / PA12-CF (nylon + carbon)** | Rocket landing frame, gimbal parts | Stiff, heat-resistant to ≈ 120 °C+. Dry the filament; print with hardened nozzle |
 | **TPU 95A** | Monocopter legs and foot caps (optional) | Absorbs landing shocks |
 | **PLA** | Test fits and jigs only | Creeps and softens in a hot car. Do not use on flight hardware |
-| **Aluminium 6061 (machined)** | Gimbal ring option, heat shield disc | Better thermal behaviour; use for the first static fires if available |
+| **Aluminium 6061 (machined)** | Gimbal ring option | Stiffer and wear-resistant; an option if printed gimbal parts show wear |
 
 ## Baseline print settings
 
@@ -51,13 +51,13 @@ Filament: ≈ 105 g (BOM F-01). Print time: 8-10 h total on a 0.4 mm nozzle.
 | Landing frame: 133 mm diamond with 4 corner hinge lugs | 1 | PA-CF | flat | Heat and impact loads |
 | Gimbal fixed mount | 1 | PA-CF | flat | Four rod bosses |
 | Gimbal outer ring | 1 | PA-CF or Al | flat | Ø60 mm ring with 4 pin bosses |
-| Gimbal inner collar | 1 | PA-CF or Al | vertical | Grips Ø32 mm tube |
+| Gimbal inner collar | 1 | PA-CF or Al | vertical | Grips the Ø42 mm mount tube |
 | Gear sectors 36T, module 1 | 2 | PA12 or machined acetal | flat | Check backlash. Printed gears wear; keep spares |
 | Pinions 18T, module 1 | 2 | Printed PA or bought metal | flat | Match the servo spline; metal pinions preferred |
 | Servo brackets | 2 | PA-CF | flat | |
 | Leg hinges and brackets | 4 | PA-CF | flat | |
 | Battery straps tabs / avionics standoffs | misc | PETG | flat | |
-| Heat shield | 1 | 1.5 mm aluminium cut | n/a | Not printed |
+| Motor cage plates (upper and lower) + 3 struts + guard ring segments | 1 set | PA-CF or PETG | flat | Prop radius 114 mm, cage radius 123 mm |
 
 Filament: ≈ 180 g. The model parameters for every dimension are in `src/data/spec.js`.
 
