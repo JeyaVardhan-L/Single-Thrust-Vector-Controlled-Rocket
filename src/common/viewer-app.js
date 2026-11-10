@@ -35,7 +35,9 @@ export function mountViewer({ model: id, stageEl, leftEl, rightEl }) {
       <button id="xray">X-ray others</button>
       <button id="spin">Turntable</button>
       <button id="reset">Reset camera</button>
-    </div>`;
+    </div>
+    <h3>Quick views</h3>
+    <div class="btn-row" id="views"></div>`;
   const ul = $('#plist', leftEl);
   for (const p of list) {
     const li = document.createElement('li');
@@ -62,6 +64,7 @@ export function mountViewer({ model: id, stageEl, leftEl, rightEl }) {
       ? `<h4>${p.name}</h4><div>${p.desc}</div><div class="meta">Category: ${p.category}${p.cad ? ` · CAD: <code>${p.cad}</code>` : ''} · id: <code>${p.id}</code></div>`
       : '<h4>Nothing selected</h4><div>Click a part in the list or in the 3D view.</div>';
     applyXray();
+    if (pid && !shot) focusPart(pid);
   }
   function applyXray() {
     for (const p of list) m.parts.setGhost(p.id, xray && selected && p.id !== selected);
@@ -77,6 +80,35 @@ export function mountViewer({ model: id, stageEl, leftEl, rightEl }) {
   $('#spin', leftEl).addEventListener('click', (e) => { spin = !spin; e.target.classList.toggle('on', spin); stage.controls.autoRotate = spin; stage.controls.autoRotateSpeed = 1.6; });
   const home = { pos: stage.camera.position.toArray(), tgt: stage.controls.target.toArray() };
   $('#reset', leftEl).addEventListener('click', () => stage.setView(home.pos, home.tgt));
+
+  // smooth camera moves: focus a part, or jump to a preset view (the camera is free: pan, orbit below the ground, zoom to cursor)
+  let goal = null;
+  stage.controls.addEventListener('start', () => { goal = null; });
+  stage.onTick(() => {
+    if (!goal) return;
+    stage.controls.target.lerp(goal.t, 0.14);
+    stage.camera.position.lerp(goal.pos, 0.14);
+    if (stage.camera.position.distanceTo(goal.pos) < 0.6 && stage.controls.target.distanceTo(goal.t) < 0.6) goal = null;
+  });
+  const V3 = stage.THREE.Vector3;
+  function focusPart(pid) {
+    const p = m.parts.get(pid); if (!p) return;
+    const box = new stage.THREE.Box3().setFromObject(p.group);
+    if (box.isEmpty()) return;
+    const c = box.getCenter(new V3()), size = box.getSize(new V3()).length();
+    const dir = stage.camera.position.clone().sub(stage.controls.target).normalize();
+    goal = { t: c, pos: c.clone().addScaledVector(dir, Math.max(size * 1.9, 110)) };
+  }
+  function viewOf(pid, dirVec, dist) {
+    const p = m.parts.get(pid); const box = new stage.THREE.Box3().setFromObject(p ? p.group : m.root);
+    const c = box.getCenter(new V3());
+    goal = { t: c, pos: c.clone().add(new V3(...dirVec).normalize().multiplyScalar(dist || box.getSize(new V3()).length() * 1.9)) };
+  }
+  const views = isRocket
+    ? [['Overview', () => { goal = { t: new V3(...home.tgt), pos: new V3(...home.pos) }; }], ['Gimbal', () => viewOf('tvc', [1, 0.5, 1.1], 330)], ['Motors', () => viewOf('motor', [1, 0.35, 1.1], 520)], ['Underside', () => viewOf('motor', [0.9, -0.55, 1], 650)], ['Stack', () => viewOf('pcb-frame', [1, 0.4, 1.1], 700)]]
+    : [['Overview', () => { goal = { t: new V3(...home.tgt), pos: new V3(...home.pos) }; }], ['Vanes', () => viewOf('vanes', [1, 0.5, 1.1], 330)], ['Underside', () => viewOf('vanes', [0.9, -0.55, 1], 480)], ['Top', () => viewOf('battery', [1, 0.6, 1.1], 330)]];
+  const vbox = $('#views', leftEl);
+  views.forEach(([label, fn]) => { const b = document.createElement('button'); b.textContent = label; b.onclick = fn; vbox.appendChild(b); });
 
   // click picking
   const ray = new stage.THREE.Raycaster(); const mouse = new stage.THREE.Vector2();

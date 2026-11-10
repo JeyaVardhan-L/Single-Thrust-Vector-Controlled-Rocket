@@ -42,8 +42,11 @@ export function createStage(container, opts = {}) {
   controls.target.set(...target);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.maxPolarAngle = Math.PI * 0.495;
-  controls.minDistance = 120;
+  controls.maxPolarAngle = Math.PI * 0.985;
+  controls.screenSpacePanning = true;
+  controls.zoomToCursor = true;
+  controls.panSpeed = 1.2;
+  controls.minDistance = 25;
   controls.maxDistance = 3500;
   controls.update();
 

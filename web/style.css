@@ -231,3 +231,9 @@ body.shot .topbar, body.shot .side, body.shot .hint, body.shot .badge { display:
 body.shot .app, body.shot .app.two { display: block; }
 body.shot .stage { height: 100vh; }
 .wizard .badge b { font-size: 24px; }
+
+.hero-row { display: grid; grid-template-columns: 1.05fr .95fr; gap: 24px; align-items: center; padding-right: 36px; }
+.hero-row .display { font-size: clamp(64px, 11.2vw, 150px); margin-bottom: 28px; }
+.hero-row .iso-hero { height: min(84vh, 760px); min-height: 480px; }
+.hero { padding-bottom: 48px; }
+@media (max-width: 1100px) { .hero-row { grid-template-columns: 1fr; padding-right: 0; } .hero-row .iso-hero { height: 440px; min-height: 0; } }

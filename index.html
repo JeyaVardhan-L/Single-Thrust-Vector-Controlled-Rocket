@@ -23,21 +23,19 @@
 </header>
 
 <section class="band hero">
-  <div class="in">
-    <h1 class="display">TVC<br>Rocket</h1>
-    <div class="side-label">Open build guide</div>
-    <div class="hero-grid">
-      <div>
-        <div class="mono">RK-1 · Phase 2 · electric thrust-vector control</div>
-        <p class="lede">Two brushless motors, steered by servos through a geared two-axis gimbal. Build it from the printed parts to the first tethered hover, after proving the electronics on a vane-controlled monocopter.</p>
-        <div class="actions">
-          <a class="cta" href="web/assembly.html?model=rocket">Start building<i>/</i></a>
-          <a class="btn" href="web/rocket.html">Open the 3D model</a>
-          <a class="btn" href="web/doc.html?p=docs/README.md">Read the docs</a>
-        </div>
+  <div class="in hero-row">
+    <div class="hero-copy">
+      <h1 class="display">TVC<br>Rocket</h1>
+      <div class="mono">RK-1 · Phase 2 · electric thrust-vector control</div>
+      <p class="lede">Two brushless motors, steered by servos through a geared two-axis gimbal. Build it from the printed parts to the first tethered hover, after proving the electronics on a vane-controlled monocopter.</p>
+      <div class="actions">
+        <a class="cta" href="web/assembly.html?model=rocket">Start building<i>/</i></a>
+        <a class="btn" href="web/rocket.html">Open the 3D model</a>
+        <a class="btn" href="web/doc.html?p=docs/README.md">Read the docs</a>
       </div>
-      <div class="iso-hero" id="hero"></div>
     </div>
+    <div class="iso-hero" id="hero"></div>
+    <div class="side-label">Open build guide</div>
   </div>
 </section>
 
@@ -122,6 +120,7 @@
 
 <script type="module">
 import { createIsoStage } from './src/common/iso.js';
+import { setQuality } from './src/common/kit.js';
 import { buildRocket } from './src/models/rocket.js';
 import { buildMonocopter } from './src/models/monocopter.js';
 
@@ -129,18 +128,19 @@ document.querySelectorAll('.acc-item > button').forEach((b) => b.addEventListene
   const it = b.parentElement; const open = it.classList.toggle('open'); b.querySelector('i').textContent = open ? '×' : '+';
 }));
 
+setQuality(0.5);
 const rocket = () => { const m = buildRocket(); m.setGimbal(4, -3); m.setThrottle(0.4); return m; };
 let ready = 0;
 const mark = () => { if (++ready === 4) window.__ready = true; };
-createIsoStage(document.getElementById('hero'), rocket(), { azimuth: 38, spin: 3, zoom: 1.35, outline: 1.2, hide: ['test-stand'], target: [0, 275, 0] });
+createIsoStage(document.getElementById('hero'), rocket(), { azimuth: 38, spin: 4, fps: 24, zoom: 1.6, outline: 0.9, hide: ['test-stand'], target: [0, 275, 0] });
 mark();
 const make = (el, kind) => {
-  if (kind === 'rocket') return createIsoStage(el, rocket(), { azimuth: 40, zoom: 1.6, hide: ['test-stand'], target: [0, 275, 0] });
+  if (kind === 'rocket') return createIsoStage(el, rocket(), { azimuth: 40, zoom: 1.6, isStatic: true, maxDpr: 1.5, hide: ['test-stand'], target: [0, 275, 0] });
   if (kind === 'monocopter') {
     const m = buildMonocopter(); m.setThrottle(0.3); m.setControl({ roll: 0.4, pitch: -0.25, yaw: 0.1 });
-    return createIsoStage(el, m, { azimuth: 40, zoom: 1.45, target: [0, 135, 0] });
+    return createIsoStage(el, m, { azimuth: 40, zoom: 1.45, isStatic: true, maxDpr: 1.5, target: [0, 135, 0] });
   }
-  return createIsoStage(el, rocket(), { azimuth: 40, explode: 0.75, zoom: 1.5, hide: ['test-stand'], target: [0, 270, 0] });
+  return createIsoStage(el, rocket(), { azimuth: 40, explode: 0.75, zoom: 1.5, isStatic: true, maxDpr: 1.5, hide: ['test-stand'], target: [0, 270, 0] });
 };
 document.querySelectorAll('[data-iso]').forEach((el) => { make(el, el.dataset.iso); mark(); });
 </script>

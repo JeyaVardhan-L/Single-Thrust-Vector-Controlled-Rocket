@@ -21,11 +21,11 @@ export function createIsoStage(container, model, opts = {}) {
     ink = 0x000000, fill = 0xffffff, accent = 0x1925aa, sulfur = 0xd6d3cb,
     accentCats = ['actuation', 'propulsion'], sulfurCats = ['power'],
     visible = null, hide = [], explode = 0, azimuth = 45, spin = 0, zoom = 1, outline = 1.1, edgeAngle = 28,
-    bg = null, pad = 1.12,
+    bg = null, pad = 1.12, isStatic = false, fps = 24, maxDpr = 2,
   } = opts;
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: !!opts.preserve });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
   if (bg === null) renderer.setClearColor(0x000000, 0); else renderer.setClearColor(bg, 1);
   container.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
@@ -89,17 +89,25 @@ export function createIsoStage(container, model, opts = {}) {
   };
   fit();
   place(az);
-  window.addEventListener('resize', () => { fit(); renderer.render(scene, cam); });
 
-  let running = true, last = performance.now();
+  let running = true, last = performance.now(), inView = true;
+  const draw = () => renderer.render(scene, cam);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver((es) => { inView = es[0].isIntersecting; if (inView) draw(); }).observe(container);
+  }
+  window.addEventListener('resize', () => { fit(); draw(); });
+  draw();
   const tick = (now) => {
     if (!running) return;
-    const dt = Math.min((now - last) / 1000, 0.05); last = now;
+    requestAnimationFrame(tick);
+    if (isStatic || !inView || document.hidden) return;
+    const el = now - last;
+    if (el < 1000 / fps) return;
+    const dt = Math.min(el / 1000, 0.1); last = now;
     if (spin) { az += spin * dt; place(az); }
     if (model.update) model.update(dt, now / 1000);
-    renderer.render(scene, cam);
-    requestAnimationFrame(tick);
+    draw();
   };
-  requestAnimationFrame(tick);
+  if (!isStatic) requestAnimationFrame(tick);
   return { renderer, camera: cam, stop: () => { running = false; }, render: () => renderer.render(scene, cam) };
 }

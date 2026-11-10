@@ -21,27 +21,29 @@ export const MAT = {
   glow:    new THREE.MeshBasicMaterial({ color: 0xbfe6ff }),
 };
 
+let Q = 1;
+export const setQuality = (q) => { Q = q; };
 const shadowed = (m) => { m.castShadow = true; m.receiveShadow = true; return m; };
 
 export function box(w, h, d, mat = MAT.print, x = 0, y = 0, z = 0) {
   const r = Math.min(0.9, Math.min(w, h, d) / 2.4);
-  const m = shadowed(new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 3, r), mat));
+  const m = shadowed(new THREE.Mesh(new RoundedBoxGeometry(w, h, d, Q < 1 ? 1 : 3, r), mat));
   m.position.set(x, y, z);
   return m;
 }
 export function cyl(rTop, rBot, h, mat = MAT.print, seg = 32, x = 0, y = 0, z = 0) {
-  const sg = Math.max(seg, Math.max(rTop, rBot) > 8 ? 72 : 32);
+  const sg = Q < 1 ? Math.max(14, Math.min(seg, 28)) : Math.max(seg, Math.max(rTop, rBot) > 8 ? 72 : 32);
   const m = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBot, h, sg), mat));
   m.position.set(x, y, z);
   return m;
 }
 export function torus(R, r, mat = MAT.print, seg = 64) {
-  const m = shadowed(new THREE.Mesh(new THREE.TorusGeometry(R, r, 24, Math.max(seg, 128)), mat));
+  const m = shadowed(new THREE.Mesh(new THREE.TorusGeometry(R, r, Q < 1 ? 8 : 24, Q < 1 ? 64 : Math.max(seg, 128)), mat));
   m.rotation.x = Math.PI / 2; // lay flat (axis = Y)
   return m;
 }
 export function sphere(r, mat = MAT.print, x = 0, y = 0, z = 0) {
-  const m = shadowed(new THREE.Mesh(new THREE.SphereGeometry(r, 40, 24), mat));
+  const m = shadowed(new THREE.Mesh(new THREE.SphereGeometry(r, Q < 1 ? 14 : 40, Q < 1 ? 9 : 24), mat));
   m.position.set(x, y, z);
   return m;
 }
@@ -49,14 +51,14 @@ export function sphere(r, mat = MAT.print, x = 0, y = 0, z = 0) {
 export function strut(a, b, r = 2, mat = MAT.print, seg = 12) {
   const va = new THREE.Vector3(...a), vb = new THREE.Vector3(...b);
   const len = va.distanceTo(vb);
-  const m = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, Math.max(seg, 28)), mat));
+  const m = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, Q < 1 ? 12 : Math.max(seg, 28)), mat));
   m.position.copy(va).add(vb).multiplyScalar(0.5);
   m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), vb.clone().sub(va).normalize());
   return m;
 }
 export function tubeAlong(points, r = 3, mat = MAT.print) {
   const curve = new THREE.CatmullRomCurve3(points.map((p) => new THREE.Vector3(...p)));
-  return shadowed(new THREE.Mesh(new THREE.TubeGeometry(curve, 80, r, 20, false), mat));
+  return shadowed(new THREE.Mesh(new THREE.TubeGeometry(curve, Q < 1 ? 24 : 80, r, Q < 1 ? 8 : 20, false), mat));
 }
 
 // Involute-ish spur gear (flat teeth) as an extruded shape. Axis = Z of the shape; thickness = t.
