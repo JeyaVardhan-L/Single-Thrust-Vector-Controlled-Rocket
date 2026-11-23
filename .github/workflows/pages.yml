@@ -29,7 +29,7 @@ jobs:
           mkdir -p _site/firmware/monocopter
           cp -r firmware/monocopter/web _site/firmware/monocopter/
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
       - id: deployment
