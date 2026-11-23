@@ -1,110 +1,85 @@
 # Phase 1 build guide: MC-1 monocopter
 
-Interactive version with the current step highlighted on the 3D model: **[web/assembly.html?model=monocopter](../../web/assembly.html?model=monocopter)**. This document has the long form and the checks.
+Interactive version with each step highlighted on the model: **[web/assembly.html?model=monocopter](../../web/assembly.html?model=monocopter)**.
 
-![Assembly wizard](../../assets/screenshots/ui-assembly-monocopter.png)
+**Before you start:** read [safety](../safety.md). **The propeller stays off** until the thrust stand (Gate 1): keep it in a labelled bag. Disconnect the motor leads from the ESC whenever you work on software.
 
-**Before you start:** read [safety](../safety.md). Order parts from the [BOM](02-bom.md). Tools: hobby soldering iron (and a heat-set insert tip), hex drivers 1.5/2/2.5 mm, small side cutters, calipers, multimeter, hot-air gun or lighter for heat-shrink, kitchen scale (0.1 g), prop balancer, 3 A current-limited bench supply (or smoke stopper), laptop with PlatformIO.
+Tools: M3 and M2 hex drivers, soldering iron (inserts and electronics), side cutters, small files, a 3.2 mm drill, a 2 mm and a 1.5 mm drill, epoxy (5 minute and 30 minute), thread-lock, multimeter, a scale, a protractor or phone angle app, a prop balancer.
 
-Time budget: print ≈ 10 h, build ≈ 8 h, bench tests ≈ 4 h.
+All printed parts are in [`hardware/cad/stl/monocopter/`](../../hardware/cad/stl/monocopter/); the list with sizes and hardware counts is [cad-parts](../cad-parts.md). A 220 × 220 mm bed is enough.
 
----
-
-## Step 1: Print and prepare the structure
+## Step 1: Print and prepare
 
 | Do | Check |
 |---|---|
-| Print the parts in the [printing guide](../printing.md) (PETG, 0.2 mm, 4 perimeters, 30 % gyroid; vanes 100 %) | Part weights are within 10 % of the BOM |
-| Remove supports, deburr every hole with a 3 mm drill turned by hand | M3 screw enters each hole freely |
-| Install M3 brass heat-set inserts in the hub plate (motor mount ×4, FC standoffs ×4), deck ring (servo mounts) and ring (leg mounts), iron at ≈ 220 °C, press straight until flush | Inserts flush and square, no melted blobs inside the thread |
-| Dry-fit the ring segments (if split) with M3 and pins | Ring lies flat on a table (≤ 1 mm warp) |
+| Print every part (PETG; the feet in TPU 95A; the vanes at 100 % infill, the rest 4 walls and 30 % gyroid). Orientation is already in the files | Parts are flat, no layer splits |
+| Press M3 heat-set inserts: **7 in each post** (1 in the top end, 2 on the inner face, 4 on the outer face), **4 in each servo cradle** (2 per side) | Inserts flush and square |
+| Drill the vane spines, the horn adapters (blind bore) and the hub bores with a 3.2 mm drill if tight; the Ø3 rods must slide without force | A rod slides through the full vane spine |
+| Cut four Ø3 rods to 116 mm and deburr | Straight, equal length ±0.5 mm |
+| Fit a servo in a cradle window (no screws) | The body slides in; the ears sit flat on the pocket floor |
 
-## Step 2: Legs and vane deck
+## Step 2: Hub, stators and posts (`stators`, `posts`)
 
-1. Fix the three legs to the guard ring at 120° spacing (the model puts them at 50°, 170°, 290° so they clear the servo positions). Fit the rubber foot caps.
-2. Mount the vane deck ring 113 mm below the guard ring using the leg brackets (deck at 92 mm, guard ring at 205 mm above the ground plane).
-3. Press the four Ø2 mm steel hinge shafts (110 mm long) through the deck: each shaft passes through the centre hub and the ring.
+1. Slide the inner end of each stator into a slot of the lower hub. Fit two M3 × 25 screws through the hub wall and the stator, with the nuts in the pockets on the far side. The stators run on the four diagonals.
+2. Stand the four posts against the stator flanges (post inner face to flange) and fit two M3 × 10 screws per post from the inside into the post inserts.
 
-**Check:** shafts spin freely under a fingertip; shafts are coplanar (use a flat table as reference); frame stands level on its three feet (< 2 mm).
+**Check:** the hub is centred; the posts are parallel; opposite posts are 290 mm apart centre to centre (2 × 145); the hub top is about 74 mm below the post tops (hub top at z = 16.5, post top at z = 90).
 
-## Step 3: Servos and control vanes
+## Step 3: Cradles and rings (`rings`)
 
-1. **Centre each servo electrically first**: connect to the servo tester or flight computer at 1500 µs. Fit the horn so it points exactly radial/vertical per the CAD. Do not centre by feel.
-2. Mount each servo on the **outside** of the deck ring (X pattern: **front, right, rear, left**). M2 screws into the inserts.
-3. Clamp each vane on its hinge shaft with an M2 grub screw so the vane plate is vertical when the servo is centred (use a small square).
-4. Connect the servo horn to the hinge shaft end so that servo rotation = vane rotation 1:1 (direct drive).
-5. **Label every servo lead:** `V1 front`, `V2 right`, `V3 rear`, `V4 left`. The mixer relies on this order.
+1. Offer each servo cradle to its place on a vane axis (between two posts, window facing the centre, ear pocket facing out) and hold it while you fit the two lower half-arcs on its sides: the tabs go on the **outer** face of the cradle, M3 × 10 into the cradle inserts. Use four half-arcs as printed and four turned over (the mirror image).
+2. Fit the other end of each half-arc to the post (tab on the post's outer face, M3 × 10 into the post inserts).
+3. Fit the four guard arcs at the upper insert height (M3 × 10, tab on the post outer face).
 
-**Check:** vane swings ±25° without hitting the fins; no slop between horn and shaft; no binding; all four vanes are the same angle when centred.
+**Check:** both rings are round and level; the cradle windows face the hub exactly; the lower ring is at the height of the hub's vane bores (z = 0).
 
-> **Why the label:** a wrong vane order or mirrored servo is the most common cause of a first-flight flip. The bench sign checks in [06-bench-tests](06-bench-tests.md) catch it, but labelling prevents it.
+## Step 4: Vanes (`vanes`)
 
-## Step 4: Motor and propeller (propeller stays OFF)
+1. Epoxy a rod through each vane spine so that 14 mm sticks out of the inner end and 9 mm out of the outer end. Epoxy the outer rod end 5 mm deep into a horn adapter (counterbores facing inward), leaving a 4 mm gap between the spine and the adapter. Keep the vane plate vertical while it cures.
+2. Lower each vane assembly **from the top** into the frame, rod tip toward its hub bore. Slide it inward until the rod bottoms in the hub bore. The vane must swing freely: ±25° without touching a stator, the hub or the ring.
 
-1. Mount the 2306 motor under the hub plate, shaft **down**, with M3 screws (short! see motor datasheet for maximum screw length) and thread-lock.
-2. Spin the bell by hand: no rubbing, no wobble.
-3. Do **not** fit the propeller yet. Put it in a labelled bag. Orientation rule for later: the prop sits **below** the motor and must blow air **downward, away from the motor**, so use a pusher-type prop that matches the motor direction (a standard prop mounted this way pulls air the wrong way and gives little thrust).
-4. Balance the propeller on a balancer: remove material from the heavy blade (light sanding of the back face), or add a small piece of tape to the light one, until it stays horizontal.
+**Check:** the vane hangs vertically; the adapter sits 7 mm in front of the cradle plate; no binding.
 
-**Check:** motor wires routed away from the bell; screws do not touch the windings (spin test).
+## Step 5: Servos (`servos`)
 
-## Step 5: ESC, power wiring and battery tray
+1. Centre each servo electrically (1500 µs from a servo tester or the firmware) **before** fitting the horn. Fit a round horn on the spline in the position that puts the vane closest to vertical (the spline has 25 teeth, 14.4 deg per tooth; trim the rest with `trimDeg` in the firmware). Choose the horn arms that line up with the four adapter holes.
+2. Slide each servo with its horn into its cradle window from the outside, so that the horn meets the adapter. Fit the two M2 × 6 self-tapping ear screws.
+3. From inside the frame, fit four M2 × 10 screws through each adapter (heads in the counterbores) into the horn arms.
+4. Label the servo leads **1 front, 2 right, 3 rear, 4 left**. The mixer depends on this order.
 
-1. Solder the XT60 lead (14 AWG silicone) to the ESC power pads, with a 1000 µF 35 V low-ESR capacitor across the pads as close as possible. Insulate with heat-shrink.
-2. Connect three motor wires to the ESC (any order). Direction is fixed later in the ESC configurator.
-3. Install the **arming loop** (XT30 pair or anti-spark switch) in series with the battery positive lead.
-4. Solder the two BECs to the arming-loop side of the supply: 6 V / 5 A for servos, 5 V / 3 A for logic. Heat-shrink everything.
-5. Mount the ESC on its pad on the spoke (Velcro + zip tie).
+**Check:** vane centred = servo centred (vane vertical); no slop between horn and adapter; each vane moves ±25° smoothly by hand with the servo unpowered.
 
-**Check (no battery):** with a multimeter, battery+ to battery− reads open; no continuity from battery− to either BEC output; BEC outputs to ground are open.
+> The wrong vane order is the most common cause of a first-flight flip. Label the leads and do the sign checks in [06-bench-tests](06-bench-tests.md).
 
-**Check (current-limited supply, 12 V, 2 A limit):** insert the arming loop. Idle current < 100 mA, BEC outputs read 5.0 ± 0.1 V and 6.0 ± 0.1 V. Remove the loop.
+## Step 6: Hub plate, arms and motor (`hub-plate`, `motor`)
 
-## Step 6: Flight-computer stack
+1. Fit the motor **upside down** under the hub plate: the base against the plate underside, shaft pointing **down**, four M3 × 8 screws with thread-lock from the top into the motor base (use the 16 × 16 or the 19 × 19 mm pattern, whichever your motor has). Pass the three motor wires up through the centre hole.
+2. Bolt the four arms to the plate stubs with two M3 × 8 screws and nuts each (the nuts sit in the hexagon holes of the arm). The arms run on the diagonals.
+3. Lower the plate with the motor onto the posts (the motor and its bell go between the guard ring and the plate) and fit one M3 × 10 screw per arm tip into the post top inserts.
 
-1. Solder female headers to the carrier board for the Teensy 4.1. Solder the IMU, barometer, INA226 and receiver headers per the pin map in [04-wiring](04-wiring.md).
-2. Install the Teensy last. Do not plug USB while the battery is connected.
-3. Mount the carrier on four M3 nylon standoffs with silicone grommets (vibration isolation). Orient the board so that the **IMU X axis points to the front (vane 1)** and the IMU Z axis points **down** (ICM-42688 pad marking: check the board silk, then confirm in the sign test).
-4. Wire the servo signals to pins 3, 4, 5, 6 in order V1, V2, V3, V4. ESC signal to pin 2. Servo power to the 6 V rail. Join grounds at the carrier board only.
-5. Route the receiver antenna along the ring, away from the motor wires.
+**Check:** the motor shaft is vertical and on the axis; the bell spins freely; the bottom of the motor bell is 8 mm above the prop plane; the prop would clear the guard ring by 13 mm.
 
-**Check:** continuity of every signal wire to its pin; no short between 5 V and 6 V rails; the IMU board sits horizontally and is **at or very near the vertical axis through the CG**.
+## Step 7: Battery, deck and electronics (`battery`, `electronics`)
 
-## Step 7: Battery, strap, CG
+1. Fit the four M3 × 39 standoffs on the hub plate (screws from underneath).
+2. Strap the battery to the hub plate with two Velcro straps through the slots (75 × 35 mm, centred, XT60 pointing out). Foam under the battery.
+3. Fix the electronics deck on the standoffs. Zip-tie the ESC, the two BECs, the ESP32-S3 board and the receiver to the deck through the slots (see the layout in [04-wiring](04-wiring.md)). The receiver antenna comes up through the 6.5 mm hole, vertical, away from the carbon and metal.
+4. Wire per [04-wiring](04-wiring.md). Route the servo leads along the posts with zip ties every 40 mm and leave a service loop at each servo.
 
-1. Fit the 4S pack on top of the stack with Velcro strap and foam.
-2. Hang the vehicle on two strings at the hub plate (or balance it on a rod across the ring at the hub). Slide the battery fore/aft until the vehicle hangs level.
-3. Weigh the finished vehicle without the propeller: update the BOM if it is more than 5 % off.
+**Check:** continuity battery+ to battery− reads open; no shorts between rails; first power-up on a current-limited supply or a smoke stopper, idle current < 0.2 A.
 
-**Check:** CG within ±3 mm of the vertical thrust axis; the battery cannot move under a 3 g shake (shake test by hand).
+## Step 8: Balance (CG check)
 
-## Step 8: Firmware flash
+1. Weigh the vehicle without the propeller. Compare with the BOM (≈ 813 g without the 12 g prop).
+2. Hang the vehicle on two strings from opposite sides of the hub plate: it must hang level. Move the battery a few mm along its strap until it does.
+3. The CG height is about 56 mm above the vane axes (the prop plane). Record the measured value in the test log.
 
-```bash
-cd firmware/monocopter
-pio run -t upload
-pio device monitor
-```
+**Check:** the CG is within ±3 mm of the axis; the battery cannot slide under a 3 g shake.
 
-Expected: gyro-calibration message, then console lines `armed=0 rc=0 roll=... pitch=... thr=...` at 10 Hz. A fast-blinking LED means the IMU was not found (check wiring and chip select). Continue with [05-firmware-and-control](05-firmware-and-control.md) and [06-bench-tests](06-bench-tests.md).
+## Step 9: Firmware and bench checks (no propeller)
 
-## Step 9: ESC and receiver set-up (still no propeller)
+Flash [`firmware/monocopter`](../../firmware/monocopter/) ([05-firmware-and-control](05-firmware-and-control.md)), then run the **Gate 0** tests in [06-bench-tests](06-bench-tests.md): channels, vane order and signs, arming rules, failsafes, servo power, battery voltage.
 
-1. ESC: connect to the ESC configurator with a programmer or passthrough; set motor direction, enable PWM input at 400 Hz-compatible mode, set low throttle calibration (1000 µs = stop, 2000 µs = full).
-2. Receiver: bind the ELRS receiver; set channels AETR; AUX1 (channel 5) as the arm switch; a **throttle-cut** switch on AUX2 as a second kill (optional but recommended).
-3. Verify channel values on the serial console with the transmitter sticks.
+## Step 10: Propeller, thrust stand and tether
 
-## Step 10: Gates
-
-Proceed to the bench tests: Gate 0, then Gate 1 (propeller fitted for the first time **on the stand**), then Gate 2 (tethered hover).
-
-## Troubleshooting
-
-| Symptom | Likely cause |
-|---|---|
-| Fast LED blink on boot | IMU not detected: check CS pin 10, SPI wiring, 3.3 V |
-| `rc=0` always | Receiver not bound, TX/RX swapped, wrong baud (CRSF 420000) |
-| Servos twitch or reset the Teensy | Servo rail shares the logic regulator, ground loop, weak BEC |
-| Roll angle drifts slowly | Gyro not calibrated at rest; vibration; loosen mount |
-| Motor will not arm | Throttle > 5 % at arm time, tilt > 20°, or arm switch not above 1700 µs |
-| One vane moves the wrong way | Servo mirrored: set `VANE_SIGN[i] = -1` after confirming with the sign test |
+Fit the **propeller last**, through the open side between the lower ring and the guard ring: it is a 10 × 4.5 **pusher** type for the rotation direction of your motor, balanced on a prop balancer. Then follow Gate 1 (thrust stand, [06-bench-tests](06-bench-tests.md)) and Gate 2 (tethered flight, [07-tethered-flight-test](07-tethered-flight-test.md)).

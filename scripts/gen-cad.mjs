@@ -63,7 +63,7 @@ const HARDWARE = `
 | M3 × 20 bolt + M3 nylock nut | 2 | outer ring pivots (X axis) |
 | M3 × 16 bolt + M3 nylock nut | 2 | collar pivots (Y axis) |
 | M3 × 25 bolt + M3 nylock nut | 4 | leg hinges |
-| M3 × 12 screw + M3 nut | 12 | cage arms to the plate stubs (two per arm) |
+| M3 × 8 screw + M3 nut | 12 | cage arms to the plate stubs (two per arm) |
 | M3 × 10 screw | 16 | servo brackets 4, arm tips to struts 6, guard-arc tabs 6 |
 | M2 × 6 self-tapping screw | 8 | two servos, four per servo |
 | 683ZZ bearing (3 × 7 × 3) | 4 | two in the outer ring bosses, two in the collar bosses |
@@ -72,6 +72,23 @@ const HARDWARE = `
 | Carbon tube Ø42 (about 40 mm bore), 58 mm long | 1 | motor mount tube |
 | Wire Ø1.6 mm | 4 | leg braces, about 135 mm each before the hooks |
 `;
+
+const HARDWARE_MC = `
+## Hardware for the printed parts (MC-1)
+
+| Item | Qty | Used at |
+|---|---|---|
+| M3 heat-set insert (Ø4.2 hole, 5.7 mm) | 44 | posts 28 (1 top, 2 inner, 4 outer each), servo cradles 16 (4 each) |
+| M3 × 25 screw + M3 nut | 8 | stators to the lower hub (two per stator) |
+| M3 × 10 screw | 36 | posts to the stator flanges 8, lower half-arc tabs 16, guard-arc tabs 8, arm tips 4 |
+| M3 × 8 screw | 12 | arms to the hub plate stubs 8 (with M3 nuts), motor 4 |
+| M3 × 6 screw | 8 | the four 39 mm standoffs, both ends |
+| M3 × 39 mm standoff, female-female | 4 | hub plate to electronics deck |
+| M2 × 6 self-tapping screw | 8 | servo ears, two per servo |
+| M2 × 10 screw | 16 | horn adapters to the servo horns, four per vane |
+| Rod Ø3 × 116 mm | 4 | vane rods, epoxied into the vane and the horn adapter |
+| Round servo horn with four arms | 4 | supplied with the servos |
+`;
 const titles = { rocket: 'RK-1 rocket', monocopter: 'MC-1 monocopter' };
 for (const v of Object.keys(titles)) {
   const list = manifest.filter((p) => p.vehicle === v);
@@ -79,6 +96,6 @@ for (const v of Object.keys(titles)) {
   md += `\n## ${titles[v]}\n\n| Part (STL) | Qty | Size (mm) | Material | g solid | BOM | Notes |\n|---|---|---|---|---|---|---|\n${list.map(row).join('\n')}\n`;
   md += `\nWhole set printed solid: ${list.reduce((a, p) => a + p.qty * p.mass_solid_g, 0)} g (upper bound).\n`;
 }
-md += HARDWARE;
+md += HARDWARE + HARDWARE_MC;
 writeFileSync(join(root, 'docs/cad-parts.md'), md);
 console.log(`wrote ${manifest.length} STL files, hardware/cad/parts.json and docs/cad-parts.md`);

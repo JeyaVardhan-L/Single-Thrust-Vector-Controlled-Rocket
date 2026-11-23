@@ -20,14 +20,33 @@ The smallest bed that fits everything is **220 × 220 mm**. Settings, materials 
 | [servo-bracket-2](../hardware/cad/stl/rocket/servo-bracket-2.stl) | 1 | 36 × 32.5 × 11.1 | PA-CF (or PETG for a first set) | 5 | G-01 | Two M3 × 10 into the ring inserts; four M2 self-tap holes for the servo. |
 | [motor-plate-upper](../hardware/cad/stl/rocket/motor-plate-upper.stl) | 1 | 78.06 × 90.14 × 13 | PA-CF (or PETG for a first set) | 20 | M-05 | Ø42.3 socket for the carbon tube (epoxy + two M3 set screws). Motor pattern Ø19, four M3, reached through the tube bore. |
 | [motor-plate-lower](../hardware/cad/stl/rocket/motor-plate-lower.stl) | 1 | 78.06 × 90.14 × 5 | PA-CF (or PETG for a first set) | 14 | M-05 | Motor B stands on it; screws from below. |
-| [cage-arm-upper](../hardware/cad/stl/rocket/cage-arm-upper.stl) | 3 | 105 × 16 × 7.8 | PA-CF (or PETG for a first set) | 8 | M-05 | Half-lap onto the plate stub, two M3 × 12 with nuts; tip bolts to the strut. |
-| [cage-arm-lower](../hardware/cad/stl/rocket/cage-arm-lower.stl) | 3 | 105 × 16 × 7.8 | PA-CF (or PETG for a first set) | 8 | M-05 | Same as the upper arm, on the lower plate. |
+| [cage-arm-upper](../hardware/cad/stl/rocket/cage-arm-upper.stl) | 3 | 105 × 16 × 5 | PA-CF (or PETG for a first set) | 7 | M-05 | Half lap under the plate stub, two M3 × 8 with nuts in the hexagon holes; tip bolts to the strut. Underside is flat. |
+| [cage-arm-lower](../hardware/cad/stl/rocket/cage-arm-lower.stl) | 3 | 105 × 16 × 5 | PA-CF (or PETG for a first set) | 7 | M-05 | Same as the upper arm, on the lower plate. |
 | [cage-strut](../hardware/cad/stl/rocket/cage-strut.stl) | 3 | 7.5 × 14 × 60 | PA-CF (or PETG for a first set) | 7 | M-05 | M3 inserts in both ends (screws M3 × 10 through the arms) and two on the outer face for the guard-ring tabs. |
 | [guard-arc](../hardware/cad/stl/rocket/guard-arc.stl) | 3 | 195 × 125.98 × 10 | PETG | 9 | M-05 | Tabs screw onto the struts with M3 × 10. |
 | [leg-hinge](../hardware/cad/stl/rocket/leg-hinge.stl) | 4 | 41.5 × 15 × 12.6 | PA-CF (or PETG for a first set) | 8 | R-04 | Ø8.2 socket for the Ø8 carbon leg (epoxy), Ø3.2 pin bore. Tongue 12.6 mm sits between the frame lug ears. |
 | [leg-clip](../hardware/cad/stl/rocket/leg-clip.stl) | 4 | 27 × 18 × 10 | PETG | 3 | R-05 | Slides onto the leg, M3 grub screw; Ø2.2 eyelet for the Ø1.6 brace wire. |
 
-Whole set printed solid: 583 g (upper bound).
+Whole set printed solid: 577 g (upper bound).
+
+## MC-1 monocopter
+
+| Part (STL) | Qty | Size (mm) | Material | g solid | BOM | Notes |
+|---|---|---|---|---|---|---|
+| [mc-hub-plate](../hardware/cad/stl/monocopter/mc-hub-plate.stl) | 1 | 118.79 × 118.79 × 5 | PETG | 43 | F-01 | Motor pattern 16 x 16 and 19 x 19 (M3). Four strap slots for the battery, four standoff holes, four arm stubs. |
+| [mc-deck-plate](../hardware/cad/stl/monocopter/mc-deck-plate.stl) | 1 | 96 × 88 × 3 | PETG | 31 | F-01 | On four M3 x 39 mm standoffs above the battery, in the prop intake airflow. Zip-tie slots for the ESC, ESP32 board, receiver and BECs. |
+| [mc-arm](../hardware/cad/stl/monocopter/mc-arm.stl) | 4 | 95 × 16 × 5 | PETG | 6 | F-01 | Half lap under the plate stub, two M3 x 8 with nuts in the hexagon holes; tip screws into the post (M3 x 10). |
+| [mc-post](../hardware/cad/stl/monocopter/mc-post.stl) | 4 | 165 × 24 × 8 | PETG | 30 | F-01 | Eight M3 inserts: one in the top, two on the inner face (stator), four on the outer face (ring tabs). Prints on its side. |
+| [mc-servo-cradle](../hardware/cad/stl/monocopter/mc-servo-cradle.stl) | 4 | 22 × 64 × 9 | PETG | 12 | F-01 | 23 x 12 mm servo window, ear pocket, four M2 self-tap holes; two M3 inserts per side take the half-arc tabs. |
+| [mc-ring-half-arc](../hardware/cad/stl/monocopter/mc-ring-half-arc.stl) | 8 | 44.31 × 81.01 × 8 | PETG | 5 | F-01 | From a servo node to a post. Four are used as printed, four are turned over (mirror image). M3 x 10 at both ends. |
+| [mc-guard-arc](../hardware/cad/stl/monocopter/mc-guard-arc.stl) | 4 | 39.31 × 210.01 × 10 | PETG | 14 | F-01 | Ring around the prop plane, 13 mm outside the prop tips. M3 x 10 into the post inserts. |
+| [mc-hub-lower](../hardware/cad/stl/monocopter/mc-hub-lower.stl) | 1 | 44 × 44 × 24 | PETG | 32 | F-01 | Four Ø3.3 bores for the vane rods, four slots for the stators with M3 screws and nut pockets. |
+| [mc-stator](../hardware/cad/stl/monocopter/mc-stator.stl) | 4 | 127 × 40 × 18 | PETG | 18 | F-01 | Cancels most of the prop torque so the vanes keep their authority for control. Inner end in the hub slot, outer flange on the post (M3 x 10). |
+| [mc-vane](../hardware/cad/stl/monocopter/mc-vane.stl) | 6 | 93 × 55 × 6 | PETG | 18 | F-01 | Four fitted plus two spares. Epoxy a Ø3 x 116 mm rod through the spine. Print 100 % infill. |
+| [mc-horn-adapter](../hardware/cad/stl/monocopter/mc-horn-adapter.stl) | 4 | 20 × 20 × 6 | PETG | 2 | F-01 | Takes the outer end of the vane rod; four M2 x 10 from the inner face into the servo horn (counterbored heads). |
+| [mc-foot](../hardware/cad/stl/monocopter/mc-foot.stl) | 4 | 16 × 32 × 20 | TPU 95A | 8 | F-01 | Slips over the post bottom; absorbs landing shocks. |
+
+Whole set printed solid: 614 g (upper bound).
 
 ## Hardware for the printed parts (RK-1)
 
@@ -38,7 +57,7 @@ Whole set printed solid: 583 g (upper bound).
 | M3 × 20 bolt + M3 nylock nut | 2 | outer ring pivots (X axis) |
 | M3 × 16 bolt + M3 nylock nut | 2 | collar pivots (Y axis) |
 | M3 × 25 bolt + M3 nylock nut | 4 | leg hinges |
-| M3 × 12 screw + M3 nut | 12 | cage arms to the plate stubs (two per arm) |
+| M3 × 8 screw + M3 nut | 12 | cage arms to the plate stubs (two per arm) |
 | M3 × 10 screw | 16 | servo brackets 4, arm tips to struts 6, guard-arc tabs 6 |
 | M2 × 6 self-tapping screw | 8 | two servos, four per servo |
 | 683ZZ bearing (3 × 7 × 3) | 4 | two in the outer ring bosses, two in the collar bosses |
@@ -46,3 +65,18 @@ Whole set printed solid: 583 g (upper bound).
 | Carbon rod Ø8 × 260 mm | 4 | legs |
 | Carbon tube Ø42 (about 40 mm bore), 58 mm long | 1 | motor mount tube |
 | Wire Ø1.6 mm | 4 | leg braces, about 135 mm each before the hooks |
+
+## Hardware for the printed parts (MC-1)
+
+| Item | Qty | Used at |
+|---|---|---|
+| M3 heat-set insert (Ø4.2 hole, 5.7 mm) | 44 | posts 28 (1 top, 2 inner, 4 outer each), servo cradles 16 (4 each) |
+| M3 × 25 screw + M3 nut | 8 | stators to the lower hub (two per stator) |
+| M3 × 10 screw | 36 | posts to the stator flanges 8, lower half-arc tabs 16, guard-arc tabs 8, arm tips 4 |
+| M3 × 8 screw | 12 | arms to the hub plate stubs 8 (with M3 nuts), motor 4 |
+| M3 × 6 screw | 8 | the four 39 mm standoffs, both ends |
+| M3 × 39 mm standoff, female-female | 4 | hub plate to electronics deck |
+| M2 × 6 self-tapping screw | 8 | servo ears, two per servo |
+| M2 × 10 screw | 16 | horn adapters to the servo horns, four per vane |
+| Rod Ø3 × 116 mm | 4 | vane rods, epoxied into the vane and the horn adapter |
+| Round servo horn with four arms | 4 | supplied with the servos |

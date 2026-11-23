@@ -48,7 +48,7 @@ The 36-tooth sectors are part of the outer ring (axis 1) and the collar (axis 2)
 
 1. Epoxy the Ø42 tube into the socket of the upper motor plate and tighten its two M3 set screws. The tube bottom rests on the plate.
 2. Fit motor A under the upper plate (shaft down): four M3 from inside the tube bore (the Ø19 pattern is reached through the bore). Fit motor B on top of the lower plate (shaft up): four M3 from below.
-3. Fit the six cage arms: each arm laps under a stub of its plate and is held by two M3 × 12 screws and nuts. Join the arms with the three struts (M3 × 10 through each arm tip into the strut inserts), then clip the three guard arcs onto the struts with M3 × 10.
+3. Fit the six cage arms: each arm laps under a stub of its plate (the stub is the upper half of the joint) and is held by two M3 × 8 screws, with the nuts dropped into the hexagon holes in the arm. Join the arms with the three struts (M3 × 10 through each arm tip into the strut inserts), then clip the three guard arcs onto the struts with M3 × 10.
 4. Mount the two ESCs on the tube above the collar and solder motor leads (short, twisted). Fit 1000 µF capacitors at the power board.
 5. **Do not fit the propellers.** Balance them on a prop balancer now (sand the heavy blade or tape the light one) and put them in a labelled bag. Both props must blow air **downward**: the upper prop sits below its motor, so it is a **pusher** type; the lower prop sits above its motor, so it is a **standard** type. Order them with the rotation directions of step 6.
 6. Set motor directions in the ESC configurator with the props off: motor A turns the prop clockwise seen from above, motor B counter-clockwise.

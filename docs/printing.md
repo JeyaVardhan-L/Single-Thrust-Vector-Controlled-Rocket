@@ -29,19 +29,24 @@ Strength is strongest **along** the layer lines and weakest **between** layers. 
 
 ## Print list: MC-1 monocopter
 
+The STL files are in [`hardware/cad/stl/monocopter/`](../hardware/cad/stl/monocopter/), already in print orientation; the full table (quantity, size, material, mass, hardware) is [cad-parts](cad-parts.md). A 220 × 220 mm bed is enough. Summary:
+
 | Part | Qty | Material | Orientation | Notes |
 |---|---|---|---|---|
-| Guard ring + hub plate (split in 2-4 segments if needed) | 1 | PETG | flat | Join with M3 + pin joints |
-| Vane deck ring | 1 | PETG | flat | |
-| Hinge shaft holders / hub centre | 1 | PETG | flat | |
-| Flow straightening fins (diagonal) | 4 | PETG | on edge | 2 mm thick |
-| Vanes 62 × 46 × 2.4 | 4 + 2 spare | PETG | flat | 100 % infill; trailing edge toward the print bed |
-| Servo mounts | 4 | PETG | flat | M2 inserts |
-| Legs | 3 | PETG or TPU | on edge, along the length | Curved: print with supports off the foot |
-| FC stack standoffs / tray | 1 | PETG | flat | |
-| Battery tray | 1 | PETG | flat | |
+| Hub plate | 1 | PETG | flat | Motor patterns 16 × 16 and 19 × 19, battery strap slots, four arm stubs |
+| Electronics deck | 1 | PETG | flat | Zip-tie slots, antenna hole |
+| Arms | 4 | PETG | flat | Half lap under the plate stub |
+| Posts / legs | 4 | PETG | on the side | Seven M3 inserts each; 165 mm long |
+| Servo cradles | 4 | PETG | on the side | 23 × 12 mm servo window, ear pocket |
+| Lower ring half-arcs | 8 | PETG | flat | Four are used turned over (mirror image) |
+| Guard arcs | 4 | PETG | flat | 90°, 13 mm outside the prop tips |
+| Lower hub | 1 | PETG | standing | Four Ø3.3 rod bores, four stator slots |
+| Stator fins | 4 | PETG | flat | 2.4 mm thick |
+| Control vanes | 6 | PETG, **100 % infill** | flat | Four fitted plus two spares; epoxy a Ø3 rod through each |
+| Horn adapters | 4 | PETG | flat | Four M2 x 10 into the servo horn |
+| Foot caps | 4 | TPU 95A | flat | Slip over the post bottoms |
 
-Filament: ≈ 105 g (BOM F-01). Print time: 8-10 h total on a 0.4 mm nozzle.
+Filament: see the mass column in [cad-parts](cad-parts.md) (the BOM uses 65 % of the solid mass). Print time: 35 to 45 h on a 0.4 mm nozzle.
 
 ## Print list: RK-1 rocket
 

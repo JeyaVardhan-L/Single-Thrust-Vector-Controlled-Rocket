@@ -43,7 +43,7 @@
   <div class="in">
     <div class="side-label">Two phases</div>
     <h2>An electric rocket that stands on its own thrust.</h2>
-    <p>Phase 1 is a monocopter with four vanes in the prop wash. It proves the flight computer, the attitude filter, the control loop, the servos, the logging and the way you work.</p>
+    <p>Phase 1 is a monocopter with a 10 inch prop and four vanes in the wash, flown tethered by a pilot with an ESP32-S3 and no IMU. It proves the motor, the ESC, the servos and their power, the radio link, the failsafes and the way you work.</p>
     <p>Phase 2 reuses all of it on RK-1: a coaxial pair of brushless motors in a gimbal, a three-plate stack and four legs.</p>
     <div class="facts">
       <div><span class="mono">Take-off mass</span><b>1.06 kg</b></div>
@@ -65,7 +65,7 @@
       </a>
       <a class="col" href="web/monocopter.html" style="border-bottom:0">
         <div class="iso" data-iso="monocopter"></div>
-        <span class="tag">Phase 1</span><h3>MC-1 monocopter</h3><p>One prop, four vanes in the wash. The test vehicle for the electronics.</p><span class="go">[ Open model → ]</span>
+        <span class="tag">Phase 1</span><h3>MC-1 monocopter</h3><p>One 10 inch prop, four vanes in the wash, ESP32-S3. Print, plug and fly; the experiment before the rocket.</p><span class="go">[ Open model → ]</span>
       </a>
       <a class="col" href="web/assembly.html?model=rocket" style="border-bottom:0">
         <div class="iso" data-iso="exploded"></div>
@@ -79,13 +79,13 @@
   <div class="in">
     <div class="split"><h2>Labs</h2><div class="rule"></div><h2>Tools</h2></div>
     <div class="acc" id="acc">
-      <div class="acc-item"><button><span>PID lab</span><i>+</i></button><div class="panel"><p>Gains, latency, actuator lag and noise on a single-axis attitude loop. Presets for the rocket and the monocopter.</p><a href="web/pid.html">[ Open lab → ]</a></div></div>
+      <div class="acc-item"><button><span>PID lab</span><i>+</i></button><div class="panel"><p>Gains, latency, actuator lag and noise on a single-axis attitude loop. Presets for the rocket and for a monocopter with a gyro.</p><a href="web/pid.html">[ Open lab → ]</a></div></div>
       <div class="acc-item"><button><span>Gimbal lab</span><i>+</i></button><div class="panel"><p>Thrust, lever arm, gear ratio, servo torque and resolution in one interactive page.</p><a href="web/gimbal.html">[ Open lab → ]</a></div></div>
       <div class="acc-item"><button><span>Sizing calculator</span><i>+</i></button><div class="panel"><p>Live mass budget from the bill of materials, thrust to weight, hover power and endurance.</p><a href="web/sizing.html">[ Open calculator → ]</a></div></div>
       <div class="acc-item"><button><span>Wiring diagrams</span><i>+</i></button><div class="panel"><p>Block diagrams and the Teensy 4.1 pin map for both vehicles.</p><a href="web/wiring.html">[ Open diagrams → ]</a></div></div>
-      <div class="acc-item"><button><span>Printable parts (STL)</span><i>+</i></button><div class="panel"><p>Eighteen print-ready STL files for the rocket: stack plates, landing frame, gimbal, gears, cage, legs. Preview and download each one.</p><a href="web/parts.html">[ Open parts → ]</a></div></div>
+      <div class="acc-item"><button><span>Printable parts (STL)</span><i>+</i></button><div class="panel"><p>Print-ready STL files for both vehicles: 18 rocket parts (stack plates, landing frame, gimbal, gears, cage, legs) and 12 monocopter part types. Preview and download each one.</p><a href="web/parts.html">[ Open parts → ]</a></div></div>
       <div class="acc-item"><button><span>Bill of materials</span><i>+</i></button><div class="panel"><p>Searchable parts list with mass and cost for both vehicles, with CSV download.</p><a href="web/bom.html?model=rocket">[ Open table → ]</a></div></div>
-      <div class="acc-item"><button><span>Monocopter build wizard</span><i>+</i></button><div class="panel"><p>Ten steps from printing to tethered hover.</p><a href="web/assembly.html?model=monocopter">[ Start building → ]</a></div></div>
+      <div class="acc-item"><button><span>Monocopter build wizard</span><i>+</i></button><div class="panel"><p>Ten steps from printing to tethered hover, with the printable parts.</p><a href="web/assembly.html?model=monocopter">[ Start building → ]</a></div></div>
     </div>
   </div>
 </section>
@@ -139,7 +139,7 @@ const make = (el, kind) => {
   if (kind === 'rocket') return createIsoStage(el, rocket(), { azimuth: 40, zoom: 1.6, isStatic: true, maxDpr: 1.5, hide: ['test-stand'], target: [0, 275, 0] });
   if (kind === 'monocopter') {
     const m = buildMonocopter(); m.setThrottle(0.3); m.setControl({ roll: 0.4, pitch: -0.25, yaw: 0.1 });
-    return createIsoStage(el, m, { azimuth: 40, zoom: 1.45, isStatic: true, maxDpr: 1.5, target: [0, 135, 0] });
+    return createIsoStage(el, m, { azimuth: 40, zoom: 1.2, isStatic: true, maxDpr: 1.5, target: [0, 30, 0] });
   }
   return createIsoStage(el, rocket(), { azimuth: 40, explode: 0.75, zoom: 1.5, isStatic: true, maxDpr: 1.5, hide: ['test-stand'], target: [0, 270, 0] });
 };

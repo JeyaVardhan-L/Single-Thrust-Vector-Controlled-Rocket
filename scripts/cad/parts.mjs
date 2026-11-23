@@ -1,6 +1,7 @@
 // Registry of every printable part: file name, quantity, material, BOM line and print orientation.
 // `build()` returns the solid in its design frame; `rot` turns it into the print orientation.
 import * as R from './rocket.mjs';
+import * as C from './mono.mjs';
 
 const PA = 'PA-CF (or PETG for a first set)';
 export const PARTS = [
@@ -30,7 +31,7 @@ export const PARTS = [
   { id: 'motor-plate-lower', vehicle: 'rocket', name: 'Motor plate, lower (motor B)', qty: 1, material: PA, bom: 'M-05', build: () => R.motorPlateLower(), rot: [0, 0, 0],
     note: 'Motor B stands on it; screws from below.' },
   { id: 'cage-arm-upper', vehicle: 'rocket', name: 'Cage arm, upper', qty: 3, material: PA, bom: 'M-05', build: () => R.cageArm(true), rot: [0, 0, 0],
-    note: 'Half-lap onto the plate stub, two M3 × 12 with nuts; tip bolts to the strut.' },
+    note: 'Half lap under the plate stub, two M3 × 8 with nuts in the hexagon holes; tip bolts to the strut. Underside is flat.' },
   { id: 'cage-arm-lower', vehicle: 'rocket', name: 'Cage arm, lower', qty: 3, material: PA, bom: 'M-05', build: () => R.cageArm(false), rot: [0, 0, 0],
     note: 'Same as the upper arm, on the lower plate.' },
   { id: 'cage-strut', vehicle: 'rocket', name: 'Cage strut (60 mm)', qty: 3, material: PA, bom: 'M-05', build: () => R.cageStrut(), rot: [0, 0, 0],
@@ -41,6 +42,31 @@ export const PARTS = [
     note: 'Ø8.2 socket for the Ø8 carbon leg (epoxy), Ø3.2 pin bore. Tongue 12.6 mm sits between the frame lug ears.' },
   { id: 'leg-clip', vehicle: 'rocket', name: 'Brace clip', qty: 4, material: 'PETG', bom: 'R-05', build: () => R.legClip(), rot: [0, 0, 0],
     note: 'Slides onto the leg, M3 grub screw; Ø2.2 eyelet for the Ø1.6 brace wire.' },
+  // ---- MC-1 monocopter --------------------------------------------------------------
+  { id: 'mc-hub-plate', vehicle: 'monocopter', name: 'Hub plate (motor under, battery on top)', qty: 1, material: 'PETG', bom: 'F-01', build: () => C.hubPlate(), rot: [0, 0, 0],
+    note: 'Motor pattern 16 x 16 and 19 x 19 (M3). Four strap slots for the battery, four standoff holes, four arm stubs.' },
+  { id: 'mc-deck-plate', vehicle: 'monocopter', name: 'Electronics deck', qty: 1, material: 'PETG', bom: 'F-01', build: () => C.deckPlate(), rot: [0, 0, 0],
+    note: 'On four M3 x 39 mm standoffs above the battery, in the prop intake airflow. Zip-tie slots for the ESC, ESP32 board, receiver and BECs.' },
+  { id: 'mc-arm', vehicle: 'monocopter', name: 'Arm (hub plate to post)', qty: 4, material: 'PETG', bom: 'F-01', build: () => C.arm(), rot: [0, 0, 0],
+    note: 'Half lap under the plate stub, two M3 x 8 with nuts in the hexagon holes; tip screws into the post (M3 x 10).' },
+  { id: 'mc-post', vehicle: 'monocopter', name: 'Post / leg', qty: 4, material: 'PETG', bom: 'F-01', build: () => C.post(), rot: [0, -90, 0],
+    note: 'Eight M3 inserts: one in the top, two on the inner face (stator), four on the outer face (ring tabs). Prints on its side.' },
+  { id: 'mc-servo-cradle', vehicle: 'monocopter', name: 'Servo cradle / lower-ring node', qty: 4, material: 'PETG', bom: 'F-01', build: () => C.servoCradle(), rot: [0, 90, 0],
+    note: '23 x 12 mm servo window, ear pocket, four M2 self-tap holes; two M3 inserts per side take the half-arc tabs.' },
+  { id: 'mc-ring-half-arc', vehicle: 'monocopter', name: 'Lower ring half-arc', qty: 8, material: 'PETG', bom: 'F-01', build: () => C.lowerHalfArc(), rot: [0, 0, 0],
+    note: 'From a servo node to a post. Four are used as printed, four are turned over (mirror image). M3 x 10 at both ends.' },
+  { id: 'mc-guard-arc', vehicle: 'monocopter', name: 'Prop guard arc (90°)', qty: 4, material: 'PETG', bom: 'F-01', build: () => C.guardArc(), rot: [0, 0, 0],
+    note: 'Ring around the prop plane, 13 mm outside the prop tips. M3 x 10 into the post inserts.' },
+  { id: 'mc-hub-lower', vehicle: 'monocopter', name: 'Lower hub (under the prop)', qty: 1, material: 'PETG', bom: 'F-01', build: () => C.lowerHub(), rot: [0, 0, 0],
+    note: 'Four Ø3.3 bores for the vane rods, four slots for the stators with M3 screws and nut pockets.' },
+  { id: 'mc-stator', vehicle: 'monocopter', name: 'Stator fin (fixed swirl straightener)', qty: 4, material: 'PETG', bom: 'F-01', build: () => C.stator(), rot: [90, 0, 0],
+    note: 'Cancels most of the prop torque so the vanes keep their authority for control. Inner end in the hub slot, outer flange on the post (M3 x 10).' },
+  { id: 'mc-vane', vehicle: 'monocopter', name: 'Control vane', qty: 6, material: 'PETG', bom: 'F-01', build: () => C.vane(), rot: [90, 0, 0],
+    note: 'Four fitted plus two spares. Epoxy a Ø3 x 116 mm rod through the spine. Print 100 % infill.' },
+  { id: 'mc-horn-adapter', vehicle: 'monocopter', name: 'Vane horn adapter', qty: 4, material: 'PETG', bom: 'F-01', build: () => C.hornAdapter(), rot: [0, 90, 0],
+    note: 'Takes the outer end of the vane rod; four M2 x 10 from the inner face into the servo horn (counterbored heads).' },
+  { id: 'mc-foot', vehicle: 'monocopter', name: 'Foot cap', qty: 4, material: 'TPU 95A', bom: 'F-01', build: () => C.foot(), rot: [0, 0, 0],
+    note: 'Slips over the post bottom; absorbs landing shocks.' },
 ];
 
 export const PRINT_BED = { x: 220, y: 220, z: 250 };      // the smallest bed the parts are designed for

@@ -178,7 +178,7 @@ export const MOTOR = {
   armAngles: [60, 180, 300],
   strutLen: 60,
 };
-const ARM = { rootR: [26, 48], stubW: 14, armW: 12, tip: 8, lap: 2.5, drop: 2.8, boltR: [33, 42] };
+const ARM = { rootR: [26, 48], stubW: 14, armW: 12, tip: 8, lap: 2.5, boltR: [33, 42] };
 function motorPlate(upper) {
   const [z0, z1] = upper ? MOTOR.zA : MOTOR.zB;
   const adds = [cylA('z', 26, z0, z1)];
@@ -204,16 +204,17 @@ export const motorPlateUpper = () => motorPlate(true);
 export const motorPlateLower = () => motorPlate(false);
 
 /** Cage arm (6x): a flat bar from the plate stub to the strut pad. Design frame: radial +x from the pivot axis, z as the plates.
- *  `upper` selects which plate it belongs to (heights). Its root sits under the plate stub (half lap) and is bolted with two M3 + nuts. */
+ *  `upper` selects which plate it belongs to (heights). Half lap: under the plate stub the arm keeps its lower half, the stub keeps
+ *  the upper half, so the underside of the arm is one plane (prints flat). Two M3 x 8 screws from the top, nuts in hexagon holes. */
 export function cageArm(upper = true) {
   const [z0, z1] = upper ? MOTOR.zA : MOTOR.zB, R = MOTOR.armR;
   const bar = poly([[ARM.rootR[1], -ARM.armW / 2], [R, -ARM.armW / 2], [R, ARM.armW / 2], [ARM.rootR[1], ARM.armW / 2]], z0, z1);
-  const root = poly([[ARM.rootR[0], -ARM.stubW / 2], [ARM.rootR[1], -ARM.stubW / 2], [ARM.rootR[1], ARM.stubW / 2], [ARM.rootR[0], ARM.stubW / 2]], z0 - ARM.drop, z0 + ARM.lap);
+  const root = poly([[ARM.rootR[0], -ARM.stubW / 2], [ARM.rootR[1], -ARM.stubW / 2], [ARM.rootR[1], ARM.stubW / 2], [ARM.rootR[0], ARM.stubW / 2]], z0, z0 + ARM.lap);
   const tip = cylA('z', ARM.tip, z0, z1, R, 0);
-  const cuts = [cylA('z', TOL.m3 / 2, z0 - 4, z1 + 1, R, 0)];
+  const cuts = [cylA('z', TOL.m3 / 2, z0 - 1, z1 + 1, R, 0)];
   for (const r of ARM.boltR) {
-    cuts.push(cylA('z', TOL.m3 / 2, z0 - 4, z1 + 1, r, 0));
-    cuts.push(hexA('z', TOL.nutAF, z0 - ARM.drop - 1, z0 - ARM.drop + TOL.nutH, r, 0));
+    cuts.push(cylA('z', TOL.m3 / 2, z0 - 1, z0 + ARM.lap + 1, r, 0));
+    cuts.push(hexA('z', TOL.nutAF, z0 - 1, z0 + ARM.lap + 0.001, r, 0));
   }
   return diff(union([bar, root, tip]), cuts);
 }

@@ -5,11 +5,13 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { summarise, cylA, stats } from '../scripts/cad/lib.mjs';
+import { summarise, cylA, boxM, stats } from '../scripts/cad/lib.mjs';
 import { PARTS, PRINT_BED } from '../scripts/cad/parts.mjs';
 import * as R from '../scripts/cad/rocket.mjs';
 import { checkAssembly } from '../scripts/cad/assembly.mjs';
-import { ROCKET as S } from '../src/data/spec.js';
+import * as C from '../scripts/cad/mono.mjs';
+import { checkMono, checkVaneInstall } from '../scripts/cad/assembly-mono.mjs';
+import { ROCKET as S, MONO as M } from '../src/data/spec.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const manifest = JSON.parse(readFileSync(join(root, 'hardware/cad/parts.json'), 'utf8'));
@@ -85,4 +87,42 @@ test('assembly: no interference at nominal and full gimbal deflection', () => {
   const { issues, pairs } = checkAssembly([[0, 0], [7, 7], [-7, 7], [7, -7]]);
   assert.ok(pairs > 400, 'enough part pairs were tested');
   assert.deepEqual(issues, []);
+});
+
+// ---------------------------------------------------------------- MC-1 monocopter
+test('MC-1: the 10 inch prop clears the guard ring by at least 12 mm and the arcs fit the bed', () => {
+  assert.equal(M.prop.diameterIn, 10);
+  assert.ok(M.postRadius - M.ring.band / 2 - M.prop.radius >= 12, 'tip clearance to the ring');
+  const g = stats(C.guardArc()).size;
+  assert.ok(g[0] <= 220 && g[1] <= 220, 'guard arc fits a 220 mm bed');
+});
+
+test('MC-1: the servo body passes the cradle window, the vane rod passes its bores', () => {
+  const body = boxM(C.MC.servoTopX, C.MC.servoTopX + 24, -5.9, 17.1, -6.1, 6.1);
+  assert.ok(C.servoCradle().intersect(body).volume() < 0.01, '23 x 12.2 x 24 servo fits the window and the ear pocket');
+  assert.ok(C.vane().intersect(cylA('x', 1.5, 0, 140, 0, 0)).volume() < 0.01, 'Ø3 rod passes the vane bore');
+  assert.ok(C.hornAdapter().intersect(cylA('x', 1.5, 120, C.MC.rod.x[1], 0, 0)).volume() < 0.01, 'Ø3 rod end fits the adapter bore');
+  assert.ok(C.lowerHub().intersect(cylA('x', 1.5, C.MC.rod.x[0], 40, 0, 0)).volume() < 0.01, 'Ø3 rod tip fits the hub bore');
+  assert.ok(C.lowerHub().intersect(C.stator().rotate([0, 0, 45])).volume() < 0.5, 'a 2.4 mm stator slides into the 3.3 mm hub slot');
+});
+
+test('MC-1: every vane axis, post and servo is where the spec says', () => {
+  const post = stats(C.post());
+  assert.deepEqual(post.size, [8, 24, 165]);
+  assert.equal(M.vane.rEnd - M.vane.rStart, M.vane.span);
+  assert.ok(M.vane.rStart > M.hub.radius, 'the vane starts outside the hub');
+  assert.ok(C.MC.adapter.x[0] > M.vane.rEnd + 2, 'the adapter clears the vane spine');
+});
+
+test('MC-1: mass budget matches the design (BOM on-board mass under 900 g)', () => {
+  const bom = JSON.parse(readFileSync(join(root, 'hardware/bom/monocopter.json'), 'utf8'));
+  const mass = bom.items.filter((i) => i.onboard).reduce((a, i) => a + i.mass_g * i.qty, 0);
+  assert.ok(mass > 600 && mass < 900, 'on-board mass ' + mass);
+});
+
+test('MC-1 assembly: no interference with the vanes at full deflection, and the vanes can be installed', () => {
+  const { issues, pairs } = checkMono([[0, 0, 0, 0], [25, 25, 25, 25], [-25, -25, -25, -25], [25, 0, -25, 0], [0, 25, 0, -25]]);
+  assert.ok(pairs > 200);
+  assert.deepEqual(issues, []);
+  assert.deepEqual(checkVaneInstall().issues, []);
 });

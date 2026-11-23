@@ -232,15 +232,15 @@
       "material": "PA-CF (or PETG for a first set)",
       "bom": "M-05",
       "file": "hardware/cad/stl/rocket/cage-arm-upper.stl",
-      "note": "Half-lap onto the plate stub, two M3 × 12 with nuts; tip bolts to the strut.",
+      "note": "Half lap under the plate stub, two M3 × 8 with nuts in the hexagon holes; tip bolts to the strut. Underside is flat.",
       "size_mm": [
         105,
         16,
-        7.8
+        5
       ],
-      "volume_cm3": 6.46,
-      "mass_solid_g": 8,
-      "triangles": 1180
+      "volume_cm3": 5.66,
+      "mass_solid_g": 7,
+      "triangles": 604
     },
     {
       "id": "cage-arm-lower",
@@ -254,11 +254,11 @@
       "size_mm": [
         105,
         16,
-        7.8
+        5
       ],
-      "volume_cm3": 6.46,
-      "mass_solid_g": 8,
-      "triangles": 1180
+      "volume_cm3": 5.66,
+      "mass_solid_g": 7,
+      "triangles": 604
     },
     {
       "id": "cage-strut",
@@ -331,6 +331,222 @@
       "volume_cm3": 2.63,
       "mass_solid_g": 3,
       "triangles": 1220
+    },
+    {
+      "id": "mc-hub-plate",
+      "vehicle": "monocopter",
+      "name": "Hub plate (motor under, battery on top)",
+      "qty": 1,
+      "material": "PETG",
+      "bom": "F-01",
+      "file": "hardware/cad/stl/monocopter/mc-hub-plate.stl",
+      "note": "Motor pattern 16 x 16 and 19 x 19 (M3). Four strap slots for the battery, four standoff holes, four arm stubs.",
+      "size_mm": [
+        118.79,
+        118.79,
+        5
+      ],
+      "volume_cm3": 34,
+      "mass_solid_g": 43,
+      "triangles": 7380
+    },
+    {
+      "id": "mc-deck-plate",
+      "vehicle": "monocopter",
+      "name": "Electronics deck",
+      "qty": 1,
+      "material": "PETG",
+      "bom": "F-01",
+      "file": "hardware/cad/stl/monocopter/mc-deck-plate.stl",
+      "note": "On four M3 x 39 mm standoffs above the battery, in the prop intake airflow. Zip-tie slots for the ESC, ESP32 board, receiver and BECs.",
+      "size_mm": [
+        96,
+        88,
+        3
+      ],
+      "volume_cm3": 24.17,
+      "mass_solid_g": 31,
+      "triangles": 4224
+    },
+    {
+      "id": "mc-arm",
+      "vehicle": "monocopter",
+      "name": "Arm (hub plate to post)",
+      "qty": 4,
+      "material": "PETG",
+      "bom": "F-01",
+      "file": "hardware/cad/stl/monocopter/mc-arm.stl",
+      "note": "Half lap under the plate stub, two M3 x 8 with nuts in the hexagon holes; tip screws into the post (M3 x 10).",
+      "size_mm": [
+        95,
+        16,
+        5
+      ],
+      "volume_cm3": 5.11,
+      "mass_solid_g": 6,
+      "triangles": 604
+    },
+    {
+      "id": "mc-post",
+      "vehicle": "monocopter",
+      "name": "Post / leg",
+      "qty": 4,
+      "material": "PETG",
+      "bom": "F-01",
+      "file": "hardware/cad/stl/monocopter/mc-post.stl",
+      "note": "Eight M3 inserts: one in the top, two on the inner face (stator), four on the outer face (ring tabs). Prints on its side.",
+      "size_mm": [
+        165,
+        24,
+        8
+      ],
+      "volume_cm3": 23.35,
+      "mass_solid_g": 30,
+      "triangles": 2088
+    },
+    {
+      "id": "mc-servo-cradle",
+      "vehicle": "monocopter",
+      "name": "Servo cradle / lower-ring node",
+      "qty": 4,
+      "material": "PETG",
+      "bom": "F-01",
+      "file": "hardware/cad/stl/monocopter/mc-servo-cradle.stl",
+      "note": "23 x 12 mm servo window, ear pocket, four M2 self-tap holes; two M3 inserts per side take the half-arc tabs.",
+      "size_mm": [
+        22,
+        64,
+        9
+      ],
+      "volume_cm3": 9.46,
+      "mass_solid_g": 12,
+      "triangles": 1216
+    },
+    {
+      "id": "mc-ring-half-arc",
+      "vehicle": "monocopter",
+      "name": "Lower ring half-arc",
+      "qty": 8,
+      "material": "PETG",
+      "bom": "F-01",
+      "file": "hardware/cad/stl/monocopter/mc-ring-half-arc.stl",
+      "note": "From a servo node to a post. Four are used as printed, four are turned over (mirror image). M3 x 10 at both ends.",
+      "size_mm": [
+        44.31,
+        81.01,
+        8
+      ],
+      "volume_cm3": 3.56,
+      "mass_solid_g": 5,
+      "triangles": 736
+    },
+    {
+      "id": "mc-guard-arc",
+      "vehicle": "monocopter",
+      "name": "Prop guard arc (90°)",
+      "qty": 4,
+      "material": "PETG",
+      "bom": "F-01",
+      "file": "hardware/cad/stl/monocopter/mc-guard-arc.stl",
+      "note": "Ring around the prop plane, 13 mm outside the prop tips. M3 x 10 into the post inserts.",
+      "size_mm": [
+        39.31,
+        210.01,
+        10
+      ],
+      "volume_cm3": 11.07,
+      "mass_solid_g": 14,
+      "triangles": 848
+    },
+    {
+      "id": "mc-hub-lower",
+      "vehicle": "monocopter",
+      "name": "Lower hub (under the prop)",
+      "qty": 1,
+      "material": "PETG",
+      "bom": "F-01",
+      "file": "hardware/cad/stl/monocopter/mc-hub-lower.stl",
+      "note": "Four Ø3.3 bores for the vane rods, four slots for the stators with M3 screws and nut pockets.",
+      "size_mm": [
+        44,
+        44,
+        24
+      ],
+      "volume_cm3": 25.29,
+      "mass_solid_g": 32,
+      "triangles": 6936
+    },
+    {
+      "id": "mc-stator",
+      "vehicle": "monocopter",
+      "name": "Stator fin (fixed swirl straightener)",
+      "qty": 4,
+      "material": "PETG",
+      "bom": "F-01",
+      "file": "hardware/cad/stl/monocopter/mc-stator.stl",
+      "note": "Cancels most of the prop torque so the vanes keep their authority for control. Inner end in the hub slot, outer flange on the post (M3 x 10).",
+      "size_mm": [
+        127,
+        40,
+        18
+      ],
+      "volume_cm3": 14.56,
+      "mass_solid_g": 18,
+      "triangles": 1236
+    },
+    {
+      "id": "mc-vane",
+      "vehicle": "monocopter",
+      "name": "Control vane",
+      "qty": 6,
+      "material": "PETG",
+      "bom": "F-01",
+      "file": "hardware/cad/stl/monocopter/mc-vane.stl",
+      "note": "Four fitted plus two spares. Epoxy a Ø3 x 116 mm rod through the spine. Print 100 % infill.",
+      "size_mm": [
+        93,
+        55,
+        6
+      ],
+      "volume_cm3": 13.87,
+      "mass_solid_g": 18,
+      "triangles": 666
+    },
+    {
+      "id": "mc-horn-adapter",
+      "vehicle": "monocopter",
+      "name": "Vane horn adapter",
+      "qty": 4,
+      "material": "PETG",
+      "bom": "F-01",
+      "file": "hardware/cad/stl/monocopter/mc-horn-adapter.stl",
+      "note": "Takes the outer end of the vane rod; four M2 x 10 from the inner face into the servo horn (counterbored heads).",
+      "size_mm": [
+        20,
+        20,
+        6
+      ],
+      "volume_cm3": 1.68,
+      "mass_solid_g": 2,
+      "triangles": 2892
+    },
+    {
+      "id": "mc-foot",
+      "vehicle": "monocopter",
+      "name": "Foot cap",
+      "qty": 4,
+      "material": "TPU 95A",
+      "bom": "F-01",
+      "file": "hardware/cad/stl/monocopter/mc-foot.stl",
+      "note": "Slips over the post bottom; absorbs landing shocks.",
+      "size_mm": [
+        16,
+        32,
+        20
+      ],
+      "volume_cm3": 6.76,
+      "mass_solid_g": 8,
+      "triangles": 604
     }
   ]
 }

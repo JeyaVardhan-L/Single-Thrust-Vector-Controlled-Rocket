@@ -7,9 +7,9 @@ Each requirement has an ID, a verification method (**T**est, **A**nalysis, **I**
 | ID | Requirement | Ver. | Gate |
 |---|---|---|---|
 | SYS-01 | The vehicle shall be electrically inert (no actuator motion, no motor output) until powered with the RBF loop/pin removed **and** the arm switch on | T | 0 / A |
-| SYS-02 | The flight computer shall run its control loop at ≥ 500 Hz with worst-case jitter < 10 % | T | 0 |
-| SYS-03 | Total sensor-to-actuator latency shall be ≤ 15 ms | T | 0 / A |
-| SYS-04 | All flight-relevant signals (attitude, rates, commands, actuator positions, state, battery V) shall be logged ≥ 100 Hz to non-volatile storage | T | 0 |
+| SYS-02 | The flight computer shall run its control loop at ≥ 500 Hz (RK-1) or ≥ 250 Hz (MC-1) with worst-case jitter < 10 % | T | 0 |
+| SYS-03 | Total sensor-to-actuator latency shall be ≤ 15 ms (RK-1); stick-to-vane latency ≤ 25 ms (MC-1) | T | 0 / A |
+| SYS-04 | RK-1: all flight-relevant signals (attitude, rates, commands, actuator positions, state, battery V) shall be logged ≥ 100 Hz to non-volatile storage. MC-1: arm state, link, throttle, battery V and vane commands are printed at 10 Hz and the flight is recorded on video | T | 0 |
 | SYS-05 | Servo power shall be separate from logic power; a servo stall shall not reset the flight computer | T | 0 / A |
 | SYS-06 | Telemetry (state, attitude, battery, position) shall reach the ground station at ≥ 1 Hz over ≥ 300 m before first flight | T | 2 / E |
 | SYS-07 | The software configuration (git commit, gains) shall be recorded on the checklist for every powered test | I | all |
@@ -19,15 +19,15 @@ Each requirement has an ID, a verification method (**T**est, **A**nalysis, **I**
 
 | ID | Requirement | Ver. | Gate |
 |---|---|---|---|
-| MC-01 | Take-off mass ≤ 550 g (BOM baseline 485 g) | I | 1 |
+| MC-01 | Take-off mass ≤ 900 g (BOM baseline 825 g) | I | 1 |
 | MC-02 | Static thrust ≥ 2.0 × take-off weight on a fresh 4S pack | T | 1 |
-| MC-03 | Roll and pitch control authority ≥ 0.02 N·m at hover throttle (design value 0.022 N·m, recorded on the stand at Gate 1) | T | 1 |
+| MC-03 | Roll and pitch control authority ≥ 0.05 N·m at hover throttle (design value 0.09 N·m, recorded on the stand at Gate 1) | T | 1 |
 | MC-04 | With the swirl-straightening fins fitted, the residual prop reaction torque at hover shall be ≤ 60 % of the yaw authority of the vanes (measured on the stand) | T | 1 |
 | MC-05 | RC link loss or arm-switch off shall cut the motor and centre the vanes within 0.5 s | T | 0 |
-| MC-06 | The vehicle shall refuse to arm if tilt > 20° or throttle > 5 % | T | 0 |
-| MC-07 | Attitude estimate shall agree with a reference (phone IMU / protractor) within ±1.5° static | T | 0 |
-| MC-08 | Tethered hover shall hold attitude within ±3° for 30 s in ≤ 2 m/s wind | T | 2 |
-| MC-09 | Vehicle shall recover from a 15° hand-induced tilt without tether tension | T | 2 |
+| MC-06 | The vehicle shall refuse to arm if the arm switch is on at power-up, or if the throttle is > 5 % | T | 0 |
+| MC-07 | Vane angle shall match the commanded angle within ±2° over the full travel (protractor) | T | 0 |
+| MC-08 | A pilot shall hold a tethered hover for 30 s within ±0.5 m of the tether centre in ≤ 2 m/s wind | T | 2 |
+| MC-09 | The pilot shall recover from a 15° tilt within 2 s without tether tension | T | 2 |
 | MC-10 | Servo signs and vane order shall be verified against the mixer convention (docs/phase1-monocopter/05) | T | 0 |
 
 ## RK-1 rocket (Phase 2)

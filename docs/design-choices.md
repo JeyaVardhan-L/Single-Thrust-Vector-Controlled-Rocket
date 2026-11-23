@@ -9,15 +9,17 @@ The numbers in this repository come from one CAD screenshot (browser tree and vi
 | D-03 | **Recovery** | Pilot-controlled throttle and landing on the four legs; tether for the first flights | The legs are for landing; the thrust is throttleable | A parachute for free flights over rough ground |
 | D-04 | Stack | Three 110 mm plates (battery, flight computer, telemetry) on four Ø6 mm carbon rods, plus a diamond landing frame | Three modules are enough for the electronics and keep the CG low | More plates raise the CG and add mass |
 | D-05 | Power | 6S 1500 mAh main pack (ESCs, servo BEC) and a separate 2S 450 mAh avionics pack, side by side on one plate | ESC and servo noise never reaches the flight computer | One pack with a clean regulator |
-| D-06 | Flight computer | Teensy 4.1 + ICM-42688-P + BMP390 | Fast, well documented, SD slot, same in both phases | Any 100 MHz+ MCU with SPI and an SD card |
-| D-07 | Phase 1 propulsion | 2306 ≈ 2000 KV + 6×3.5 prop, 4S 1300 mAh | Matches the ≈ Ø250 mm ring of the photographed vehicle | 7″ prop for more vane authority |
+| D-06 | Flight computer | RK-1: Teensy 4.1 + ICM-42688-P + BMP390. MC-1: ESP32-S3, no IMU | Rocket: fast, well documented, SD slot. Monocopter: cheap, one board, the experiment needs no attitude loop | Any 100 MHz+ MCU with SPI and an SD card |
+| D-07 | Phase 1 propulsion | 28xx ≈ 1100 KV motor + 10×4.5 pusher prop, 4S 1500 mAh | A 10 inch disc gives about 40 % less hover power than 6 inch for the same mass and a wider wash for the vanes; see [phase 1 design](phase1-monocopter/01-design.md) §4 | 8 or 9 inch prop with a smaller ring |
 | D-08 | Control link (Phase 1) | ExpressLRS 2.4 GHz, CRSF | Low latency, telemetry back-channel | Any RC link with SBUS or CRSF |
 | D-09 | Control link | ExpressLRS 2.4 GHz, CRSF, with link statistics and battery voltage on the radio | Same receiver as the monocopter | Any radio with SBUS or CRSF |
 | D-10 | Arming | Two independent switches (on-board and radio), RBF pin on the main pack, ESCs held low by pull-downs | Two interlocks against an accidental spin-up | A hardware arm relay |
 | D-11 | Test stand | Fixed thrust stand with a load cell, plus a tilting rig for closed-loop tests | The CAD has a `test-stand` part | A free pivot or tethered stand |
-| D-12 | Materials | PETG for the monocopter; PA-CF for the rocket gimbal and landing frame | Stiffness and landing loads | Machined aluminium gimbal |
+| D-12 | Materials | PETG for the monocopter (TPU feet); PA-CF for the rocket gimbal and landing frame | Stiffness and landing loads | Machined aluminium gimbal |
 | D-13 | Landing legs | Four rigid Ø8 mm legs, 34° from vertical, rubber feet, hinged at the landing-frame corners | CAD | Fewer or shorter legs change the tip-over margin |
 | D-14 | Gimbal range | ±7° mechanical, ±6.5° software | Typical for small hobby TVC | More range gives more authority and more mechanics |
+| D-15 | MC-1 control | Pilot-in-the-loop vane control, no IMU, tethered | Phase 1 is an experiment on the propulsion stack and the vane side force; the thrust line passes through the CG, so the vehicle is not divergent and a pilot with a tether can fly it | Add an IMU and the rocket control loop for hands-off hover |
+| D-16 | MC-1 actuation | Four servos driving the vane rods directly, four fixed stator fins on the diagonals | No linkage or slop; the stators cancel most of the prop torque so the vanes keep their authority | Pushrods; no stators with a larger yaw vane area |
 
 ## How to change a choice
 

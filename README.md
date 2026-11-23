@@ -4,8 +4,8 @@ An open guide to build an **electric thrust-vector-controlled (TVC) rocket** in 
 
 | Phase | Vehicle | Purpose |
 |---|---|---|
-| **1** | **MC-1 vane-control monocopter**: one motor, one prop, four servo-driven vanes in the prop wash | Prove the flight computer, attitude estimation, control loop, actuators, logging, failsafes and operating procedures on a vehicle you can crash cheaply |
-| **2** | **RK-1 TVC rocket**: coaxial brushless motors in a 2-axis gear-driven gimbal steered by servos, three-plate stack, four splayed legs | The main goal. Reuses the Phase 1 electronics, software core and procedures |
+| **1** | **MC-1 vane-control monocopter**: one motor with a 10 inch prop, four servo-driven vanes in the prop wash, ESP32-S3, no IMU, print-and-fly | Experiment: prove the propulsion stack, servos and their power, the radio link, failsafes and operating procedures on a vehicle you can crash cheaply (pilot-flown, tethered) |
+| **2** | **RK-1 TVC rocket**: coaxial brushless motors in a 2-axis gear-driven gimbal steered by servos, three-plate stack, four splayed legs | The main goal. Reuses the Phase 1 propulsion practice, servo power, link and procedures; adds the IMU and the control loop |
 
 ![RK-1 TVC rocket, three.js model](assets/screenshots/rocket-hero.png)
 
@@ -16,7 +16,7 @@ An open guide to build an **electric thrust-vector-controlled (TVC) rocket** in 
 </tr>
 </table>
 
-> The 3D models are procedural three.js code (`src/models/`), driven by one parameter file (`src/data/spec.js`). They mirror the CAD browser tree of the Fusion project (`tvc`, `gear36t1`, `gear36t2`, `rods`, `landing-frame`, `battery-frame`, `pcb-frame`, `telemetry-frame`, `landing-gear`, `test-stand`). They are visualisation and teaching models. The printable parts are separate, generated files: **[18 STL files for the rocket](hardware/cad/stl/rocket/)**, listed in [docs/cad-parts.md](docs/cad-parts.md) and downloadable from [web/parts.html](web/parts.html). See also [docs/cad-mapping.md](docs/cad-mapping.md).
+> The 3D models are procedural three.js code (`src/models/`), driven by one parameter file (`src/data/spec.js`). They mirror the CAD browser tree of the Fusion project (`tvc`, `gear36t1`, `gear36t2`, `rods`, `landing-frame`, `battery-frame`, `pcb-frame`, `telemetry-frame`, `landing-gear`, `test-stand`). They are visualisation and teaching models. The printable parts are separate, generated files: **[18 STL files for the rocket](hardware/cad/stl/rocket/) and [12 part types (45 pieces) for the monocopter](hardware/cad/stl/monocopter/)**, listed in [docs/cad-parts.md](docs/cad-parts.md) and downloadable from [web/parts.html](web/parts.html). See also [docs/cad-mapping.md](docs/cad-mapping.md).
 
 ## Quick start
 
@@ -63,12 +63,12 @@ src/
 docs/                     all documentation (start at docs/README.md)
 hardware/
   bom/*.json              bill of materials (source of truth) + generated CSV
-  cad/                    where the Fusion/STEP/STL files go (README explains naming)
+  cad/                    print-ready STL files (rocket, monocopter) + parts.json manifest
 firmware/
-  lib/tvc_core/           portable C++17 core: PID, AHRS, mixers, CRSF, flight state machine
+  lib/tvc_core/           portable C++17 core: PID, AHRS, mixers, CRSF, flight state machine, manual flight mode
   lib/tvc_hal/            Teensy hardware drivers (ICM-42688-P)
-  monocopter/             PlatformIO project, Phase 1
-  rocket/                 PlatformIO project, Phase 2
+  monocopter/             PlatformIO project, Phase 1 (ESP32-S3, no IMU)
+  rocket/                 PlatformIO project, Phase 2 (Teensy 4.1)
   test/                   host-side unit tests (g++)
 test/                     JS tests
 scripts/                  serve, screenshot, BOM generator, firmware test runner

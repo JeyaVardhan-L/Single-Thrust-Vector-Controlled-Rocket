@@ -1,124 +1,83 @@
-// MC-1 monocopter: attitude-hold flight software (Phase 1). Teensy 4.1.
+// MC-1 monocopter: manual flight software (Phase 1). ESP32-S3, no IMU.
 //
-// Control: angle mode on roll/pitch (PID, derivative on gyro), rate mode on yaw. Output -> vane mixer -> 4 servos.
-// Safety: arm only with throttle low and RC link alive; RC loss > 250 ms or switch off => motor off, vanes centred.
+// ELRS receiver (CRSF) -> ESP32 -> one ESC and four vane servos. The pilot closes the attitude loop; the vanes act directly on the sticks,
+// scaled with throttle (see lib/tvc_core/manual_mode.h, covered by the host tests). Intended for tethered flight.
+// Safety: arm only with the switch cycled and throttle low; link loss > 250 ms or switch off => motor off, vanes centred.
 //
-// Before flight run docs/phase1-monocopter/06-bench-tests.md, especially the sign checks, with the PROPELLER REMOVED.
+// Before flight run docs/phase1-monocopter/06-bench-tests.md with the PROPELLER REMOVED.
 #include <Arduino.h>
-#include <SD.h>
-#include <SPI.h>
-#include <Servo.h>
 
-#include "ahrs.h"
 #include "crsf.h"
-#include "icm42688.h"
+#include "manual_mode.h"
 #include "mixers.h"
-#include "pid.h"
 #include "pins.h"
 
 using namespace tvc;
 
-// ---------------- tunables (start here; see the PID lab and docs) ----------------
-constexpr float LOOP_HZ = 500.f;
-constexpr float DT = 1.f / LOOP_HZ;
-constexpr float MAX_ANGLE_RAD = 15.f * 0.0174533f;     // stick -> angle setpoint
-constexpr float MAX_YAW_RATE = 90.f * 0.0174533f;      // rad/s
-constexpr float YAW_KP = 0.25f;                        // vane units per rad/s
-constexpr float YAW_TRIM = 0.0f;                       // static vane trim that cancels prop torque (find on the tether)
-constexpr float MIN_AUTH_THROTTLE = 0.12f;             // below this the prop wash is too weak: vanes centred
+// ---------------- tunables ----------------
+constexpr uint32_t LOOP_HZ = 250;
+constexpr uint32_t LOOP_US = 1000000 / LOOP_HZ;
 constexpr uint32_t RC_TIMEOUT_MS = 250;
-constexpr float VANE_SIGN[4] = {1.f, 1.f, 1.f, 1.f};   // flip a servo if its linkage is mirrored (bench test!)
+constexpr int ESC_HZ = 400, SERVO_HZ = 50;             // raise SERVO_HZ to 200 only after checking that your servos accept it
+constexpr int PWM_BITS = 14;
+constexpr float VANE_MAX_DEG = 25.f;                   // vane angle at full command; the servo moves the same angle (direct drive)
+constexpr float VANE_SIGN[4] = {1.f, 1.f, 1.f, 1.f};   // flip a servo if it is mounted mirrored (bench test!)
+constexpr float VBAT_DIV = 57.f / 10.f;                // 47k + 10k divider
+constexpr float VBAT_CAL = 1.0f;                       // trim against a multimeter
+constexpr float VBAT_WARN = 14.0f;                     // 3.5 V per cell: warn
 
-static Icm42688 imu(PIN_IMU_CS);
-static Mahony ahrs(2.0f, 0.0f);
+static ManualConfig cfg;                               // start with the defaults, tune on the tether
+static ManualMode flight(cfg);
 static CrsfParser crsf;
-static Pid pidRoll({2.8f, 0.8f, 0.78f, 1.f, 0.3f});
-static Pid pidPitch({2.8f, 0.8f, 0.78f, 1.f, 0.3f});
-static Servo vane[4];
 static ServoMap servoMap[4];
-static float gyroBias[3] = {0, 0, 0};
-static uint32_t lastRcMs = 0;
-static bool armed = false;
-static File logFile;
-static elapsedMicros loopTimer;
+static uint32_t lastRcMs = 0, nextLoopUs = 0, loops = 0;
 
-static void escWriteUs(float us) {
-  // 12-bit PWM at 400 Hz: period 2500 us
-  analogWrite(PIN_ESC, (int)(us / 2500.f * 4095.f));
+static void pwmUs(int channel, int freq, float us) {
+  const float period = 1e6f / freq;
+  ledcWrite(channel, (uint32_t)(constrain(us, 0.f, period) / period * ((1 << PWM_BITS) - 1)));
 }
+static void setupPwm(int channel, int pin, int freq) { ledcSetup(channel, freq, PWM_BITS); ledcAttachPin(pin, channel); }
 
-static void centreVanes() { for (int i = 0; i < 4; ++i) vane[i].writeMicroseconds((int)servoMap[i].centerUs); }
-
-static void calibrateGyro() {
-  float g[3], a[3], sum[3] = {0, 0, 0};
-  const int N = 1000;
-  for (int i = 0; i < N; ++i) { imu.read(g, a); for (int k = 0; k < 3; ++k) sum[k] += g[k]; delay(2); }
-  for (int k = 0; k < 3; ++k) gyroBias[k] = sum[k] / N;
+static void writeVanes(const float v[4]) {
+  for (int i = 0; i < 4; ++i) pwmUs(1 + i, SERVO_HZ, vaneToUs(v[i] * VANE_SIGN[i], servoMap[i], VANE_MAX_DEG));
 }
 
 void setup() {
   Serial.begin(115200);
-  Serial1.begin(420000);
-  pinMode(PIN_LED, OUTPUT); pinMode(PIN_BUZZER, OUTPUT);
-  analogWriteResolution(12); analogWriteFrequency(PIN_ESC, 400);
-  escWriteUs(1000);                                  // motor off before anything else
-  for (int i = 0; i < 4; ++i) vane[i].attach(PIN_VANE[i], 900, 2100);
-  centreVanes();
-  if (!imu.begin()) { while (true) { digitalWrite(PIN_LED, !digitalRead(PIN_LED)); delay(100); } }   // fast blink = IMU fault
-  Serial.println("Calibrating gyro: keep the vehicle still...");
-  calibrateGyro();
-  if (SD.begin(BUILTIN_SDCARD)) logFile = SD.open("flight.csv", FILE_WRITE);
-  if (logFile) logFile.println("ms,armed,roll,pitch,gx,gy,gz,thr,v1,v2,v3,v4");
-  loopTimer = 0;
+  Serial1.begin(420000, SERIAL_8N1, PIN_CRSF_RX, PIN_CRSF_TX);
+  pinMode(PIN_LED, OUTPUT);
+  pinMode(PIN_BUZZER, OUTPUT);
+  analogReadResolution(12);
+  setupPwm(0, PIN_ESC, ESC_HZ);
+  pwmUs(0, ESC_HZ, 1000.f);                            // motor off before anything else
+  for (int i = 0; i < 4; ++i) setupPwm(1 + i, PIN_VANE[i], SERVO_HZ);
+  const float centre[4] = {0, 0, 0, 0};
+  writeVanes(centre);
+  nextLoopUs = micros();
 }
 
 void loop() {
-  if (loopTimer < (uint32_t)(DT * 1e6f)) return;
-  loopTimer -= (uint32_t)(DT * 1e6f);
-
-  // --- receiver ---
-  while (Serial1.available()) if (crsf.feed(Serial1.read())) lastRcMs = millis();
-  const bool rcOk = (millis() - lastRcMs) < RC_TIMEOUT_MS;
-
-  // --- sensors + attitude ---
-  float g[3], a[3];
-  imu.read(g, a);
-  for (int k = 0; k < 3; ++k) g[k] -= gyroBias[k];
-  ahrs.update(g[0], g[1], g[2], a[0], a[1], a[2], DT);
-
-  // --- arming ---
-  const float thr = constrain((crsf.us(CH_THROTTLE) - 1000.f) / 1000.f, 0.f, 1.f);
-  const bool armSw = crsf.us(CH_ARM) > 1700.f;
-  if (!rcOk || !armSw) { if (armed) { pidRoll.reset(); pidPitch.reset(); } armed = false; }
-  else if (!armed && thr < 0.05f && fabsf(ahrs.roll()) < 0.35f && fabsf(ahrs.pitch()) < 0.35f) armed = true;   // < 20 deg
-
-  float v[4] = {0, 0, 0, 0};
-  if (armed) {
-    const float rollSp = crsf.norm(CH_ROLL) * MAX_ANGLE_RAD;
-    const float pitchSp = crsf.norm(CH_PITCH) * MAX_ANGLE_RAD;
-    const float yawRateSp = crsf.norm(CH_YAW) * MAX_YAW_RATE;
-    const bool auth = thr > MIN_AUTH_THROTTLE;
-    float cr = 0.f, cp = 0.f, cy = 0.f;
-    if (auth) {
-      cr = pidRoll.update(rollSp - ahrs.roll(), g[0], DT);
-      cp = pidPitch.update(pitchSp - ahrs.pitch(), g[1], DT);
-      cy = constrain(YAW_KP * (yawRateSp - g[2]) + YAW_TRIM, -1.f, 1.f);
-    } else {
-      pidRoll.reset(); pidPitch.reset();
-    }
-    mixMonocopter(cr, cp, cy, v);
-    escWriteUs(1000.f + thr * 1000.f);
-  } else {
-    escWriteUs(1000.f);
+  while ((int32_t)(micros() - nextLoopUs) < 0) {
+    while (Serial1.available()) if (crsf.feed(Serial1.read())) lastRcMs = millis();
   }
-  for (int i = 0; i < 4; ++i) vane[i].writeMicroseconds((int)vaneToUs(v[i] * VANE_SIGN[i], servoMap[i]));
-  digitalWrite(PIN_LED, armed);
+  nextLoopUs += LOOP_US;
 
-  // --- logging (100 Hz) and console (10 Hz) ---
-  static uint32_t n = 0; ++n;
-  if (logFile && (n % 5 == 0)) {
-    logFile.printf("%lu,%d,%.4f,%.4f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n", millis(), armed, ahrs.roll(), ahrs.pitch(), g[0], g[1], g[2], thr, v[0], v[1], v[2], v[3]);
-    if (n % 500 == 0) logFile.flush();
-  }
-  if (n % 50 == 0) Serial.printf("armed=%d rc=%d roll=%.1f pitch=%.1f thr=%.2f\n", armed, rcOk, ahrs.roll() * 57.296f, ahrs.pitch() * 57.296f, thr);
+  ManualInput in;
+  in.linkOk = (millis() - lastRcMs) < RC_TIMEOUT_MS && crsf.framesOk > 0;
+  in.roll = crsf.norm(CH_ROLL);
+  in.pitch = crsf.norm(CH_PITCH);
+  in.yaw = crsf.norm(CH_YAW);
+  in.throttle = constrain((crsf.us(CH_THROTTLE) - 1000.f) / 1000.f, 0.f, 1.f);
+  in.armSwitchUs = crsf.us(CH_ARM);
+  const ManualOutput out = flight.update(in);
+
+  pwmUs(0, ESC_HZ, out.motorUs);
+  writeVanes(out.vane);
+  digitalWrite(PIN_LED, out.armed);
+
+  const float vbat = analogReadMilliVolts(PIN_VBAT) * 0.001f * VBAT_DIV * VBAT_CAL;
+  digitalWrite(PIN_BUZZER, (vbat > 6.f && vbat < VBAT_WARN && (millis() / 400) % 2) ? HIGH : LOW);
+
+  if (++loops % (LOOP_HZ / 10) == 0)
+    Serial.printf("armed=%d link=%d thr=%.2f vbat=%.2f v=%.2f %.2f %.2f %.2f\n", out.armed, in.linkOk, in.throttle, vbat, out.vane[0], out.vane[1], out.vane[2], out.vane[3]);
 }

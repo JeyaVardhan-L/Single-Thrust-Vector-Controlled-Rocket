@@ -4,22 +4,22 @@
 
 export const MONO = {
   name: 'MC-1 Vane-Control Monocopter',
-  ringRadius: 125,        // outer guard ring radius
-  ringY: 205,             // guard ring height above ground
-  ringTube: 3.2,          // ring section radius
-  deckY: 92,              // vane deck height
-  deckRadius: 125,
-  propDiameter: 152,      // 6 inch
-  propY: 160,
-  motorY: 182,
-  motor: { radius: 14, height: 18 },      // 2306 stator bell approx (28 mm dia)
-  hubRadius: 46,
-  legs: 3,
-  legFootRadius: 150,
-  vane: { chord: 46, span: 62, thickness: 2.4, radialStart: 26 },
-  servoCount: 4,
-  battery: { w: 75, h: 33, d: 36 },       // 4S 1300 mAh class
+  // Coordinates for the CAD and the 3D model: z up, origin on the prop axis at the height of the vane hinge axes.
+  prop: { diameterIn: 10, pitchIn: 4.5, radius: 127, z: 52 },      // 10 inch two-blade pusher prop, plane at z = 52
+  motor: { radius: 17.5, height: 30, zTop: 90 },                    // 28xx outrunner hanging under the hub plate, shaft down
+  postRadius: 145,        // four posts on the diagonals; ring centre-lines sit on this radius (18 mm outside the prop tips, 13 mm to the ring)
+  postZ: [-75, 90],       // posts double as legs
+  ring: { band: 5, lowerH: 8, guardH: 10, guardZ: 52 },             // lower ring (servo nodes + half arcs) and prop guard ring
+  vane: { chord: 55, span: 91, thickness: 2.6, rStart: 30, rEnd: 121, hingeFromLE: 16.5 },   // four vanes on the axes, hinge 30 % back
   vaneMaxDeflectionDeg: 25,
+  hub: { radius: 22, z: [-7.5, 16.5] },                             // lower hub under the prop: carries the vane rods and the stators
+  stator: { height: 40, thickness: 2.4 },                           // four fixed swirl-straightening fins on the diagonals
+  plate: { radius: 58, z: [90, 95] },                               // hub plate: motor on the underside, battery on top
+  deck: { w: 96, d: 88, z: [134, 137] },                            // electronics deck on four 39 mm standoffs
+  standoff: { x: 36, y: 32, length: 39 },
+  battery: { w: 75, h: 34, d: 35 },                                 // 4S 1500 mAh class
+  servo: { L: 23, W: 12.2, H: 24 },                                 // 9 to 12 g metal-gear micro servo
+  servoCount: 4,
   // Mixer sign convention is documented in docs/phase1-monocopter/05-firmware-and-control.md
 };
 

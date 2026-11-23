@@ -1,41 +1,48 @@
 # Phase 1 firmware and control
 
-Code: [`firmware/monocopter/src/main.cpp`](../../firmware/monocopter/src/main.cpp) with the portable core in [`firmware/lib/tvc_core/`](../../firmware/lib/tvc_core/). Simulation twin: [`src/sim/`](../../src/sim/). Interactive: [PID lab](../../web/pid.html?model=monocopter).
+Code: [`firmware/monocopter/src/main.cpp`](../../firmware/monocopter/src/main.cpp) with the portable logic in [`firmware/lib/tvc_core/manual_mode.h`](../../firmware/lib/tvc_core/manual_mode.h), the vane mixer in [`mixers.h`](../../firmware/lib/tvc_core/mixers.h) and the CRSF parser in [`crsf.h`](../../firmware/lib/tvc_core/crsf.h). The portable part has host tests (`npm run test:firmware`).
+
+There is **no IMU and no attitude loop** in MC-1: the pilot closes the loop (see [design](01-design.md) §2).
 
 ## 1. Build and upload
 
 ```bash
 pip install platformio          # once
 cd firmware/monocopter
-pio run                         # build
-pio run -t upload               # flash the Teensy 4.1
+pio run                         # build for the ESP32-S3 DevKitC-1
+pio run -t upload               # flash over USB (battery unplugged, propeller off)
 pio device monitor              # 115200 baud console
 ```
 
-## 2. Loop structure (500 Hz)
+## 2. Loop structure (250 Hz)
 
 ```
-read CRSF bytes ─► rcOk?        (link timeout 250 ms)
-read IMU ─► remove gyro bias ─► Mahony AHRS ─► roll, pitch
-arm logic: arm switch > 1700 µs, throttle < 5 %, |roll|,|pitch| < 20°, rcOk
-setpoints: roll/pitch angle (±15° from sticks), yaw rate (±90°/s)
-PID: roll, pitch (D on gyro);  yaw: P on rate error
-authority gate: throttle > 12 % else vanes centred and integrators reset
-mixer ─► 4 servo pulses;  ESC pulse = 1000 + throttle * 1000 µs
-log 100 Hz to SD,  console 10 Hz
+read CRSF bytes ─► link ok?         (timeout 250 ms)
+arm logic:  arm switch > 1700 us, throttle < 5 %, switch must have been seen OFF once since boot or since the last disarm
+if armed:   throttle -> ESC pulse = 1000 + throttle * 1000 us
+            if throttle > 12 %: sticks -> expo -> x scale x schedule -> vane mixer -> 4 servo pulses
+            else: vanes centred
+else:       ESC 1000 us, vanes centred
+console 10 Hz:  armed, link, throttle, battery voltage, vane commands
 ```
 
-Failsafe: link lost > 250 ms or arm switch off → motor pulse 1000 µs, vanes centred, integrators reset, disarmed. The tilt limit is checked at arming.
+**Failsafe:** link lost for more than 250 ms, or the arm switch off → motor pulse 1000 µs, vanes centred, disarmed. It does **not** re-arm by itself: the switch must be cycled with the throttle low.
 
-## 3. Axes, signs and the mixer
+## 3. Channels and the console
+
+ELRS default channel order (AETR): channel 1 roll, 2 pitch, 3 throttle, 4 yaw, 5 arm switch (AUX1). Change `CH_*` in [`pins.h`](../../firmware/monocopter/include/pins.h) if your radio differs.
+
+The console line looks like `armed=1 link=1 thr=0.45 vbat=15.62 v=0.00 0.00 0.00 0.00`. The battery warning buzzes below 14.0 V (3.5 V per cell); calibrate `VBAT_CAL` against a multimeter.
+
+## 4. Axes, signs and the mixer
 
 Aerospace **FRD** body axes: X forward (towards vane 1), Y right (vane 2), Z down.
 
-| Angle | Positive when |
+| Command | Meaning |
 |---|---|
-| Roll | right side goes **down** |
-| Pitch | nose goes **up** |
-| Yaw / yaw rate | **clockwise** seen from above |
+| Roll + | a torque that rolls the right side **down** |
+| Pitch + | a torque that pitches the nose **up** |
+| Yaw + | a torque clockwise seen from above |
 
 Vane `k` is at: 1 front (+X), 2 right (+Y), 3 rear (−X), 4 left (−Y). A positive vane command `d_k` produces a side force along the **clockwise tangent** at that vane (`t1 = +Y, t2 = −X, t3 = −Y, t4 = +X`).
 
@@ -54,51 +61,42 @@ d1 = yaw − roll      d3 = yaw + roll
 d4 = yaw + pitch     d2 = yaw − pitch
 ```
 
-When any |d| exceeds 1, **all four are scaled together** so the ratio between axes is preserved. This is tested in both the JS and C++ test suites with the same cases.
+When any |d| exceeds 1, **all four are scaled together** so the ratio between axes is preserved (tested in the JS and the C++ suites with the same cases).
 
-**Physical rule for checking signs on the bench:** the vane forces must push the *bottom* of the vehicle toward the side that is leaning down. Equivalent: the **lower (trailing) edge of a vane moves away from the lean side**. A vehicle tilted right-wing-down must show the front and rear vanes with their lower edges moving to the left.
+**Physical rule for checking signs on the bench:** the vane force pushes the *bottom* of the vehicle in the direction the lower (trailing) edge of the vane moves **away** from. A roll-right command (right side down) must move the lower edges of vanes 1 and 3 **away from the right**, towards the left of the vehicle, pushing the bottom to the left and rolling the top to the right.
 
-## 4. Estimator
+## 5. Stick processing and the values to tune (`ManualConfig`)
 
-`Mahony(kp = 2.0, ki = 0)` fuses gyro and accelerometer. It ignores the accelerometer when its magnitude is outside 0.5 to 1.5 g (during motor transients), so a strong vibration burst does not corrupt the attitude. There is no magnetometer: yaw drifts slowly and is only used as a rate.
-
-Gyro bias is measured at boot over 2 s. **The vehicle must be still during boot.**
-
-Known limits: a vehicle in sustained acceleration (hover is 1 g, fine) sees fewer corrections; in a sustained turn the estimate lags. That does not matter for hover-level tethered tests.
-
-## 5. Control law and starting gains
-
-| Axis | Law | Gains (per rad, outputs ±1) |
+| Parameter | Default | Meaning |
 |---|---|---|
-| Roll, Pitch | `u = Kp e + ∫Ki e − Kd gyro` | Kp 2.8, Ki 0.8, Kd 0.78, integrator clamp 0.3 |
-| Yaw | `u = Kyaw (rate_sp − gyro_z) + trim` | Kyaw 0.25 per rad/s, trim 0 |
+| `expo` | 0.35 | Softens the centre of the stick (0 linear, 1 cubic) |
+| `rollScale`, `pitchScale` | 0.6 | Fraction of the vane travel at full stick: 0.6 × 25° = 15° of vane |
+| `yawScale` | 0.5 | Same for yaw |
+| `yawTrim` | 0.0 | Static yaw command that cancels the residual prop torque (found on the tether) |
+| `hoverThrottle` | 0.45 | Throttle at which the vane scale is 1.0 (set from the thrust curve at Gate 1) |
+| `schedMin`, `schedMax` | 0.6, 1.6 | Limits of the schedule `hoverThrottle / throttle`: the vane force grows with the wash, so the commands are scaled down at high throttle and up at low throttle |
+| `minAuthThrottle` | 0.12 | Below this the wash is too weak and the vanes stay centred |
+| `armMaxThrottle` | 0.05 | Throttle must be below this to arm |
 
-These come from the **PID lab monocopter preset** ([`src/sim/attitude.js`](../../src/sim/attitude.js)): plant gain `G = 9 rad/s²` per unit command (design estimate, [design §3](01-design.md)), loop `ωn ≈ 5 rad/s`, damping ratio ≈ 0.7, 10 ms latency, 25 ms actuator lag. The simulation predicts settling in ≈ 1.5 s with ≈ 12 % overshoot.
+Servo mapping (`ServoMap` in `mixers.h`): `centerUs` 1500, `usPerDeg` 10, `trimDeg` 0 per servo. The vane is driven directly, so **servo angle = vane angle** (25° at full command). Calibrate each servo: command a known angle, measure it with a protractor, and set `usPerDeg` and `trimDeg` so that the measured angle matches.
 
-Because authority scales with thrust, gains that are stable at hover can be too high at full throttle (G ≈ 2.7×) and gains tuned at low throttle too soft. If you hover over a range of throttles, schedule gains by `1 / thr²` or keep to one hover throttle.
+`VANE_SIGN[i]` flips a servo that is mounted mirrored. Change it only after the sign checks in [06-bench-tests](06-bench-tests.md) show a mirrored vane.
 
-## 6. Tuning procedure (tethered, calm air)
+## 6. Tuning on the tether
 
-1. Set Ki = 0, Kd = 0, Kp low (≈ 1.0). Hover on the tether.
-2. Raise Kp until a small oscillation just appears, then reduce by 30 %.
-3. Add Kd until the oscillation is damped (overshoot < 20 % on a hand tap). Too much Kd: motor-like buzz and warm servos.
-4. Add Ki slowly to remove steady lean (CG error, thrust misalignment). The integrator clamp (0.3) bounds how much it can cover.
-5. Tune yaw last: find `YAW_TRIM` so the vehicle does not rotate at hover with the stick centred.
-6. Record each change and the resulting log in `docs/test-logs/`.
+1. Start with the defaults. Hover low on the tether (see [07](07-tethered-flight-test.md)).
+2. If the vehicle turns about the vertical axis with the yaw stick centred, adjust `yawTrim` until it holds its heading at hover throttle.
+3. If the response to a stick input is too sharp or too weak, change `rollScale` and `pitchScale` first (they set the torque), then `expo`.
+4. If a long hover at one throttle needs constant stick, the CG is off the axis: move the battery along its strap.
+5. Write every change and the result in `docs/test-logs/`.
 
-**What to look at in the log:** `roll`, `pitch` vs time; vane commands `v1..v4` (if flat-topped at ±1 → saturated: lower the gains or add authority); gyro noise (if > ±0.05 rad/s at rest with the motor on, mount better).
-
-## 7. Logging format (`flight.csv`)
-
-```
-ms,armed,roll,pitch,gx,gy,gz,thr,v1,v2,v3,v4
-```
-
-Angles in rad, rates in rad/s, `thr` 0..1, `v*` −1..1. 100 Hz. File is flushed every 5 s.
-
-## 8. Host tests (run these after every change to the core)
+## 7. Host tests (run these after every change to the core)
 
 ```bash
-npm test                 # JS: mixer, attitude simulation
-npm run test:firmware    # C++: PID, Mahony, mixers, CRSF, flight-state machine
+npm test                 # JS: mixer, attitude simulation, printable parts
+npm run test:firmware    # C++: mixers, CRSF, manual mode (arming, failsafe, scaling), and the rocket core
 ```
+
+## 8. Adding stabilisation later
+
+A rate or angle loop needs a gyro and an accelerometer. The portable core already has them for the rocket (`ahrs.h`, `pid.h`, `tvc_hal/icm42688.h`); see the [rocket firmware](../phase2-rocket/06-firmware-and-gnc.md). Replace the stick-to-vane stage in `manual_mode.h` with the same PID structure and keep the arming rules and the failsafe.

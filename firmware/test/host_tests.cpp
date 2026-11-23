@@ -7,6 +7,7 @@
 #include "ahrs.h"
 #include "crsf.h"
 #include "flight_state.h"
+#include "manual_mode.h"
 #include "mixers.h"
 #include "pid.h"
 
@@ -174,6 +175,49 @@ static void test_crsf() {
   CHECK(!got && q.crcErrors == 1, "corrupt frame rejected");
 }
 
+static void test_manual_mode() {
+  std::printf("manual mode (MC-1, no IMU): arming, failsafe, vane scaling\n");
+  using namespace tvc;
+  ManualMode m;
+  ManualInput in; in.linkOk = true;
+  in.armSwitchUs = 2000.f; in.throttle = 0.f;
+  CHECK(!m.update(in).armed, "switch already on at start never arms (must be seen off first)");
+  in.armSwitchUs = 1000.f; m.update(in);
+  in.armSwitchUs = 2000.f; in.throttle = 0.5f;
+  CHECK(!m.update(in).armed, "throttle up refuses to arm");
+  in.throttle = 0.f;
+  ManualOutput o = m.update(in);
+  CHECK(o.armed && o.motorUs == 1000.f, "arms with switch on and throttle low; motor still at idle pulse");
+  in.throttle = 0.5f; in.roll = 1.f; in.pitch = 0.f; in.yaw = 0.f;
+  o = m.update(in);
+  NEAR(o.motorUs, 1500.f, 0.01f, "throttle maps 1000..2000 us");
+  CHECK(o.vane[0] < 0.f && o.vane[2] > 0.f && std::fabs(o.vane[1]) < 1e-6f, "roll deflects vanes 1 and 3 in opposite directions, 2 and 4 stay");
+  in.throttle = 0.08f;
+  o = m.update(in);
+  CHECK(o.armed && o.vane[0] == 0.f && o.vane[2] == 0.f, "vanes centred below the minimum authority throttle");
+  in.throttle = 0.9f; in.roll = 1.f;
+  const float hi = std::fabs(m.update(in).vane[0]);
+  in.throttle = 0.3f;
+  const float lo = std::fabs(m.update(in).vane[0]);
+  CHECK(lo > hi, "vane command is scaled up at low throttle and down at high throttle");
+  in.linkOk = false;
+  o = m.update(in);
+  CHECK(!o.armed && o.motorUs == 1000.f && o.vane[0] == 0.f && o.vane[1] == 0.f, "link loss: motor off, vanes centred");
+  in.linkOk = true;
+  CHECK(m.update(in).armed == false, "does not re-arm by itself after a link loss with the switch still on");
+  in.armSwitchUs = 1000.f; m.update(in);
+  in.armSwitchUs = 2000.f; in.throttle = 0.f;
+  CHECK(m.update(in).armed, "re-arms only after the switch is cycled with the throttle low");
+  NEAR(ManualMode::expoCurve(0.5f, 0.f), 0.5f, 1e-6f, "expo 0 is linear");
+  CHECK(ManualMode::expoCurve(0.5f, 0.5f) < 0.5f && ManualMode::expoCurve(1.f, 0.5f) == 1.f, "expo softens the centre and keeps full travel");
+  ManualConfig c; c.yawTrim = 0.2f; ManualMode t(c);
+  ManualInput x; x.linkOk = true; x.armSwitchUs = 1000.f; t.update(x);
+  x.armSwitchUs = 2000.f; t.update(x);
+  x.throttle = 0.45f; o = t.update(x);
+  bool allEqual = true; for (int i = 1; i < 4; ++i) allEqual = allEqual && std::fabs(o.vane[i] - o.vane[0]) < 1e-6f;
+  CHECK(allEqual && o.vane[0] > 0.19f, "yaw trim moves all four vanes together");
+}
+
 int main() {
   test_crsf();
   test_pid_stabilises_double_integrator();
@@ -185,6 +229,7 @@ int main() {
   test_coax_mixer();
   test_flight_sequence();
   test_flight_abort_and_arming_rules();
+  test_manual_mode();
   std::printf("\n%d checks, %d failed\n", g_run, g_fail);
   return g_fail ? 1 : 0;
 }

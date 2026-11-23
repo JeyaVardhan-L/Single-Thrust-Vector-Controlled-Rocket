@@ -30,14 +30,14 @@ export const PRESETS = {
     note: 'Hover: T = 10.7 N (coaxial pair, 9 in props, about 60 % throttle), L = 0.093 m (pivot to CG), I = 0.019 kg m^2, so G = T L / I = 53 rad/s^2 per rad. At full throttle (30 N) G is about 147. Gimbal limit 7 deg, rate 6 rad/s (about 344 deg/s).',
   },
   monocopter: {
-    id: 'monocopter', label: 'MC-1 monocopter (normalised vane command)',
-    unit: '', G: 9, damping: 0.2, umax: 1,
-    pid: { kp: 2.8, ki: 0.8, kd: 0.78 },
+    id: 'monocopter', label: 'MC-1 monocopter with a gyro (optional upgrade, normalised vane command)',
+    unit: '', G: 20, damping: 0.2, umax: 1,
+    pid: { kp: 1.25, ki: 0.2, kd: 0.35 },
     act: { tau: 0.025, rate: 24 },
-    delay: 0.01, loopHz: 500,
+    delay: 0.01, loopHz: 250,
     noise: { gyro: 0.01, angle: 0.003 },
     step: 6 * DEG, disturb: { t0: 1.5, accel: 1.0, dur: 0.3 },
-    note: 'At hover the prop wash is about 10 m/s, so one vane makes roughly 0.13 N at full deflection. Two vanes at h = 85 mm below the CG give 0.022 N m; I = 0.003 kg m^2, so G is about 9 rad/s^2 per unit command (a design estimate: measure it at Gate 1).',
+    note: 'MC-1 as built has no IMU: the pilot closes the loop. This preset shows what a gyro and an attitude loop would do. At hover the wash is about 16 m/s (10 in prop, 825 g), so one vane makes about 0.8 N at full deflection; two vanes at h = 56 mm below the CG give 0.09 N m; I = 0.0045 kg m^2, so G is about 20 rad/s^2 per unit command. Kp = wn^2 / G for wn = 5 rad/s.',
   },
 };
 
