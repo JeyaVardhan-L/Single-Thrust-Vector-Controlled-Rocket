@@ -1,6 +1,10 @@
 {
   "generated_by": "scripts/gen-cad.mjs",
   "units": "mm",
+  "zips": {
+    "monocopter": "hardware/cad/mc1-monocopter-stl.zip",
+    "rocket": "hardware/cad/rk1-rocket-stl.zip"
+  },
   "bed_min_mm": [
     220,
     220,
@@ -342,13 +346,13 @@
       "file": "hardware/cad/stl/monocopter/mc-hub-plate.stl",
       "note": "Motor pattern 16 x 16 and 19 x 19 (M3). Four strap slots for the battery, four standoff holes, four arm stubs.",
       "size_mm": [
-        118.79,
-        118.79,
+        128.69,
+        128.69,
         5
       ],
-      "volume_cm3": 34,
-      "mass_solid_g": 43,
-      "triangles": 7380
+      "volume_cm3": 35.15,
+      "mass_solid_g": 45,
+      "triangles": 8548
     },
     {
       "id": "mc-deck-plate",
@@ -358,15 +362,15 @@
       "material": "PETG",
       "bom": "F-01",
       "file": "hardware/cad/stl/monocopter/mc-deck-plate.stl",
-      "note": "On four M3 x 39 mm standoffs above the battery, in the prop intake airflow. Zip-tie slots for the ESC, ESP32 board, receiver and BECs.",
+      "note": "On four M3 x 39 mm standoffs above the battery, in the prop intake airflow. Zip-tie slots for the ESC, the ESP32 board and the BECs.",
       "size_mm": [
         96,
         88,
         3
       ],
-      "volume_cm3": 24.17,
+      "volume_cm3": 24.27,
       "mass_solid_g": 31,
-      "triangles": 4224
+      "triangles": 3932
     },
     {
       "id": "mc-arm",
@@ -378,13 +382,13 @@
       "file": "hardware/cad/stl/monocopter/mc-arm.stl",
       "note": "Half lap under the plate stub, two M3 x 8 with nuts in the hexagon holes; tip screws into the post (M3 x 10).",
       "size_mm": [
-        95,
-        16,
-        5
+        93,
+        24,
+        16
       ],
-      "volume_cm3": 5.11,
-      "mass_solid_g": 6,
-      "triangles": 604
+      "volume_cm3": 8.05,
+      "mass_solid_g": 10,
+      "triangles": 732
     },
     {
       "id": "mc-post",
@@ -398,11 +402,11 @@
       "size_mm": [
         165,
         24,
-        8
+        12
       ],
-      "volume_cm3": 23.35,
-      "mass_solid_g": 30,
-      "triangles": 2088
+      "volume_cm3": 37.35,
+      "mass_solid_g": 47,
+      "triangles": 2378
     },
     {
       "id": "mc-servo-cradle",
@@ -432,11 +436,11 @@
       "file": "hardware/cad/stl/monocopter/mc-ring-half-arc.stl",
       "note": "From a servo node to a post. Four are used as printed, four are turned over (mirror image). M3 x 10 at both ends.",
       "size_mm": [
-        44.31,
-        81.01,
+        43.61,
+        82.42,
         8
       ],
-      "volume_cm3": 3.56,
+      "volume_cm3": 3.62,
       "mass_solid_g": 5,
       "triangles": 736
     },
@@ -450,11 +454,11 @@
       "file": "hardware/cad/stl/monocopter/mc-guard-arc.stl",
       "note": "Ring around the prop plane, 13 mm outside the prop tips. M3 x 10 into the post inserts.",
       "size_mm": [
-        39.31,
-        210.01,
+        38.61,
+        212.84,
         10
       ],
-      "volume_cm3": 11.07,
+      "volume_cm3": 11.21,
       "mass_solid_g": 14,
       "triangles": 848
     },
@@ -486,12 +490,12 @@
       "file": "hardware/cad/stl/monocopter/mc-stator.stl",
       "note": "Cancels most of the prop torque so the vanes keep their authority for control. Inner end in the hub slot, outer flange on the post (M3 x 10).",
       "size_mm": [
-        127,
+        125,
         40,
         18
       ],
-      "volume_cm3": 14.56,
-      "mass_solid_g": 18,
+      "volume_cm3": 17.26,
+      "mass_solid_g": 22,
       "triangles": 1236
     },
     {
@@ -540,12 +544,12 @@
       "file": "hardware/cad/stl/monocopter/mc-foot.stl",
       "note": "Slips over the post bottom; absorbs landing shocks.",
       "size_mm": [
-        16,
+        20,
         32,
         20
       ],
-      "volume_cm3": 6.76,
-      "mass_solid_g": 8,
+      "volume_cm3": 7.96,
+      "mass_solid_g": 10,
       "triangles": 604
     }
   ]

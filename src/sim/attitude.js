@@ -37,7 +37,7 @@ export const PRESETS = {
     delay: 0.01, loopHz: 250,
     noise: { gyro: 0.01, angle: 0.003 },
     step: 6 * DEG, disturb: { t0: 1.5, accel: 1.0, dur: 0.3 },
-    note: 'MC-1 as built has no IMU: the pilot closes the loop. This preset shows what a gyro and an attitude loop would do. At hover the wash is about 16 m/s (10 in prop, 825 g), so one vane makes about 0.8 N at full deflection; two vanes at h = 56 mm below the CG give 0.09 N m; I = 0.0045 kg m^2, so G is about 20 rad/s^2 per unit command. Kp = wn^2 / G for wn = 5 rad/s.',
+    note: 'MC-1 as built has no IMU: the pilot closes the loop. This preset shows what a gyro and an attitude loop would do. At hover the wash is about 17 m/s (10 in prop, 892 g), so one vane makes about 0.8 N at full deflection; two vanes at h = 56 mm below the CG give 0.09 N m; I = 0.0045 kg m^2, so G is about 20 rad/s^2 per unit command. Kp = wn^2 / G for wn = 5 rad/s.',
   },
 };
 

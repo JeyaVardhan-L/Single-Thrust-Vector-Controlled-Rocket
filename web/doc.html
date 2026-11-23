@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="theme.js"></script>
 <title>Documentation · tvc rocket</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,9 +12,10 @@
 <link rel="icon" href="data:,">
 </head>
 <body>
-<header class="topbar"><a class="brand" href="../index.html">TVC Rocket / Open build guide</a><nav><a href="../index.html">Home</a><a href="rocket.html">Rocket</a><a href="monocopter.html">Monocopter</a><a href="assembly.html?model=rocket">Build</a><a href="gimbal.html">Gimbal</a><a href="pid.html">PID</a><a href="sizing.html">Sizing</a><a href="wiring.html">Wiring</a><a href="bom.html?model=rocket">BOM</a><a href="parts.html">Parts</a><a href="doc.html?p=docs/README.md" class="on">Docs</a></nav><a class="cta" href="assembly.html?model=rocket">Start building<i>/</i></a></header>
+<header class="topbar"><a class="brand" href="../index.html">TVC Rocket / Open build guide</a><nav><a href="../index.html">Home</a><a href="rocket.html">Rocket</a><a href="monocopter.html">Monocopter</a><a href="assembly.html?model=monocopter">Build</a><a href="control.html">Control</a><a href="gimbal.html">Gimbal</a><a href="pid.html">PID</a><a href="sizing.html">Sizing</a><a href="wiring.html">Wiring</a><a href="parts.html">Parts</a><a href="doc.html?p=docs/README.md" class="on">Docs</a></nav><a class="cta" href="assembly.html?model=monocopter">Start building<i>/</i></a></header>
 <main class="doc"><article class="sheet"><div class="crumbs" id="crumbs"></div><div id="out">Loading…</div></article></main>
 <script type="module">
+addEventListener('themechange', () => location.reload());
 import { marked } from '../vendor/marked/marked.esm.js';
 
 const params = new URLSearchParams(location.search);
@@ -64,7 +66,7 @@ if (blocks.length) {
   try {
     const mod = await import('https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.esm.min.mjs');
     const mermaid = mod.default;
-    mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'strict', fontFamily: 'DM Sans, sans-serif' });
+    mermaid.initialize({ startOnLoad: false, theme: (window.TVCTheme && TVCTheme.get() === 'dark') ? 'dark' : 'neutral', securityLevel: 'strict', fontFamily: 'DM Sans, sans-serif' });
     let n = 0;
     for (const pre of blocks) {
       const src = pre.textContent;

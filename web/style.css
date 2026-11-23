@@ -21,6 +21,19 @@
   --sans: "PP Neue Montreal", "Inter", "Helvetica Neue", Arial, ui-sans-serif, system-ui, sans-serif;
   --mono: "GT America Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-family: var(--sans);
+  color-scheme: light;
+}
+/* Dark theme: near-black canvas, one orange accent. Same token names, so every page follows. */
+:root[data-theme="dark"] {
+  --indigo: #ff7a1f;
+  --bone: #121214;
+  --ink: #f1ede6;
+  --paper: #1b1b1e;
+  --deep: #ffa05a;
+  --hair: rgba(255, 255, 255, .14);
+  --hair-bone: rgba(18, 18, 20, .35);
+  --muted: #a09b90;
+  color-scheme: dark;
 }
 * { box-sizing: border-box; border-radius: 0; }
 html, body { margin: 0; height: 100%; background: var(--bone); color: var(--ink); font-family: var(--sans); font-weight: 400; font-size: 16px; line-height: 1.5; }
@@ -57,7 +70,7 @@ code, kbd { font-family: var(--mono); font-size: .84em; background: var(--paper)
 .hint { position: absolute; right: 24px; bottom: 18px; font-family: var(--mono); font-size: 10px; text-transform: uppercase; color: var(--muted); pointer-events: none; z-index: 2; }
 
 .side h3 { font-family: var(--mono); font-size: 10px; letter-spacing: .02em; text-transform: uppercase; color: var(--indigo); margin: 30px 0 12px; padding-top: 14px; border-top: 1px solid var(--hair); font-weight: 500; }
-.side h3:first-child { margin-top: 0; border-top: 0; padding-top: 0; }
+.side > h3:first-child { margin-top: 0; border-top: 0; padding-top: 0; }
 .side h3 small { font-family: var(--mono); font-size: 10px; text-transform: none; color: var(--muted); font-weight: 400; }
 .row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; margin: 8px 0; font-size: 14px; }
 .row label { color: var(--ink); }
@@ -82,7 +95,8 @@ button:disabled:hover { background: transparent; color: var(--ink); }
 .partlist .cat-power { background: var(--ink); }
 .partlist .cat-avionics { background: var(--hair); border-color: var(--ink); }
 .partlist input { margin: 0; accent-color: var(--indigo); }
-.info { background: var(--paper); padding: 16px 18px; font-size: 14px; }
+.info { background: var(--paper); padding: 16px 18px; font-size: 14px; margin-bottom: 4px; }
+#controls { margin-top: 8px; }
 .info h4 { margin: 0 0 6px; font-size: 24px; }
 .info .meta { color: var(--muted); font-family: var(--mono); font-size: 10px; margin-top: 10px; }
 .kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; font-size: 14px; }
@@ -212,9 +226,10 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 @media (max-width: 1100px) {
   body:has(.app), body:has(.wizard) { height: auto; overflow: auto; display: block; }
-  .app, .app.two { grid-template-columns: 1fr; grid-template-rows: 60vh auto auto; }
+  .app, .app.two { grid-template-columns: 1fr; grid-template-rows: none; }
+  .app > .stage { order: -1; height: 64vh; min-height: 340px; }          /* the 3D view comes first on a narrow screen */
+  .side { overflow: visible; }
   .app > .side:first-child, .app > .side:last-child { border: 0; border-top: 1px solid var(--hair); }
-  .stage { min-height: 60vh; }
   .wizard { grid-template-columns: 1fr; grid-template-rows: 60vh auto; }
   .hero-grid { grid-template-columns: 1fr; }
   .iso-hero { height: 420px; }
@@ -237,3 +252,11 @@ body.shot .stage { height: 100vh; }
 .hero-row .iso-hero { height: min(84vh, 760px); min-height: 480px; }
 .hero { padding-bottom: 48px; }
 @media (max-width: 1100px) { .hero-row { grid-template-columns: 1fr; padding-right: 0; } .hero-row .iso-hero { height: 440px; min-height: 0; } }
+
+/* ---------- theme toggle ---------- */
+.theme-btn { display: inline-flex; align-items: center; gap: 8px; padding: 0 12px; height: 40px; }
+.theme-btn i { width: 14px; height: 14px; border: 1px solid currentColor; border-radius: 50% !important; background: linear-gradient(90deg, currentColor 50%, transparent 50%); display: inline-block; }
+:root[data-theme="dark"] .doc pre { background: #000; color: var(--ink); border: 1px solid var(--hair); }
+:root[data-theme="dark"] .partlist .cat-power { background: var(--ink); }
+:root[data-theme="dark"] .canvas-wrap { background: var(--paper); }
+:root[data-theme="dark"] ::selection { background: var(--indigo); color: #000; }

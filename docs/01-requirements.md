@@ -8,7 +8,7 @@ Each requirement has an ID, a verification method (**T**est, **A**nalysis, **I**
 |---|---|---|---|
 | SYS-01 | The vehicle shall be electrically inert (no actuator motion, no motor output) until powered with the RBF loop/pin removed **and** the arm switch on | T | 0 / A |
 | SYS-02 | The flight computer shall run its control loop at ≥ 500 Hz (RK-1) or ≥ 250 Hz (MC-1) with worst-case jitter < 10 % | T | 0 |
-| SYS-03 | Total sensor-to-actuator latency shall be ≤ 15 ms (RK-1); stick-to-vane latency ≤ 25 ms (MC-1) | T | 0 / A |
+| SYS-03 | Total sensor-to-actuator latency shall be ≤ 15 ms (RK-1); command-to-vane latency ≤ 100 ms over Wi-Fi (MC-1) | T | 0 / A |
 | SYS-04 | RK-1: all flight-relevant signals (attitude, rates, commands, actuator positions, state, battery V) shall be logged ≥ 100 Hz to non-volatile storage. MC-1: arm state, link, throttle, battery V and vane commands are printed at 10 Hz and the flight is recorded on video | T | 0 |
 | SYS-05 | Servo power shall be separate from logic power; a servo stall shall not reset the flight computer | T | 0 / A |
 | SYS-06 | Telemetry (state, attitude, battery, position) shall reach the ground station at ≥ 1 Hz over ≥ 300 m before first flight | T | 2 / E |
@@ -19,9 +19,9 @@ Each requirement has an ID, a verification method (**T**est, **A**nalysis, **I**
 
 | ID | Requirement | Ver. | Gate |
 |---|---|---|---|
-| MC-01 | Take-off mass ≤ 900 g (BOM baseline 825 g) | I | 1 |
+| MC-01 | Take-off mass ≤ 950 g (parts-list baseline 892 g) | I | 1 |
 | MC-02 | Static thrust ≥ 2.0 × take-off weight on a fresh 4S pack | T | 1 |
-| MC-03 | Roll and pitch control authority ≥ 0.05 N·m at hover throttle (design value 0.09 N·m, recorded on the stand at Gate 1) | T | 1 |
+| MC-03 | Roll and pitch control authority ≥ 0.05 N·m at hover throttle (design value 0.085 N·m, recorded on the stand at Gate 1) | T | 1 |
 | MC-04 | With the swirl-straightening fins fitted, the residual prop reaction torque at hover shall be ≤ 60 % of the yaw authority of the vanes (measured on the stand) | T | 1 |
 | MC-05 | RC link loss or arm-switch off shall cut the motor and centre the vanes within 0.5 s | T | 0 |
 | MC-06 | The vehicle shall refuse to arm if the arm switch is on at power-up, or if the throttle is > 5 % | T | 0 |
@@ -34,7 +34,7 @@ Each requirement has an ID, a verification method (**T**est, **A**nalysis, **I**
 
 | ID | Requirement | Ver. | Gate |
 |---|---|---|---|
-| RK-01 | Take-off mass ≤ 1.3 kg (BOM baseline 1.06 kg) | I | B |
+| RK-01 | Take-off mass ≤ 1.3 kg (parts-list baseline 1.06 kg) | I | B |
 | RK-02 | Static thrust ≥ 2.0 × take-off weight on a fresh 6S pack (baseline 2.5) | T | B |
 | RK-03 | Gimbal range ±7° mechanical, software limit ±6.5°, both axes | T | A |
 | RK-04 | Gimbal backlash < 0.3° at the mount tube, measured | T | A |

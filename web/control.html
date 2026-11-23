@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="theme.js"></script>
+<title>Phone control · MC-1 flight deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+<style>
+  .ctl-grid { display: grid; grid-template-columns: minmax(320px, 440px) 1fr; gap: 40px; align-items: start; margin-top: 8px; }
+  .phone { position: sticky; top: 16px; border: 1px solid var(--ink); background: var(--paper); padding: 10px; }
+  .phone iframe { display: block; width: 100%; height: min(78vh, 760px); min-height: 560px; border: 0; background: var(--bone); }
+  .phone .cap { display: flex; justify-content: space-between; gap: 8px; margin-top: 8px; color: var(--muted); }
+  .ctl-text h2 { font-size: 34px; margin: 44px 0 14px; }
+  .ctl-text h2:first-child { margin-top: 0; }
+  .steps-n { counter-reset: s; list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--hair); }
+  .steps-n li { counter-increment: s; padding: 14px 0 14px 48px; border-bottom: 1px solid var(--hair); position: relative; }
+  .steps-n li::before { content: counter(s); position: absolute; left: 0; top: 14px; width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid var(--indigo); color: var(--indigo); font-family: var(--mono); font-size: 12px; }
+  @media (max-width: 1000px) { .ctl-grid { grid-template-columns: 1fr; } .phone { position: static; } }
+</style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="../index.html">TVC Rocket / Open build guide</a><nav><a href="../index.html">Home</a><a href="rocket.html">Rocket</a><a href="monocopter.html">Monocopter</a><a href="assembly.html?model=monocopter">Build</a><a href="control.html" class="on">Control</a><a href="gimbal.html">Gimbal</a><a href="pid.html">PID</a><a href="sizing.html">Sizing</a><a href="wiring.html">Wiring</a><a href="parts.html">Parts</a><a href="doc.html?p=docs/README.md">Docs</a></nav><a class="cta" href="assembly.html?model=monocopter">Start building<i>/</i></a></header>
+<div class="page">
+  <div class="mono" style="color:var(--muted)">MC-1 · Phase 1 · no radio, no IMU</div>
+  <h1 style="font-size:clamp(48px,8vw,112px)">Phone control</h1>
+  <p class="lead">The ESP32-S3 makes its own Wi-Fi network and serves one page. Join the network with any phone, open the page, and fly: a throttle that always ramps smoothly, a direction wheel that moves the right vanes, yaw, arm and kill. The phone on the left is the real page running against a simulated vehicle; try it.</p>
+  <div class="ctl-grid">
+    <div class="phone">
+      <iframe id="app" title="MC-1 flight deck demo" src="../firmware/monocopter/web/control.html?demo=1"></iframe>
+      <div class="cap mono"><span>Demo · keys: arrows, W/S, A/D, Enter, Space</span><a href="../firmware/monocopter/web/control.html?demo=1">Full screen →</a></div>
+    </div>
+    <div class="ctl-text">
+      <h2>Connect in four steps</h2>
+      <ol class="steps-n">
+        <li>Power the vehicle with the propeller <b>off</b>. The ESP32-S3 starts the network <code>MC1-FLY</code> (password in <code>firmware/monocopter/include/config.h</code>; change it).</li>
+        <li>Join <code>MC1-FLY</code> on your phone. If it says "no internet", choose <b>stay connected</b>.</li>
+        <li>Open <code>http://192.168.4.1/</code> in the phone's browser (type <code>http://</code>, not <code>https://</code>).</li>
+        <li>The link light turns green. Move the wheel: the vanes follow while the vehicle is disarmed, so you can check every direction before the propeller goes on.</li>
+      </ol>
+
+      <h2>What each control does</h2>
+      <table>
+        <tr><th>Control</th><th>What it does</th></tr>
+        <tr><td>Throttle track</td><td>Drag to set the target. The motor follows through a ramp (0.30 per second up, 0.60 per second down), so a jump on the slider is never a jump on the motor. A thin line shows the real motor value.</td></tr>
+        <tr><td>▲ Climb / ▼ Descend</td><td>Hold to raise or lower the target at a steady rate: Smooth 6, Normal 12, Quick 24 percent per second.</td></tr>
+        <tr><td>Hover</td><td>Sets the target to the hover throttle (45 percent by default, tuned on the tether).</td></tr>
+        <tr><td>Land</td><td>Brings the throttle down slowly (8 percent per second), then tells you to disarm.</td></tr>
+        <tr><td>Direction wheel</td><td>Push toward the way you want the vehicle to tilt and move. Release and it springs back to the centre. The sensitivity is in Settings.</td></tr>
+        <tr><td>Yaw</td><td>Slide left or right to turn; it springs back to the centre.</td></tr>
+        <tr><td>Hold to arm</td><td>Hold for 0.9 s with the throttle at zero. Tap to disarm.</td></tr>
+        <tr><td>Kill</td><td>The motor stops at once. The vehicle stays off until you arm it again.</td></tr>
+        <tr><td>Throttle limit</td><td>Starts at 50 percent every time the page opens. Raise it in steps on the tether (Settings).</td></tr>
+      </table>
+
+      <h2>Which servo moves for which direction</h2>
+      <p>The vanes work below the centre of gravity, so a side force at the vanes tilts the thrust line the opposite way round. The firmware does that for you; the table is what to expect when you check the vanes on the bench.</p>
+      <table>
+        <tr><th>Wheel</th><th>Vanes that move</th><th>The vehicle then</th></tr>
+        <tr><td>Forward (up)</td><td>2 right and 4 left, opposite directions</td><td>tilts nose down and moves forward</td></tr>
+        <tr><td>Backward (down)</td><td>2 and 4, the other way</td><td>tilts nose up and moves back</td></tr>
+        <tr><td>Right</td><td>1 front and 3 rear, opposite directions</td><td>rolls right and moves right</td></tr>
+        <tr><td>Left</td><td>1 and 3, the other way</td><td>rolls left and moves left</td></tr>
+        <tr><td>Yaw right</td><td>all four, the same direction</td><td>turns clockwise seen from above</td></tr>
+      </table>
+
+      <h2>Safety, enforced in the firmware</h2>
+      <ul>
+        <li>It arms only on a fresh press of ARM, with the throttle at zero, after ARM was seen off since power-up.</li>
+        <li>No commands for 0.4 s: the throttle ramps down with the vanes centred. No commands for 2.5 s: disarmed. It never re-arms by itself.</li>
+        <li>The throttle limit and the ramps apply in the firmware, not only in the page.</li>
+        <li>Fly tethered. Wi-Fi is not a radio-control link: keep the phone close, the screen on, and expect the occasional dropout.</li>
+      </ul>
+      <div class="btn-row"><a class="btn" href="doc.html?p=docs/phase1-monocopter/09-phone-control.md">Phone control guide</a><a class="btn" href="doc.html?p=docs/phase1-monocopter/05-firmware-and-control.md">Firmware</a><a class="btn" href="https://github.com/JeyaVardhan-L/Single-Thrust-Vector-Controlled-Rocket/blob/main/firmware/monocopter/web/control.html">Page source</a></div>
+    </div>
+  </div>
+</div>
+<script>window.__ready = true;</script>
+</body>
+</html>

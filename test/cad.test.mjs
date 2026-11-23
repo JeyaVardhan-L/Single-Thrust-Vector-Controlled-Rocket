@@ -103,21 +103,26 @@ test('MC-1: the servo body passes the cradle window, the vane rod passes its bor
   assert.ok(C.vane().intersect(cylA('x', 1.5, 0, 140, 0, 0)).volume() < 0.01, 'Ø3 rod passes the vane bore');
   assert.ok(C.hornAdapter().intersect(cylA('x', 1.5, 120, C.MC.rod.x[1], 0, 0)).volume() < 0.01, 'Ø3 rod end fits the adapter bore');
   assert.ok(C.lowerHub().intersect(cylA('x', 1.5, C.MC.rod.x[0], 40, 0, 0)).volume() < 0.01, 'Ø3 rod tip fits the hub bore');
-  assert.ok(C.lowerHub().intersect(C.stator().rotate([0, 0, 45])).volume() < 0.5, 'a 2.4 mm stator slides into the 3.3 mm hub slot');
+  assert.ok(C.lowerHub().intersect(C.stator().rotate([0, 0, 45])).volume() < 0.5, 'a 3.0 mm stator slides into the 3.3 mm hub slot');
 });
 
 test('MC-1: every vane axis, post and servo is where the spec says', () => {
   const post = stats(C.post());
-  assert.deepEqual(post.size, [8, 24, 165]);
+  assert.deepEqual(post.size, [12, 24, 165]);
   assert.equal(M.vane.rEnd - M.vane.rStart, M.vane.span);
   assert.ok(M.vane.rStart > M.hub.radius, 'the vane starts outside the hub');
   assert.ok(C.MC.adapter.x[0] > M.vane.rEnd + 2, 'the adapter clears the vane spine');
 });
 
-test('MC-1: mass budget matches the design (BOM on-board mass under 900 g)', () => {
+test('MC-1: mass budget matches the design (on-board mass under 950 g, printed line agrees with the CAD files)', () => {
   const bom = JSON.parse(readFileSync(join(root, 'hardware/bom/monocopter.json'), 'utf8'));
   const mass = bom.items.filter((i) => i.onboard).reduce((a, i) => a + i.mass_g * i.qty, 0);
-  assert.ok(mass > 600 && mass < 900, 'on-board mass ' + mass);
+  assert.ok(mass > 600 && mass < 950, 'on-board mass ' + mass);
+  // F-01 is 65 % of the solid mass of the mounted printed parts (the two spare vanes are not mounted)
+  const parts = JSON.parse(readFileSync(join(root, 'hardware/cad/parts.json'), 'utf8')).parts.filter((p) => p.vehicle === 'monocopter');
+  const solid = parts.reduce((a, p) => a + (p.id === 'mc-vane' ? 4 : p.qty) * p.mass_solid_g, 0);
+  const f01 = bom.items.find((i) => i.id === 'F-01').mass_g;
+  assert.ok(Math.abs(f01 - 0.65 * solid) / f01 < 0.03, `F-01 ${f01} g vs 65 % of ${solid} g solid`);
 });
 
 test('MC-1 assembly: no interference with the vanes at full deflection, and the vanes can be installed', () => {

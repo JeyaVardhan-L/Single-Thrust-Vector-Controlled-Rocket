@@ -24,16 +24,16 @@ export function buildMonocopter() {
     const h = S.postZ[1] - S.postZ[0];
     for (let k = 0; k < 4; k++) {
       const a = diag(k), [x, z] = at(a, R);
-      const p = box(8, h, 24, MAT.print, x, S.postZ[0] + h / 2, z);
+      const p = box(S.post.t, h, S.post.w, MAT.print, x, S.postZ[0] + h / 2, z);
       p.rotation.y = -a;
       g.add(p);
-      const f = box(16, 20, 32, MAT.rubber, x, S.postZ[0] + 10, z);
+      const f = box(S.post.t + 8, 20, S.post.w + 8, MAT.rubber, x, S.postZ[0] + 10, z);
       f.rotation.y = -a;
       g.add(f);
     }
     parts.add('posts', g, {
       name: 'Posts / legs (×4)', category: 'structure', explode: [0, -80, 0],
-      desc: 'Four 8 × 24 mm posts on the diagonals, 165 mm long. They carry the arms, the stators and both rings and double as the legs, with TPU foot caps.',
+      desc: 'Four 12 × 24 mm posts on the diagonals, 165 mm long. They carry the arms, the stators and both rings and double as the legs, with TPU foot caps.',
     });
   }
 
@@ -65,15 +65,19 @@ export function buildMonocopter() {
     g.add(cyl(S.plate.radius, S.plate.radius, py[1] - py[0], MAT.print, 64, 0, (py[0] + py[1]) / 2, 0));
     for (let k = 0; k < 4; k++) {
       const a = diag(k), len = R - S.plate.radius, [x, z] = at(a, S.plate.radius + len / 2);
-      const arm = box(len, py[1] - py[0], 12, MAT.print, x, (py[0] + py[1]) / 2, z);
+      const arm = box(len, py[1] - py[0], S.arm.w, MAT.print, x, (py[0] + py[1]) / 2, z);
       arm.rotation.y = -a;
       g.add(arm);
+      const ribLen = R - 8 - 88, [rx, rz] = at(a, 88 + ribLen / 2);
+      const rib = box(ribLen, S.arm.ribH, S.arm.ribT, MAT.print, rx, py[1] + S.arm.ribH / 2, rz);
+      rib.rotation.y = -a;
+      g.add(rib);
     }
     for (const sx of [-1, 1]) for (const sz of [-1, 1]) g.add(cyl(2.75, 2.75, S.standoff.length, MAT.gold, 6, sx * S.standoff.x, py[1] + S.standoff.length / 2, sz * S.standoff.y));
     g.add(box(S.deck.w, S.deck.z[1] - S.deck.z[0], S.deck.d, MAT.print, 0, (deckY[0] + deckY[1]) / 2, 0));
     parts.add('hub-plate', g, {
       name: 'Hub plate, arms, electronics deck', category: 'structure', explode: [0, 110, 0],
-      desc: 'Ø116 hub plate with the motor hanging under it and the battery strapped on top, four arms to the posts, and the electronics deck on four 39 mm standoffs.',
+      desc: 'Ø116 hub plate with the motor hanging under it and the battery strapped on top, four T-section arms (14 mm flange, 11 mm rib) to the posts, and the electronics deck on four 39 mm standoffs.',
     });
   }
 
@@ -199,13 +203,10 @@ export function buildMonocopter() {
     g.add(box(69, 3, 25.5, MAT.pcb, -8, y + 1.5 + 4, -16));            // ESP32-S3 board
     g.add(box(16, 2.5, 14, MAT.steel, -30, y + 4 + 4, -16));
     g.add(box(45, 6, 22, MAT.black, 4, y + 3, 18));                     // ESC
-    g.add(box(17, 2, 12, MAT.pcb, -34, y + 2, 20));                     // receiver
     g.add(box(24, 6, 14, MAT.red, 32, y + 3, -22));                     // BECs
-    g.add(cyl(3.2, 3.8, 5, MAT.black, 0, y + 2.5, S.deck.d / 2 - 12 - 0));
-    g.add(cyl(0.9, 0.9, 80, MAT.black, 8, 0, y + 45, S.deck.d / 2 - 12));
     parts.add('electronics', g, {
-      name: 'ESP32-S3, ESC, receiver, BECs', category: 'avionics', explode: [0, 200, 0],
-      desc: 'On the deck in the prop intake airflow (cooling): ESP32-S3 board, 40 A ESC, ELRS receiver, 6 V servo BEC and 5 V logic BEC. No IMU: the pilot closes the loop.',
+      name: 'ESP32-S3, ESC, BECs', category: 'avionics', explode: [0, 200, 0],
+      desc: 'On the deck in the prop intake airflow (cooling): ESP32-S3 board, 40 A ESC, 6 V servo BEC and 5 V logic BEC. The ESP32-S3 makes the Wi-Fi network the phone flies it over. No IMU, no receiver: the pilot closes the loop.',
     });
   }
 

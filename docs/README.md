@@ -14,8 +14,8 @@ Read in this order the first time. Afterwards use it as a lookup.
 |---|---|
 | [01-requirements.md](01-requirements.md) | Numbered requirements for both vehicles, traceable to tests |
 | [02-architecture.md](02-architecture.md) | Mechanical, electrical, software and data-flow architecture with diagrams |
-| [cad-mapping.md](cad-mapping.md) | CAD browser tree ↔ three.js part ids ↔ BOM lines ↔ STL files |
-| [cad-parts.md](cad-parts.md) | Printable STL files: sizes, materials, quantities |
+| [cad-mapping.md](cad-mapping.md) | CAD browser tree ↔ three.js part ids ↔ parts-list lines ↔ STL files |
+| [cad-parts.md](cad-parts.md) | Printable STL files: the two sets (monocopter first, rocket second), with one zip each |
 | [printing.md](printing.md) | Materials, print settings, per-part print list and orientation |
 | [glossary.md](glossary.md) | Terms and abbreviations |
 
@@ -24,26 +24,29 @@ Read in this order the first time. Afterwards use it as a lookup.
 | # | Document |
 |---|---|
 | 1 | [Design](phase1-monocopter/01-design.md): concept, vane physics, sizing, mass budget |
-| 2 | [Bill of materials](phase1-monocopter/02-bom.md) (generated) |
+| 2 | [Parts list](phase1-monocopter/02-parts-list.md) (generated) |
 | 3 | [Build guide](phase1-monocopter/03-build-guide.md): step by step, with checks |
 | 4 | [Wiring](phase1-monocopter/04-wiring.md): power tree, pin map, harness notes |
-| 5 | [Firmware and control](phase1-monocopter/05-firmware-and-control.md): estimator, mixer, PID, sign conventions, tuning |
+| 5 | [Firmware and control](phase1-monocopter/05-firmware-and-control.md): Wi-Fi protocol, loop, mixer, sign conventions, tuning |
 | 6 | [Bench tests](phase1-monocopter/06-bench-tests.md): no-prop and static-thrust procedures with pass/fail |
 | 7 | [Tethered flight test](phase1-monocopter/07-tethered-flight-test.md) |
 | 8 | [Gate review](phase1-monocopter/08-gate-review.md): what must be true before starting Phase 2 hardware |
+| 9 | [Phone control guide](phase1-monocopter/09-phone-control.md): connect, the controls, bench check, troubleshooting |
+| + | [Printable parts](phase1-monocopter/printable-parts.md): the monocopter STL set, hardware counts, strength notes |
 
 ## 3. Phase 2: RK-1 TVC rocket
 
 | # | Document |
 |---|---|
 | 1 | [Design](phase2-rocket/01-design.md): concept, mass / CG / inertia, stability, sizing |
-| 2 | [Bill of materials](phase2-rocket/02-bom.md) (generated) |
+| 2 | [Parts list](phase2-rocket/02-parts-list.md) (generated) |
 | 3 | [Build guide](phase2-rocket/03-build-guide.md) |
 | 4 | [Wiring](phase2-rocket/04-wiring.md) |
 | 5 | [Gimbal design](phase2-rocket/05-gimbal-design.md): kinematics, gears, torque, backlash, calibration |
 | 6 | [Firmware and GNC](phase2-rocket/06-firmware-and-gnc.md): states, attitude error, control, sign convention |
 | 7 | [Test stand procedure](phase2-rocket/07-test-stand-procedure.md): static thrust, gimbal sweeps, closed loop on a rig, abort criteria |
 | 8 | [Flight test plan](phase2-rocket/08-flight-test-plan.md): from tethered hop to free flight |
+| + | [Printable parts](phase2-rocket/printable-parts.md): the rocket STL set and hardware counts |
 
 ## 4. Theory (short, practical)
 
@@ -53,7 +56,7 @@ Read in this order the first time. Afterwards use it as a lookup.
 
 ## Interactive companions
 
-Everything above has an interactive counterpart in the web viewer (`npm start`): 3D models, build wizards, PID lab, gimbal lab, sizing calculator, wiring diagrams, BOM table. Links are in the [root README](../README.md).
+Everything above has an interactive counterpart in the web viewer (`npm start`): 3D models, build wizards, PID lab, gimbal lab, sizing calculator, wiring diagrams, phone-control demo. Links are in the [root README](../README.md).
 
 ## Conventions used in the docs
 

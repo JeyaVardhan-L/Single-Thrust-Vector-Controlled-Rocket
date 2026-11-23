@@ -26,6 +26,8 @@ jobs:
         run: |
           mkdir _site
           cp -r index.html web src vendor hardware assets docs _site/
+          mkdir -p _site/firmware/monocopter
+          cp -r firmware/monocopter/web _site/firmware/monocopter/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

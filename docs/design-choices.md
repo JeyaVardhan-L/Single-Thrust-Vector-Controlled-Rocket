@@ -11,7 +11,7 @@ The numbers in this repository come from one CAD screenshot (browser tree and vi
 | D-05 | Power | 6S 1500 mAh main pack (ESCs, servo BEC) and a separate 2S 450 mAh avionics pack, side by side on one plate | ESC and servo noise never reaches the flight computer | One pack with a clean regulator |
 | D-06 | Flight computer | RK-1: Teensy 4.1 + ICM-42688-P + BMP390. MC-1: ESP32-S3, no IMU | Rocket: fast, well documented, SD slot. Monocopter: cheap, one board, the experiment needs no attitude loop | Any 100 MHz+ MCU with SPI and an SD card |
 | D-07 | Phase 1 propulsion | 28xx ≈ 1100 KV motor + 10×4.5 pusher prop, 4S 1500 mAh | A 10 inch disc gives about 40 % less hover power than 6 inch for the same mass and a wider wash for the vanes; see [phase 1 design](phase1-monocopter/01-design.md) §4 | 8 or 9 inch prop with a smaller ring |
-| D-08 | Control link (Phase 1) | ExpressLRS 2.4 GHz, CRSF | Low latency, telemetry back-channel | Any RC link with SBUS or CRSF |
+| D-08 | Control link (Phase 1) | Phone over Wi-Fi: the ESP32-S3 is the access point and serves the control page | Nothing to buy or bind, live vane display, smooth throttle ramps; adequate for a tethered experiment | An ExpressLRS radio (the rocket's link) for range and latency |
 | D-09 | Control link | ExpressLRS 2.4 GHz, CRSF, with link statistics and battery voltage on the radio | Same receiver as the monocopter | Any radio with SBUS or CRSF |
 | D-10 | Arming | Two independent switches (on-board and radio), RBF pin on the main pack, ESCs held low by pull-downs | Two interlocks against an accidental spin-up | A hardware arm relay |
 | D-11 | Test stand | Fixed thrust stand with a load cell, plus a tilting rig for closed-loop tests | The CAD has a `test-stand` part | A free pivot or tethered stand |
@@ -24,7 +24,7 @@ The numbers in this repository come from one CAD screenshot (browser tree and vi
 ## How to change a choice
 
 1. Write the decision and the reasoning in your pull request.
-2. Update `src/data/spec.js` (geometry), the BOM JSON (parts), the [requirements](01-requirements.md) and the affected design document.
+2. Update `src/data/spec.js` (geometry), the parts-list JSON (parts), the [requirements](01-requirements.md) and the affected design document.
 3. Run `npm test`, `npm run bom`, `npm run screenshots`.
 
 ## Scope of this design

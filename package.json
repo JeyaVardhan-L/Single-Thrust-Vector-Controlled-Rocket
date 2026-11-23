@@ -14,7 +14,8 @@
     "test:firmware": "node scripts/test-firmware.mjs",
     "cad": "node scripts/gen-cad.mjs",
     "cad:check": "node scripts/gen-cad.mjs --check",
-    "cad:assembly": "node scripts/check-assembly.mjs"
+    "cad:assembly": "node scripts/check-assembly.mjs",
+    "webui": "node scripts/gen-webui.mjs"
   },
   "devDependencies": {
     "manifold-3d": "^3.5.4",

@@ -12,10 +12,12 @@ if (!executablePath) { console.error('No Chrome found. Set CHROME_PATH.'); proce
 const pages = [
   'index.html', 'web/rocket.html', 'web/rocket.html?select=tvc', 'web/monocopter.html', 'web/monocopter.html?select=vanes',
   'web/assembly.html?model=rocket&step=4', 'web/assembly.html?model=monocopter&step=3', 'web/pid.html', 'web/pid.html?model=monocopter',
-  'web/gimbal.html', 'web/sizing.html', 'web/sizing.html?model=monocopter', 'web/bom.html?model=rocket', 'web/parts.html', 'web/bom.html?model=monocopter',
+  'web/gimbal.html', 'web/sizing.html', 'web/sizing.html?model=monocopter', 'web/parts.html',
   'web/wiring.html', 'web/wiring.html?model=rocket', 'web/doc.html?p=docs/README.md', 'web/doc.html?p=docs/phase2-rocket/03-build-guide.md',
-  'web/doc.html?p=docs/safety.md',
+  'web/doc.html?p=docs/safety.md', 'web/doc.html?p=docs/phase1-monocopter/09-phone-control.md', 'web/control.html', 'firmware/monocopter/web/control.html?demo=1',
+  'web/parts.html?v=rocket', 'web/assembly.html?model=monocopter&step=7',
 ];
+const THEMES = ['light', 'dark'];
 
 const MIN = 3.0;   // below this the text is effectively unreadable
 const check = () => {
@@ -29,7 +31,7 @@ const check = () => {
       if (c[3] > 0) layers.push(c);
       if (c[3] >= 1) break;
     }
-    let base = [247, 246, 242];
+    let base = document.documentElement.getAttribute('data-theme') === 'dark' ? [18, 18, 20] : [247, 246, 242];
     for (let i = layers.length - 1; i >= 0; i--) base = blend(layers[i], base);
     return base;
   };
@@ -62,8 +64,9 @@ const { server, port } = await startServer(0);
 const browser = await puppeteer.launch({ executablePath, headless: 'new', args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 let fails = 0, warns = 0;
 try {
-  for (const url of pages) {
+  for (const theme of THEMES) for (const url of pages) {
     const page = await browser.newPage();
+    await page.evaluateOnNewDocument((t) => { try { localStorage.setItem('tvc-theme', t); } catch (e) { /* none */ } }, theme);
     const errors = [];
     page.on('pageerror', (e) => errors.push('js: ' + e.message));
     page.on('console', (m) => { if (m.type() === 'error' && !/fonts\.g|mermaid|ERR_(NAME|INTERNET|CONNECTION)|Failed to load resource: net::/.test(m.text())) errors.push('console: ' + m.text()); });
@@ -76,7 +79,7 @@ try {
     const hard = bad.filter((b) => b.ratio < MIN);
     const soft = bad.filter((b) => b.ratio >= MIN);
     fails += hard.length + errors.length; warns += soft.length;
-    console.log(`${errors.length || hard.length ? 'FAIL' : 'ok  '} ${url}` + (soft.length ? `  (${soft.length} below 4.5:1)` : ''));
+    console.log(`${errors.length || hard.length ? 'FAIL' : 'ok  '} [${theme}] ${url}` + (soft.length ? `  (${soft.length} below 4.5:1)` : ''));
     errors.forEach((e) => console.log('   ' + e));
     hard.forEach((b) => console.log(`   unreadable ${b.ratio}:1 "${b.text}" ${b.tag} fg ${b.fg} on ${b.bg}`));
     if (process.env.VERBOSE) soft.forEach((b) => console.log(`   low ${b.ratio}:1 "${b.text}" ${b.tag} ${b.fg} on ${b.bg}`));

@@ -1,6 +1,6 @@
 # Contributing
 
-This is a hardware + software project, so the rules are about keeping the **models, documents, BOM and firmware telling the same story**.
+This is a hardware + software project, so the rules are about keeping the **models, documents, parts lists and firmware telling the same story**.
 
 ## Source of truth
 
@@ -8,13 +8,13 @@ This is a hardware + software project, so the rules are about keeping the **mode
 |---|---|---|
 | Geometry / design parameters | `src/data/spec.js` | `npm test`, `npm run screenshots`, update docs that quote the number |
 | Printable parts | `scripts/cad/*.mjs` (parametric) | `npm run cad`, `npm run cad:assembly`, `npm test` (commit the regenerated STL files) |
-| Parts, masses, prices | `hardware/bom/*.json` | `npm run bom` (regenerates CSV and `docs/*/02-bom.md`) |
+| Parts and masses | `hardware/bom/*.json` | `npm run bom` (regenerates `docs/*/02-parts-list.md`) |
 | Build steps shown in the wizard | `src/data/steps.js` | keep `docs/*/03-build-guide.md` in sync |
 | Pin assignments | `firmware/*/include/pins.h` | update `web/wiring.html` and `docs/*/04-wiring.md` |
 | Vane mixer | `firmware/lib/tvc_core/mixers.h` **and** `src/sim/mixer.js` | `npm test` and `npm run test:firmware` (same test cases on both sides) |
 | Control defaults | `src/sim/attitude.js` presets | keep firmware gains in `firmware/*/src/main.cpp` and the docs equal |
 
-Generated files (`hardware/bom/*.csv`, `docs/*/02-bom.md`, `assets/screenshots/*`) are committed on purpose so GitHub shows them. Do not hand-edit them.
+Generated files (`docs/*/02-parts-list.md`, `assets/screenshots/*`) are committed on purpose so GitHub shows them. Do not hand-edit them.
 
 ## Workflow
 

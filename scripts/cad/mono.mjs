@@ -17,13 +17,13 @@ const INS = TOL.insert / 2;
 const STANDOFFS = [[1, 1], [1, -1], [-1, 1], [-1, -1]].map(([a, b]) => [a * M.standoff.x, b * M.standoff.y]);
 
 export const MC = {
-  post: { u: [-4, 4], v: 12 },
+  post: { u: [-M.post.t / 2, M.post.t / 2], v: M.post.w / 2 },
   node: { v: 32, u: [-5, 4], h: 22 },                      // servo cradle / lower-ring node
   servoTopX: R - 5.6,                                      // servo top face (shaft side) on the vane axis: 139.4
   rod: { d: 3, x: [16, R - 13] },                          // Ø3 x 116 rod: hub bore to adapter
   adapter: { x: [R - 18, R - 12], r: 10 },                 // 6 thick: clears the cradle plate (x 140) while the vane is slid in
   hornX: [R - 11.5, R - 9],
-  armRoot: [58, 78], armBolts: [64, 72], lap: 2.5, armW: 12,
+  armRoot: [58, 84], armBolts: [62, 70, 78], lap: 2.5, armW: M.arm.w, armPadBolts: 7, ribFrom: 88,
   ringZ: { lower: 0, guard: M.ring.guardZ },
 };
 
@@ -44,32 +44,36 @@ export function hubPlate() {
 // ---------------------------------------------------------------- electronics deck
 export function deckPlate() {
   const [z0, z1] = M.deck.z;
-  const cuts = [cylA('z', 3.25, z0 - 1, z1 + 1, 0, 38)];                                  // antenna base
+  const cuts = [];
   for (const [x, y] of STANDOFFS) cuts.push(cylA('z', TOL.m3 / 2, z0 - 1, z1 + 1, x, y));
   for (const [x, y] of [[-24, 12], [-24, -12], [24, 12], [24, -12], [0, 26], [0, -26], [-38, 0], [38, 0]]) {
-    cuts.push(extrude(rrect(10, 2.6, 1.2), z0 - 1, z1 + 1).translate([x, y, 0]));         // zip-tie slots for ESC, ESP32, receiver, BEC
+    cuts.push(extrude(rrect(10, 2.6, 1.2), z0 - 1, z1 + 1).translate([x, y, 0]));         // zip-tie slots for ESC, ESP32, BECs
   }
   return diff(extrude(rrect(M.deck.w, M.deck.d, 12), z0, z1), cuts);
 }
 
 // ---------------------------------------------------------------- arm (4x): plate stub to post top. Underside is one flat plane.
+// T-section: 14 x 5 flange with a 3 x 11 rib on top (about five times the vertical bending strength of a flat 12 x 5 bar). The end widens to a
+// 12 x 24 pad that sits on the whole top face of the post and takes two M3 screws.
 export function arm() {
-  const w = MC.armW / 2;
-  const bar = poly([[MC.armRoot[1], -w], [R, -w], [R, w], [MC.armRoot[1], w]], Z0, Z1);
-  const root = poly([[MC.armRoot[0], -7], [MC.armRoot[1], -7], [MC.armRoot[1], 7], [MC.armRoot[0], 7]], Z0, Z0 + MC.lap);
-  const cuts = [cylA('z', TOL.m3 / 2, Z0 - 1, Z1 + 1, R, 0)];
+  const w = MC.armW / 2, pv = M.post.w / 2, pu = M.post.t / 2;
+  const bar = poly([[MC.armRoot[1], -w], [R - 20, -w], [R - pu - 2, -pv], [R + pu, -pv], [R + pu, pv], [R - pu - 2, pv], [R - 20, w], [MC.armRoot[1], w]], Z0, Z1);
+  const root = poly([[MC.armRoot[0], -8], [MC.armRoot[1], -8], [MC.armRoot[1], 8], [MC.armRoot[0], 8]], Z0, Z0 + MC.lap);
+  const rib = boxM(MC.ribFrom, R - pu - 2, -M.arm.ribT / 2, M.arm.ribT / 2, Z1 - 0.5, Z1 + M.arm.ribH);
+  const cuts = [];
+  for (const y of [-MC.armPadBolts, MC.armPadBolts]) cuts.push(cylA('z', TOL.m3 / 2, Z0 - 1, Z1 + 1, R, y));
   for (const r of MC.armBolts) { cuts.push(cylA('z', TOL.m3 / 2, Z0 - 1, Z1 + 1, r, 0)); cuts.push(hexA('z', TOL.nutAF, Z0 - 1, Z0 + MC.lap + 0.001, r, 0)); }
-  return diff(union([bar, root, cylA('z', 8, Z0, Z1, R, 0)]), cuts);
+  return diff(union([bar, root, rib]), cuts);
 }
 
 // ---------------------------------------------------------------- post (4x): also the leg. Design frame: centred on (R, 0).
 export function post() {
   const [zl, zh] = M.postZ, [u0, u1] = MC.post.u, v = MC.post.v;
   let m = boxM(R + u0, R + u1, -v, v, zl, zh);
-  const cuts = [cylA('z', INS, zh - 6, zh + 1, R, 0)];                                    // arm screw
+  const cuts = [-MC.armPadBolts, MC.armPadBolts].map((y) => cylA('z', INS, zh - 6, zh + 1, R, y));   // two arm screws
   for (const z of [-17, 10]) cuts.push(cylA('x', INS, R + u0 - 1, R + u0 + 6, 0, z));     // stator screws, from the inner face
   for (const zc of [MC.ringZ.lower, MC.ringZ.guard]) for (const s of [-1, 1]) cuts.push(cylA('x', INS, R + u1 - 6, R + u1 + 1, s * 7, zc));   // ring tab screws, outer face
-  for (const [a, b] of [[-69, -25], [18, 44], [62, 80]]) cuts.push(boxM(R + u0 - 1, R + u1 + 1, -5.5, 5.5, a, b));   // lightening windows
+  for (const [a, b] of [[-69, -25], [18, 44], [62, 80]]) cuts.push(boxM(R + u0 - 1, R + u1 + 1, -4.5, 4.5, a, b));   // lightening windows
   return diff(m, cuts);
 }
 
@@ -165,5 +169,5 @@ export function hornAdapter() {
 }
 /** Foot cap for a post end (print in TPU). */
 export function foot() {
-  return diff(extrude(rrect(16, 32, 6), 0, 20), [extrude(rrect(8.4, 24.4, 1), 6, 21)]);
+  return diff(extrude(rrect(M.post.t + 8, M.post.w + 8, 6), 0, 20), [extrude(rrect(M.post.t + 0.4, M.post.w + 0.4, 1), 6, 21)]);
 }

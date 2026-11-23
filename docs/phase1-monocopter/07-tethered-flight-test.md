@@ -13,7 +13,7 @@ MC-1 has no attitude loop: **the pilot flies it**, and the tether limits the con
 | Shield | Net or polycarbonate; operator and spotter behind it or ≥ 5 m away |
 | Crew | Test Director, pilot (transmitter), spotter (eyes on the vehicle only), notes and video |
 | Equipment | Fire extinguisher, LiPo bag, spare props, spare battery, first-aid kit, tools, radio check |
-| Vehicle | Firmware committed, `ManualConfig` values written on the checklist, battery charged, CG verified |
+| Vehicle | Firmware committed, `PhoneConfig` values written on the checklist, battery charged, CG verified |
 
 ## Pre-flight checklist
 
@@ -21,9 +21,9 @@ MC-1 has no attitude loop: **the pilot flies it**, and the tether limits the con
 2. ☐ Battery inspected, voltage ≥ 16.0 V, strap tight
 3. ☐ Tether lines inspected and anchored; knots checked
 4. ☐ Area clear; spotter in position; wind within limit
-5. ☐ Vane sign check repeated (stick test at 45 % throttle with the **propeller removed**; then fit it)
-6. ☐ Transmitter: arm switch off, throttle zero, kill switch tested
-7. ☐ Failsafe tested by turning the transmitter off **before** connecting the battery to see that the vanes centre (no motor)
+5. ☐ Vane sign check repeated (wheel test with the **propeller removed**, [phone control guide](09-phone-control.md) §5; then fit it)
+6. ☐ Phone joined to `MC1-FLY`, app open, throttle limit at 50 %, ARM off, throttle zero, Kill tested
+7. ☐ Failsafe tested on the bench: with the app open and the vehicle disarmed, close the page and check that the link light goes red and the vanes centre (no motor)
 8. ☐ Connect the battery, check the LED and the buzzer (no low-voltage tone)
 9. ☐ Everyone confirms "clear"
 
@@ -31,10 +31,10 @@ MC-1 has no attitude loop: **the pilot flies it**, and the tether limits the con
 
 | Phase | Action | Pass criterion |
 |---|---|---|
-| T1 | Arm, throttle up over 5 s. **Stay low:** light on the posts, then barely airborne (≤ 20 cm) | Lifts without large rotation; the vanes respond to the sticks |
+| T1 | Arm, then raise the throttle with Climb (Smooth) over about 5 s. **Stay low:** light on the posts, then barely airborne (≤ 20 cm) | Lifts without large rotation; the vanes respond to the wheel |
 | T2 | Hold 10 s ≤ 20 cm with small inputs | No growing tilt or spin the pilot cannot correct |
 | T3 | Raise to ≈ 50 cm, hold 30 s | Stays inside ±0.5 m of the tether centre for 30 s in calm air (MC-08) |
-| T4 | Light stick commands: roll and pitch taps of about 0.5 s | The vehicle tilts and drifts a little and returns with an opposite tap; no overshoot the pilot cannot catch |
+| T4 | Light wheel commands: short pushes of about 0.5 s | The vehicle tilts and drifts a little and returns with an opposite tap; no overshoot the pilot cannot catch |
 | T5 | Pilot-induced tilt of ≈ 15°, then recovery | Recovered within 2 s without tether tension (MC-09) |
 | T6 | Throttle down, land, disarm, **remove the battery before approaching** | |
 
@@ -53,23 +53,23 @@ Each flight ≤ 60 s. Cool-down 5 minutes between flights. After each flight: ch
 ## Data to capture
 
 - Video (phone, from the side) for every flight, named with date and run number.
-- Notes: wind, temperature, battery voltage at start and end, hover throttle, any stick trim needed.
+- Notes: wind, temperature, battery voltage at start and end, hover throttle, any trim needed.
 
 ## Analysis (within 24 h of the session)
 
 | Look at | What it tells you |
 |---|---|
 | Hover throttle (radio channel monitor or video) | `hoverThrottle` |
-| Constant stick offset needed at hover | CG off the axis, or `yawTrim` |
+| Constant wheel offset needed at hover | CG off the axis, or `yawTrim` |
 | How hard the pilot had to work (video) | `rollScale`, `pitchScale`, `expo` |
 | Servo temperature | Servo dither; check the 6 V rail |
 | Battery voltage start and end | Capacity used, endurance |
 
-Update [05-firmware-and-control](05-firmware-and-control.md) with the final `ManualConfig` values.
+Update [05-firmware-and-control](05-firmware-and-control.md) with the final `PhoneConfig` values.
 
 ## Gate 2 pass criteria
 
 - 10 tethered flights (≥ 5 s hover each) without a crash.
 - T3 and T5 met and recorded on video.
 - All failsafes (RC loss, switch) demonstrated with the prop on **in the tethered setup** at least once.
-- The final `ManualConfig` values recorded in the repository.
+- The final `PhoneConfig` values recorded in the repository.

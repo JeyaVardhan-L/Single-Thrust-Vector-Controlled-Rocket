@@ -26,10 +26,10 @@ flowchart LR
 | Layer | Monocopter | Rocket | Shared code |
 |---|---|---|---|
 | Estimation | Mahony, roll/pitch used, yaw rate from gyro | Mahony, nose-tilt vector | `ahrs.h` |
-| Control | Pilot sticks to vanes (expo, throttle-scaled, mixer); no loop | PID pitch/yaw on nose-tilt error, spin-rate loop, gain schedule on throttle | `pid.h` |
+| Control | Phone wheel and throttle to vanes (ramps, expo, throttle-scaled, mixer); no loop | PID pitch/yaw on nose-tilt error, spin-rate loop, gain schedule on throttle | `pid.h` |
 | Actuator map | 4-vane mixer | 2-axis gimbal with 2:1 gear map; coaxial throttle mixer | `mixers.h` |
 | Supervision | arm / failsafe on the RC link | SAFE → ARMED → FLIGHT, abort | `flight_state.h`, `crsf.h` |
-| Hardware | ESP32-S3, ELRS, no IMU | Teensy 4.1, ICM-42688-P, BMP390, GPS, ELRS | `tvc_hal/` (RK-1) |
+| Hardware | ESP32-S3 (Wi-Fi to a phone), no IMU | Teensy 4.1, ICM-42688-P, BMP390, GPS, ELRS | `tvc_hal/` (RK-1) |
 
 The portable core is plain C++17 with no Arduino dependency, so it is unit-tested on a PC (`npm run test:firmware`). The Teensy projects only wire hardware to that core.
 

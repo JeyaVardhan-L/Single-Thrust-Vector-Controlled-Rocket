@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="theme.js"></script>
 <title>Printable parts</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,15 +13,17 @@
 <script type="importmap">{"imports":{"three":"../vendor/three/three.module.js","three/addons/":"../vendor/three/addons/"}}</script>
 </head>
 <body>
-<header class="topbar"><a class="brand" href="../index.html">TVC Rocket / Open build guide</a><nav><a href="../index.html">Home</a><a href="rocket.html">Rocket</a><a href="monocopter.html">Monocopter</a><a href="assembly.html?model=rocket">Build</a><a href="gimbal.html">Gimbal</a><a href="pid.html">PID</a><a href="sizing.html">Sizing</a><a href="wiring.html">Wiring</a><a href="bom.html?model=rocket">BOM</a><a href="parts.html" class="on">Parts</a><a href="doc.html?p=docs/README.md">Docs</a></nav><a class="cta" href="assembly.html?model=rocket">Start building<i>/</i></a></header>
+<header class="topbar"><a class="brand" href="../index.html">TVC Rocket / Open build guide</a><nav><a href="../index.html">Home</a><a href="rocket.html">Rocket</a><a href="monocopter.html">Monocopter</a><a href="assembly.html?model=monocopter">Build</a><a href="control.html">Control</a><a href="gimbal.html">Gimbal</a><a href="pid.html">PID</a><a href="sizing.html">Sizing</a><a href="wiring.html">Wiring</a><a href="parts.html" class="on">Parts</a><a href="doc.html?p=docs/README.md">Docs</a></nav><a class="cta" href="assembly.html?model=monocopter">Start building<i>/</i></a></header>
 <div class="app two">
   <aside class="side left" id="left">
     <h3>Printable parts <small id="count"></small></h3>
-    <p style="font-size:14px;margin:0 0 14px">Binary STL, millimetres, in print orientation. The smallest bed that fits everything is 220 × 220 mm.</p>
+    <div class="btn-row" id="tabs" style="margin-top:0"><button data-v="monocopter">1 · Monocopter</button><button data-v="rocket">2 · Rocket</button></div>
+    <p style="font-size:14px;margin:0 0 14px" id="order"></p>
+    <div class="btn-row"><a class="btn primary" id="zip" href="#" download>Download the set (zip)</a></div>
     <ul class="partlist" id="list"></ul>
     <h3>Selected part</h3>
     <div id="info" style="font-size:14px"></div>
-    <div class="btn-row"><a class="btn" id="dl" href="#">Download STL</a><a class="btn" href="doc.html?p=docs/cad-parts.md">Full list</a></div>
+    <div class="btn-row"><a class="btn" id="dl" href="#">Download this STL</a><a class="btn" id="full" href="#">Print list and hardware</a></div>
   </aside>
   <main class="stage" id="stage">
     <div class="badge"><b id="title">Printable parts</b>drag to orbit · right-drag to pan · wheel to zoom</div>
@@ -38,18 +41,26 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
 stage.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xe8e6e0);
+const th = () => TVCTheme.three();
+scene.background = new THREE.Color(th().bg);
 const pm = new THREE.PMREMGenerator(renderer);
 scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
 const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(200, 400, 250); scene.add(key);
 const camera = new THREE.PerspectiveCamera(35, 1, 1, 5000);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true; controls.screenSpacePanning = true; controls.zoomToCursor = true; controls.maxPolarAngle = Math.PI * 0.985;
-const grid = new THREE.GridHelper(300, 30, 0xc6c3ba, 0xdad7cf); scene.add(grid);
+let grid = new THREE.GridHelper(300, 30, th().gridMajor, th().grid); scene.add(grid);
 const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.55, metalness: 0.05 });
 const edgeMat = new THREE.LineBasicMaterial({ color: 0x000000 });
+const partColor = () => (TVCTheme.get() === 'dark' ? 0xd9d4ca : 0xffffff);
+mat.color.setHex(partColor());
 let mesh = null;
 
+addEventListener('themechange', () => {
+  const c = th(); scene.background.setHex(c.bg); mat.color.setHex(partColor());
+  const s = grid.scale.x, y = grid.position.y; scene.remove(grid); grid.geometry.dispose();
+  grid = new THREE.GridHelper(300, 30, c.gridMajor, c.grid); grid.scale.setScalar(s); grid.position.y = y; scene.add(grid);
+});
 function fit() {
   const w = stage.clientWidth, h = stage.clientHeight;
   renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
@@ -77,7 +88,7 @@ async function show(p) {
   $('#title').textContent = p.name;
   $('#info').innerHTML = `<div class="mono" style="font-size:10px;text-transform:uppercase;color:var(--muted)">${p.id}</div>
     <p style="margin:6px 0">${p.note}</p>
-    <table style="font-size:13px"><tr><th>Quantity</th><td>${p.qty}</td></tr><tr><th>Material</th><td>${p.material}</td></tr><tr><th>Size</th><td>${p.size_mm.join(' × ')} mm</td></tr><tr><th>Volume</th><td>${p.volume_cm3} cm³</td></tr><tr><th>BOM</th><td>${p.bom}</td></tr></table>`;
+    <table style="font-size:13px"><tr><th>Quantity</th><td>${p.qty}</td></tr><tr><th>Material</th><td>${p.material}</td></tr><tr><th>Size</th><td>${p.size_mm.join(' × ')} mm</td></tr><tr><th>Volume</th><td>${p.volume_cm3} cm³</td></tr><tr><th>List ID</th><td>${p.bom}</td></tr></table>`;
   $('#dl').href = '../' + p.file; $('#dl').setAttribute('download', p.id + '.stl');
   $('#dims').textContent = p.size_mm.join(' × ') + ' mm';
   const geo = parseSTL(await (await fetch('../' + p.file)).arrayBuffer());
@@ -97,11 +108,31 @@ async function show(p) {
 }
 
 const manifest = await (await fetch('../hardware/cad/parts.json')).json();
-$('#count').textContent = manifest.parts.length + ' files';
-$('#list').innerHTML = manifest.parts.map((p) => `<li data-id="${p.id}"><span class="dot"></span>${p.name}<span class="mono" style="margin-left:auto;font-size:10px">×${p.qty}</span></li>`).join('');
-document.querySelectorAll('#list li').forEach((li) => li.addEventListener('click', () => show(manifest.parts.find((p) => p.id === li.dataset.id))));
-const want = new URLSearchParams(location.search).get('part');
-await show(manifest.parts.find((p) => p.id === want) || manifest.parts[0]);
+const qs = new URLSearchParams(location.search);
+const ORDER = {
+  monocopter: 'Step 1 of the build line: print and build the monocopter first. Binary STL, millimetres, in print orientation; a 220 × 220 mm bed is enough.',
+  rocket: 'Step 2 of the build line: print these after the monocopter has flown. Binary STL, millimetres, in print orientation; a 220 × 220 mm bed is enough.',
+};
+const DOCS = { monocopter: 'docs/phase1-monocopter/printable-parts.md', rocket: 'docs/phase2-rocket/printable-parts.md' };
+let vehicle = qs.get('v') === 'rocket' || (manifest.parts.find((p) => p.id === qs.get('part')) || {}).vehicle === 'rocket' ? 'rocket' : 'monocopter';
+function list(v) {
+  vehicle = v;
+  const parts = manifest.parts.filter((p) => p.vehicle === v);
+  document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+  $('#count').textContent = `${parts.length} files · ${parts.reduce((a, p) => a + p.qty, 0)} pieces`;
+  $('#order').textContent = ORDER[v];
+  $('#zip').href = '../' + manifest.zips[v]; $('#zip').setAttribute('download', manifest.zips[v].split('/').pop());
+  $('#full').href = 'doc.html?p=' + DOCS[v];
+  $('#list').innerHTML = parts.map((p) => `<li data-id="${p.id}"><span class="dot"></span>${p.name}<span class="mono" style="margin-left:auto;font-size:10px">×${p.qty}</span></li>`).join('');
+  document.querySelectorAll('#list li').forEach((li) => li.addEventListener('click', () => show(parts.find((p) => p.id === li.dataset.id))));
+  return parts;
+}
+document.querySelectorAll('#tabs button').forEach((b) => b.addEventListener('click', async () => {
+  const parts = list(b.dataset.v); await show(parts[0]);
+  history.replaceState(null, '', '?v=' + b.dataset.v);
+}));
+const initial = list(vehicle);
+await show(initial.find((p) => p.id === qs.get('part')) || initial[0]);
 window.__ready = true;
 </script>
 </body>

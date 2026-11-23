@@ -29,7 +29,7 @@ A single propeller leaves a reaction torque that spins the vehicle. Two propelle
 | Legs | 4 × Ø8, hinge radius 94 mm at 238 mm, foot radius 255 mm: 34° from vertical, Ø510 mm footprint |
 | Overall height | ≈ 535 mm to the rod tops + ≈ 95 mm antenna |
 
-## 4. Mass, CG and inertia (from the BOM)
+## 4. Mass, CG and inertia (from the parts list)
 
 Source: [`hardware/bom/rocket.json`](../../hardware/bom/rocket.json). On-board mass is **≈ 1.06 kg**.
 

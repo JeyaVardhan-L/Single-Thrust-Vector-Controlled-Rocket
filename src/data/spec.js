@@ -9,11 +9,13 @@ export const MONO = {
   motor: { radius: 17.5, height: 30, zTop: 90 },                    // 28xx outrunner hanging under the hub plate, shaft down
   postRadius: 145,        // four posts on the diagonals; ring centre-lines sit on this radius (18 mm outside the prop tips, 13 mm to the ring)
   postZ: [-75, 90],       // posts double as legs
+  post: { t: 12, w: 24 },  // 12 mm radial x 24 mm tangential: twice the bending strength of the first 8 mm section
+  arm: { w: 14, ribT: 3, ribH: 11 },   // arms are T-sections: 14 x 5 flange with a 3 x 11 rib on top
   ring: { band: 5, lowerH: 8, guardH: 10, guardZ: 52 },             // lower ring (servo nodes + half arcs) and prop guard ring
   vane: { chord: 55, span: 91, thickness: 2.6, rStart: 30, rEnd: 121, hingeFromLE: 16.5 },   // four vanes on the axes, hinge 30 % back
   vaneMaxDeflectionDeg: 25,
   hub: { radius: 22, z: [-7.5, 16.5] },                             // lower hub under the prop: carries the vane rods and the stators
-  stator: { height: 40, thickness: 2.4 },                           // four fixed swirl-straightening fins on the diagonals
+  stator: { height: 40, thickness: 3.0 },                           // four fixed swirl-straightening fins on the diagonals
   plate: { radius: 58, z: [90, 95] },                               // hub plate: motor on the underside, battery on top
   deck: { w: 96, d: 88, z: [134, 137] },                            // electronics deck on four 39 mm standoffs
   standoff: { x: 36, y: 32, length: 39 },

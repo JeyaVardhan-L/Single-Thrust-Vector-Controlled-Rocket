@@ -18,12 +18,14 @@ jobs:
         run: node --test
       - name: STL files match the parametric source
         run: npm run cad:check
+      - name: Phone app is embedded in the firmware
+        run: node scripts/gen-webui.mjs --check
       - name: Firmware core host tests (g++)
         run: node scripts/test-firmware.mjs
-      - name: BOM tables are up to date
+      - name: Parts lists are up to date
         run: |
           node scripts/gen-bom.mjs
-          git diff --exit-code hardware/bom docs/phase1-monocopter/02-bom.md docs/phase2-rocket/02-bom.md
+          git diff --exit-code hardware/bom docs/phase1-monocopter/02-parts-list.md docs/phase2-rocket/02-parts-list.md
       - name: UI audit (console errors, requests, text contrast)
         run: |
           npm run audit

@@ -14,6 +14,7 @@ This project involves **spinning propellers, lithium batteries and control softw
 
 - Flying site and airspace: permission of the landowner, and the rules of the aviation authority where you fly. A drone or model aircraft in your country may have registration, weight, altitude or line-of-sight rules. Check them *before* the first flight.
 - Radio: ExpressLRS 2.4 GHz must be used on the band and power allowed in your country. Set the regional configuration correctly.
+- Wi-Fi (MC-1): the vehicle makes a 2.4 GHz access point at the ESP32 default power, which is allowed in most countries; check yours. Change the default password in `config.h`: anyone who can join the network can fly the vehicle. Wi-Fi is not a long-range control link: fly tethered, stay close, and test the failsafe (turn the phone's Wi-Fi off) before every session.
 - Insurance: model-aircraft clubs often include it for members. Verify yours.
 
 ## 3. Propellers (both vehicles)
@@ -56,7 +57,7 @@ This project involves **spinning propellers, lithium batteries and control softw
 
 ## 6. Software and failsafes
 
-- Failsafes exist to be tested, not trusted. Each failsafe (radio loss, arm switch, tilt abort, arm interlocks) has a test in the phase documents. Record results in `docs/test-logs/`.
+- Failsafes exist to be tested, not trusted. Each failsafe (link loss, arm switch, tilt abort, arm interlocks) has a test in the phase documents. Record results in `docs/test-logs/`.
 - The rocket's flight-state machine **enables the motors and the gimbal only in FLIGHT**, never arms if not near vertical or with the throttle up, and never arms with the RBF pin inserted. These are unit-tested ([firmware/test/host_tests.cpp](../firmware/test/host_tests.cpp)); do not edit them without updating the tests.
 - Tilt abort in FLIGHT cuts the motors. A cut vehicle falls: choose the site so that the vehicle landing anywhere within the cleared radius is harmless, and fly over soft ground.
 

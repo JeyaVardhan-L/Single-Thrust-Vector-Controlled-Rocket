@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="theme.js"></script>
 <title>Wiring diagrams</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,21 +11,22 @@
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:,">
 <style>
-  svg { width: 100%; height: auto; background: #e8e6e0; }
-  svg text { font-family: inherit; font-weight: 300; fill: #000; font-size: 12px; }
-  svg .sub { fill: #4a4840; font-weight: 100; font-size: 10.5px; }
-  svg .lbl { fill: #070607; font-size: 10px; paint-order: stroke; stroke: #e8e6e0; stroke-width: 3px; }
+  svg { width: 100%; height: auto; background: var(--bone); }
+  svg text { font-family: inherit; font-weight: 300; fill: var(--ink); font-size: 12px; }
+  svg .sub { fill: var(--muted); font-weight: 100; font-size: 10.5px; }
+  svg .lbl { fill: var(--ink); font-size: 10px; paint-order: stroke; stroke: var(--bone); stroke-width: 3px; }
+  svg .box { fill: var(--paper); stroke: var(--ink); }
   .legend { display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin:8px 0 }
   .legend i { display:inline-block; width:22px; height:4px; vertical-align:middle; margin-right:6px }
 </style>
 </head>
 <body>
-<header class="topbar"><a class="brand" href="../index.html">TVC Rocket / Open build guide</a><nav><a href="../index.html">Home</a><a href="rocket.html">Rocket</a><a href="monocopter.html">Monocopter</a><a href="assembly.html?model=rocket">Build</a><a href="gimbal.html">Gimbal</a><a href="pid.html">PID</a><a href="sizing.html">Sizing</a><a href="wiring.html" class="on">Wiring</a><a href="bom.html?model=rocket">BOM</a><a href="parts.html">Parts</a><a href="doc.html?p=docs/README.md">Docs</a></nav><a class="cta" href="assembly.html?model=rocket">Start building<i>/</i></a></header>
+<header class="topbar"><a class="brand" href="../index.html">TVC Rocket / Open build guide</a><nav><a href="../index.html">Home</a><a href="rocket.html">Rocket</a><a href="monocopter.html">Monocopter</a><a href="assembly.html?model=monocopter">Build</a><a href="control.html">Control</a><a href="gimbal.html">Gimbal</a><a href="pid.html">PID</a><a href="sizing.html">Sizing</a><a href="wiring.html" class="on">Wiring</a><a href="parts.html">Parts</a><a href="doc.html?p=docs/README.md">Docs</a></nav><a class="cta" href="assembly.html?model=monocopter">Start building<i>/</i></a></header>
 <div class="page">
   <h1>Wiring diagrams</h1>
   <p class="lead">Block-level wiring for both vehicles, with the pin assignment used by the firmware (ESP32-S3 for the monocopter, Teensy 4.1 for the rocket). The tables below are the same pin map as <code>firmware/*/include/pins.h</code>.</p>
   <div class="btn-row"><button id="bM">Phase 1 · Monocopter</button><button id="bR">Phase 2 · Rocket</button></div>
-  <div class="legend"><span><i style="background:#000"></i>battery / power (high current)</span><span><i style="background:#1925aa"></i>5 V / 6 V rails</span><span><i style="background:#9d9a92"></i>signal (digital)</span><span><i style="background:#4a4840"></i>bus (SPI / I²C / UART)</span></div>
+  <div class="legend"><span><i style="background:var(--ink)"></i>battery / power (high current)</span><span><i style="background:var(--indigo)"></i>5 V / 6 V rails</span><span><i style="background:#9d9a92"></i>signal (digital)</span><span><i style="background:var(--muted)"></i>bus (SPI / I²C / UART)</span></div>
   <div id="svgwrap"></div>
   <h2>Pin map</h2>
   <div style="overflow:auto"><table id="pins"></table></div>
@@ -33,13 +35,13 @@
     <li>One ground star point at the flight computer. Never daisy-chain servo ground through the logic board.</li>
     <li>Servo power rail is separate from the logic rail; join grounds only. In the rocket the servos have their own battery (pack B).</li>
     <li>Solder or use locking connectors. No bare Dupont jumpers in flight hardware: vibration will unseat them.</li>
-    <li>Twist motor phases and battery leads; keep them away from the receiver antenna (and the IMU on the rocket).</li>
+    <li>Twist motor phases and battery leads; keep them away from the ESP32-S3 antenna on the monocopter and from the receiver antenna and the IMU on the rocket.</li>
     <li>The remove-before-flight pin/loop breaks the main battery supply: the motors and servos cannot move with it in.</li>
   </ul>
 </div>
 <script type="module">
 const $ = (s) => document.querySelector(s);
-const COL = { pwr: '#000000', rail: '#1925aa', sig: '#9d9a92', bus: '#4a4840' };
+const COL = { pwr: 'var(--ink)', rail: 'var(--indigo)', sig: '#9d9a92', bus: 'var(--muted)' };
 
 const DIAGRAMS = {
   monocopter: {
@@ -48,16 +50,16 @@ const DIAGRAMS = {
       bat: [30, 220, 130, 60, 'LiPo 4S', '14.8 V 1500 mAh'], arm: [200, 220, 110, 60, 'Arm switch', 'RBF loop'], esc: [350, 150, 130, 70, 'ESC 40 A', 'PWM 400 Hz'], mot: [350, 40, 130, 60, 'Motor 28xx', '3-phase'],
       bec6: [350, 300, 130, 60, 'BEC 6 V / 5 A', 'servo rail'], bec5: [350, 400, 130, 60, 'BEC 5 V / 3 A', 'logic rail'],
       mcu: [600, 220, 160, 130, 'ESP32-S3', 'only controller'], div: [830, 120, 130, 56, 'Divider 47k/10k', 'ADC, pack V'],
-      rx: [830, 200, 130, 56, 'ELRS RX', 'CRSF UART'], buz: [830, 280, 130, 56, 'Buzzer + LED', 'GPIO'],
+      rx: [830, 200, 130, 56, 'Phone', 'Wi-Fi, web page'], buz: [830, 280, 130, 56, 'Buzzer + LED', 'GPIO'],
       sv: [600, 440, 160, 90, '4× vane servos', 'front/right/rear/left'],
     },
     edges: [
       ['bat', 'arm', 'pwr', ''], ['arm', 'esc', 'pwr', 'XT60'], ['esc', 'mot', 'pwr', '3 phases'], ['arm', 'bec6', 'pwr', ''], ['arm', 'bec5', 'pwr', ''],
       ['bec5', 'mcu', 'rail', '5 V'], ['bec6', 'sv', 'rail', '6 V'], ['mcu', 'esc', 'sig', 'GPIO4 PWM'], ['mcu', 'sv', 'sig', 'GPIO5 6 7 15'],
-      ['mcu', 'div', 'sig', 'GPIO1'], ['mcu', 'rx', 'bus', 'Serial1'], ['mcu', 'buz', 'sig', ''],
+      ['mcu', 'div', 'sig', 'GPIO1'], ['mcu', 'rx', 'bus', 'Wi-Fi'], ['mcu', 'buz', 'sig', ''],
     ],
     pins: [['ESP32-S3 GPIO', 'Function', 'Connected to'], ['4', '400 Hz PWM output (LEDC 0)', 'ESC signal'], ['5 / 6 / 7 / 15', 'Servo PWM 1 front, 2 right, 3 rear, 4 left (50 Hz)', 'Vane servos'],
-      ['18 / 17', 'Serial1 RX / TX (420 000 baud)', 'ELRS receiver TX / RX (CRSF)'], ['1', 'ADC, pack voltage', '47 k / 10 k divider midpoint'], ['8', 'Buzzer', 'Active buzzer 5 V via transistor'],
+      ['Wi-Fi', 'Access point MC1-FLY, http://192.168.4.1/', 'The phone (built into the ESP32-S3)'], ['1', 'ADC, pack voltage', '47 k / 10 k divider midpoint'], ['8', 'Buzzer', 'Active buzzer 5 V via transistor'],
       ['9', 'Status LED', 'LED + 330 Ω'], ['5V / GND', '5 V in', 'Logic BEC']],
   },
   rocket: {
@@ -90,22 +92,25 @@ function svg(d) {
   for (const [a, b, kind, label] of d.edges) {
     const A = c(a), B = c(b);
     const midx = (A.x + B.x) / 2;
-    s += `<path d="M${A.x} ${A.y} C ${midx} ${A.y}, ${midx} ${B.y}, ${B.x} ${B.y}" fill="none" stroke="${COL[kind]}" stroke-width="${kind === 'pwr' ? 3.2 : 1.8}" opacity=".85"/>`;
+    s += `<path d="M${A.x} ${A.y} C ${midx} ${A.y}, ${midx} ${B.y}, ${B.x} ${B.y}" fill="none" style="stroke:${COL[kind]}" stroke-width="${kind === 'pwr' ? 3.2 : 1.8}" opacity=".85"/>`;
     if (label) s += `<text class="lbl" x="${midx}" y="${(A.y + B.y) / 2 - 4}" text-anchor="middle">${label}</text>`;
   }
   for (const k in N) {
     const [x, y, w, h, t, sub] = N[k];
-    s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="0" fill="#ffffff" stroke="#000000"/><text x="${x + w / 2}" y="${y + h / 2 - 2}" text-anchor="middle" font-weight="600">${t}</text><text class="sub" x="${x + w / 2}" y="${y + h / 2 + 13}" text-anchor="middle">${sub}</text>`;
+    s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="0" class="box"/><text x="${x + w / 2}" y="${y + h / 2 - 2}" text-anchor="middle" font-weight="600">${t}</text><text class="sub" x="${x + w / 2}" y="${y + h / 2 + 13}" text-anchor="middle">${sub}</text>`;
   }
   return s + '</svg>';
 }
+let cur = 'monocopter';
 function show(w) {
+  cur = w;
   const d = DIAGRAMS[w];
   $('#svgwrap').innerHTML = svg(d);
   $('#pins').innerHTML = d.pins.map((r, i) => `<tr>${r.map((c) => (i ? `<td>${c}</td>` : `<th>${c}</th>`)).join('')}</tr>`).join('');
   $('#bM').classList.toggle('on', w === 'monocopter'); $('#bR').classList.toggle('on', w === 'rocket');
   history.replaceState(null, '', '?model=' + w);
 }
+addEventListener('themechange', () => show(cur));
 $('#bM').onclick = () => show('monocopter'); $('#bR').onclick = () => show('rocket');
 show(new URLSearchParams(location.search).get('model') === 'rocket' ? 'rocket' : 'monocopter');
 window.__ready = true;

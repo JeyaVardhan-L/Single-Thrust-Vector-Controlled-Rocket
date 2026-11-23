@@ -9,6 +9,7 @@
 #include "flight_state.h"
 #include "manual_mode.h"
 #include "mixers.h"
+#include "phone_mode.h"
 #include "pid.h"
 
 static int g_fail = 0, g_run = 0;
@@ -218,6 +219,126 @@ static void test_manual_mode() {
   CHECK(allEqual && o.vane[0] > 0.19f, "yaw trim moves all four vanes together");
 }
 
+
+// Run the phone logic for `seconds` at 250 Hz with a fixed input; returns the last output.
+static tvc::PhoneOutput runPhone(tvc::PhoneMode& m, tvc::PhoneInput in, float seconds) {
+  tvc::PhoneOutput o;
+  in.dt = 0.004f;
+  for (int i = 0; i < (int)(seconds / in.dt); ++i) o = m.update(in);
+  return o;
+}
+
+static void test_phone_mode() {
+  std::printf("phone mode (MC-1, web app): arming, smooth throttle, direction wheel, kill, failsafe\n");
+  using namespace tvc;
+  PhoneConfig cfg;
+  {
+    PhoneMode m(cfg);
+    PhoneInput in; in.msSinceCmd = 10; in.armReq = true;
+    CHECK(!m.update(in).armed, "arm switch already on at power-up never arms (must be seen off first)");
+    in.armReq = false; m.update(in);
+    in.armReq = true; in.throttle = 0.30f;
+    CHECK(!m.update(in).armed, "arming is refused with the throttle up");
+    in.throttle = 0.f;
+    PhoneOutput o = m.update(in);
+    CHECK(o.armed && o.state == PhoneState::Armed && o.motorUs == 1000.f, "arms with the throttle at zero; motor stays at the idle pulse");
+  }
+  {
+    // smooth ramps: a step to 60 % takes about 2 s up, and the way down is limited too
+    PhoneMode m(cfg);
+    PhoneInput in; in.msSinceCmd = 5; in.armReq = false; m.update(in);
+    in.armReq = true; m.update(in);
+    in.throttle = 0.6f;
+    PhoneOutput o = runPhone(m, in, 0.5f);
+    NEAR(o.throttle, 0.15f, 0.01f, "throttle ramps at the up rate (0.30 per second), no step");
+    o = runPhone(m, in, 2.0f);
+    NEAR(o.throttle, 0.6f, 1e-4f, "reaches the target");
+    NEAR(o.motorUs, 1600.f, 0.2f, "throttle maps to 1000..2000 us");
+    in.throttle = 0.f;
+    o = runPhone(m, in, 0.5f);
+    NEAR(o.throttle, 0.3f, 0.01f, "descends at the down rate (0.60 per second)");
+    in.throttle = 1.f; in.limit = 0.5f;
+    o = runPhone(m, in, 5.f);
+    NEAR(o.throttle, 0.5f, 1e-4f, "the app's throttle limit caps the throttle");
+  }
+  {
+    // direction wheel -> vanes (the sign convention of src/sim/mixer.js)
+    PhoneMode m(cfg);
+    float v[4];
+    m.mixWheel(0.f, 1.f, 0.f, 1.f, 0.f, 0.f, v);
+    CHECK(std::fabs(v[0]) < 1e-6f && std::fabs(v[2]) < 1e-6f, "wheel forward: front and rear vanes stay");
+    CHECK(v[1] > 0.1f && v[3] < -0.1f && std::fabs(v[1] + v[3]) < 1e-6f, "wheel forward: right vane +, left vane - (rearward force below the CG = nose down)");
+    m.mixWheel(1.f, 0.f, 0.f, 1.f, 0.f, 0.f, v);
+    CHECK(std::fabs(v[1]) < 1e-6f && std::fabs(v[3]) < 1e-6f, "wheel right: right and left vanes stay");
+    CHECK(v[0] < -0.1f && v[2] > 0.1f && std::fabs(v[0] + v[2]) < 1e-6f, "wheel right: front vane -, rear vane + (roll right)");
+    float a[4], b[4];
+    m.mixWheel(0.f, 1.f, 0.f, 1.f, 0.f, 0.f, a);
+    m.mixWheel(0.f, -1.f, 0.f, 1.f, 0.f, 0.f, b);
+    CHECK(std::fabs(a[1] + b[1]) < 1e-6f && std::fabs(a[3] + b[3]) < 1e-6f, "wheel backward is the mirror of forward");
+    m.mixWheel(0.02f, 0.02f, 0.f, 1.f, 0.f, 0.f, v);
+    CHECK(v[0] == 0.f && v[1] == 0.f && v[2] == 0.f && v[3] == 0.f, "the dead zone ignores a tiny wheel offset");
+    m.mixWheel(3.f, 4.f, 0.f, 1.f, 0.f, 0.f, v);   // far outside the disc: clipped to radius 1, direction kept
+    float ref[4]; m.mixWheel(0.6f, 0.8f, 0.f, 1.f, 0.f, 0.f, ref);
+    CHECK(std::fabs(v[0] - ref[0]) < 1e-6f && std::fabs(v[1] - ref[1]) < 1e-6f, "a wheel outside the unit disc is clipped, the direction is kept");
+    m.mixWheel(0.f, 0.f, 1.f, 1.f, 0.f, 0.f, v);
+    bool same = true; for (int i = 1; i < 4; ++i) same = same && std::fabs(v[i] - v[0]) < 1e-6f;
+    CHECK(same && v[0] > 0.1f, "yaw moves all four vanes the same way");
+    m.mixWheel(0.f, 0.f, 0.f, 1.f, 0.f, 0.f, v);
+    CHECK(v[0] == 0.f && v[1] == 0.f && v[2] == 0.f && v[3] == 0.f, "wheel centred: all vanes centred");
+  }
+  {
+    // vanes: centred while armed at low throttle, scaled with throttle, preview when disarmed
+    PhoneMode m(cfg);
+    PhoneInput in; in.msSinceCmd = 5; in.wheelX = 1.f;
+    PhoneOutput o = m.update(in);
+    CHECK(!o.armed && std::fabs(o.vane[0]) > 0.1f, "disarmed: the vanes follow the wheel (bench check, motor off)");
+    CHECK(o.motorUs == 1000.f, "disarmed: motor at the idle pulse");
+    in.armReq = true; m.update(in);        // first sample with the switch on after power-up: not armed, the switch was never off
+    in.armReq = false; m.update(in);
+    in.armReq = true; m.update(in);
+    in.throttle = 0.08f; o = runPhone(m, in, 1.f);
+    CHECK(o.armed && o.vane[0] == 0.f && o.vane[2] == 0.f, "armed at idle: vanes centred (too little prop wash to steer)");
+    in.throttle = 0.9f; o = runPhone(m, in, 4.f);
+    const float hi = std::fabs(o.vane[0]);
+    in.throttle = 0.3f; o = runPhone(m, in, 4.f);
+    CHECK(std::fabs(o.vane[0]) > hi, "vane command is scaled up at low throttle and down at high throttle");
+  }
+  {
+    // link loss: ramp down, vanes centred, then disarm; no automatic re-arm
+    PhoneMode m(cfg);
+    PhoneInput in; in.msSinceCmd = 5; m.update(in);
+    in.armReq = true; m.update(in);
+    in.throttle = 0.5f; PhoneOutput o = runPhone(m, in, 3.f);
+    CHECK(o.armed && std::fabs(o.throttle - 0.5f) < 1e-3f, "hovering at 50 %");
+    in.msSinceCmd = 1000; in.wheelX = 1.f;
+    o = runPhone(m, in, 0.5f);
+    CHECK(o.state == PhoneState::Failsafe && o.armed && o.throttle < 0.5f && o.throttle > 0.1f, "link lost: failsafe ramps the throttle down smoothly");
+    CHECK(o.vane[0] == 0.f && o.vane[1] == 0.f && o.vane[2] == 0.f && o.vane[3] == 0.f, "link lost: vanes centred");
+    in.msSinceCmd = 3000; o = m.update(in);
+    CHECK(!o.armed && o.motorUs == 1000.f, "no link for 2.5 s: disarmed, motor off");
+    in.msSinceCmd = 5; o = runPhone(m, in, 0.2f);
+    CHECK(!o.armed, "does not re-arm by itself when the link returns with the arm switch still on");
+    in.armReq = false; m.update(in);
+    in.armReq = true; in.throttle = 0.f; in.wheelX = 0.f;
+    CHECK(m.update(in).armed, "re-arms after the switch is cycled with the throttle at zero");
+  }
+  {
+    // kill: motor off at once, stays off until the arm switch is cycled
+    PhoneMode m(cfg);
+    PhoneInput in; in.msSinceCmd = 5; m.update(in);
+    in.armReq = true; m.update(in);
+    in.throttle = 0.4f; runPhone(m, in, 2.f);
+    in.kill = true;
+    PhoneOutput o = m.update(in);
+    CHECK(!o.armed && o.motorUs == 1000.f && o.state == PhoneState::Killed, "kill: motor off in one step, no ramp");
+    in.kill = false; in.throttle = 0.f;
+    CHECK(!m.update(in).armed, "after a kill the vehicle stays disarmed while the arm switch is on");
+    in.armReq = false; m.update(in);
+    in.armReq = true;
+    CHECK(m.update(in).armed, "and can be armed again after the switch is cycled");
+  }
+}
+
 int main() {
   test_crsf();
   test_pid_stabilises_double_integrator();
@@ -230,6 +351,7 @@ int main() {
   test_flight_sequence();
   test_flight_abort_and_arming_rules();
   test_manual_mode();
+  test_phone_mode();
   std::printf("\n%d checks, %d failed\n", g_run, g_fail);
   return g_fail ? 1 : 0;
 }

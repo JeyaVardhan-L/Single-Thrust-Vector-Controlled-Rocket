@@ -5,11 +5,11 @@ Everything needed to print the RK-1 rocket is in this repository, ready to slice
 ```
 hardware/cad/
   stl/rocket/        18 binary STL files, millimetres, already in print orientation
-  parts.json         manifest: part, quantity, material, BOM line, size, volume
+  parts.json         manifest: part, quantity, material, parts-list ID, size, volume
   README.md          this file
 ```
 
-The list with quantities, sizes, materials and notes for each part is **[docs/cad-parts.md](../../docs/cad-parts.md)**. You can also browse and download the parts, with a 3D preview, on the website page [web/parts.html](../../web/parts.html).
+The list with quantities, sizes, materials and notes for each part is **[docs/cad-parts.md](../../docs/cad-parts.md)** (two sets: monocopter first, rocket second; one zip each in this folder). You can also browse and download the parts, with a 3D preview, on the website page [web/parts.html](../../web/parts.html).
 
 ## What you get
 
@@ -34,7 +34,7 @@ The parts are parametric. Edit the dimension, regenerate, and everything stays c
 
 ```bash
 npm install
-npm run cad            # rewrites the STL files, parts.json and docs/cad-parts.md
+npm run cad            # rewrites the STL files, the two zips, parts.json and the printable-parts docs
 npm run cad:assembly   # interference check at nine gimbal poses
 npm test               # includes checks on every STL
 ```

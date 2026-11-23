@@ -7,6 +7,7 @@
 | **Backlash** | Free play between gear teeth or in a joint; shows up as dead-band in the thrust vector |
 | **BEC** | Battery Eliminator Circuit: regulator that makes 5 V or 6 V from the flight battery |
 | **CG / CP** | Centre of gravity / centre of pressure |
+| **Access point (AP)** | A Wi-Fi network made by a device itself. The MC-1 ESP32-S3 is one: the phone joins it and opens the control page |
 | **CRSF** | Crossfire serial protocol used by ExpressLRS receivers |
 | **ELRS** | ExpressLRS, open-source RC link |
 | **ESC** | Electronic speed controller for a brushless motor |

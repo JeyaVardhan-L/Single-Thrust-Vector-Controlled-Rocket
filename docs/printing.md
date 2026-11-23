@@ -29,7 +29,7 @@ Strength is strongest **along** the layer lines and weakest **between** layers. 
 
 ## Print list: MC-1 monocopter
 
-The STL files are in [`hardware/cad/stl/monocopter/`](../hardware/cad/stl/monocopter/), already in print orientation; the full table (quantity, size, material, mass, hardware) is [cad-parts](cad-parts.md). A 220 × 220 mm bed is enough. Summary:
+The STL files are in [`hardware/cad/stl/monocopter/`](../hardware/cad/stl/monocopter/), already in print orientation; the full table (quantity, size, material, mass, hardware) is [monocopter printable parts](phase1-monocopter/printable-parts.md) (zip: [mc1-monocopter-stl.zip](../hardware/cad/mc1-monocopter-stl.zip)). A 220 × 220 mm bed is enough. Summary:
 
 | Part | Qty | Material | Orientation | Notes |
 |---|---|---|---|---|
@@ -46,11 +46,11 @@ The STL files are in [`hardware/cad/stl/monocopter/`](../hardware/cad/stl/monoco
 | Horn adapters | 4 | PETG | flat | Four M2 x 10 into the servo horn |
 | Foot caps | 4 | TPU 95A | flat | Slip over the post bottoms |
 
-Filament: see the mass column in [cad-parts](cad-parts.md) (the BOM uses 65 % of the solid mass). Print time: 35 to 45 h on a 0.4 mm nozzle.
+Filament: see the mass column in [printable parts](phase1-monocopter/printable-parts.md) (the parts list uses 65 % of the solid mass). Print time: 35 to 45 h on a 0.4 mm nozzle.
 
 ## Print list: RK-1 rocket
 
-The STL files are in [`hardware/cad/stl/rocket/`](../hardware/cad/stl/rocket/), already in print orientation. The complete table (quantity, size, material, mass, notes) is [cad-parts](cad-parts.md). Summary:
+The STL files are in [`hardware/cad/stl/rocket/`](../hardware/cad/stl/rocket/), already in print orientation. The complete table (quantity, size, material, mass, notes) is [rocket printable parts](phase2-rocket/printable-parts.md) (zip: [rk1-rocket-stl.zip](../hardware/cad/rk1-rocket-stl.zip)). Summary:
 
 | Part | Qty | Material | Orientation | Notes |
 |---|---|---|---|---|
@@ -65,7 +65,7 @@ The STL files are in [`hardware/cad/stl/rocket/`](../hardware/cad/stl/rocket/), 
 | Cage arms, struts, guard arcs | 6 + 3 + 3 | PA-CF or PETG | flat (struts standing) | Arms lap onto the plate stubs |
 | Leg hinge fittings, brace clips | 4 + 4 | PA-CF / PETG | flat | Ø8.2 socket for the carbon leg |
 
-Filament: see the mass column in [cad-parts](cad-parts.md). The model parameters for every dimension are in `src/data/spec.js` and `scripts/cad/rocket.mjs`.
+Filament: see the mass column in [printable parts](phase2-rocket/printable-parts.md). The model parameters for every dimension are in `src/data/spec.js` and `scripts/cad/rocket.mjs`.
 
 ## Post-processing
 
@@ -74,7 +74,7 @@ Filament: see the mass column in [cad-parts](cad-parts.md). The model parameters
 3. Test fit every M3 screw in every hole before assembly.
 4. Check flatness of the frames on a table; sand high spots.
 5. Inspect: no layer separation, no stringing in holes, no warping > 0.5 mm.
-6. Weigh each part and write the mass on it; update the BOM if it differs from the BOM value by more than 10 %.
+6. Weigh each part and write the mass on it; update the parts list if it differs from the listed value by more than 10 %.
 
 ## Tolerances (starting values, tune per printer)
 

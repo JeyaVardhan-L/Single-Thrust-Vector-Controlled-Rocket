@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="theme.js"></script>
 <title>Build guide · interactive assembly</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +13,7 @@
 <script type="importmap">{"imports":{"three":"../vendor/three/three.module.js","three/addons/":"../vendor/three/addons/"}}</script>
 </head>
 <body>
-<header class="topbar"><a class="brand" href="../index.html">TVC Rocket / Open build guide</a><nav><a href="../index.html">Home</a><a href="rocket.html">Rocket</a><a href="monocopter.html">Monocopter</a><a href="assembly.html?model=rocket" class="on">Build</a><a href="gimbal.html">Gimbal</a><a href="pid.html">PID</a><a href="sizing.html">Sizing</a><a href="wiring.html">Wiring</a><a href="bom.html?model=rocket">BOM</a><a href="parts.html">Parts</a><a href="doc.html?p=docs/README.md">Docs</a></nav><a class="cta" href="assembly.html?model=rocket">Start building<i>/</i></a></header>
+<header class="topbar"><a class="brand" href="../index.html">TVC Rocket / Open build guide</a><nav><a href="../index.html">Home</a><a href="rocket.html">Rocket</a><a href="monocopter.html">Monocopter</a><a href="assembly.html?model=monocopter" class="on">Build</a><a href="control.html">Control</a><a href="gimbal.html">Gimbal</a><a href="pid.html">PID</a><a href="sizing.html">Sizing</a><a href="wiring.html">Wiring</a><a href="parts.html">Parts</a><a href="doc.html?p=docs/README.md">Docs</a></nav><a class="cta" href="assembly.html?model=monocopter">Start building<i>/</i></a></header>
 <div class="wizard">
   <main class="stage" id="stage">
     <div class="badge" id="badge"></div>
@@ -20,6 +21,7 @@
   </main>
   <aside class="steps">
     <div class="head">
+      <div class="btn-row" id="which" style="margin-top:0"><a class="btn" href="?model=monocopter">1 · Monocopter (first)</a><a class="btn" href="?model=rocket">2 · Rocket</a></div>
       <div id="stepNo" style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em"></div>
       <h2 id="stepTitle" style="margin:.2em 0 0;font-size:20px"></h2>
       <div class="progress"><i id="prog"></i></div>
@@ -44,18 +46,20 @@ const id = params.get('model') === 'monocopter' ? 'monocopter' : 'rocket';
 const guide = STEPS[id];
 const isR = id === 'rocket';
 document.title = guide.title;
+document.querySelectorAll('#which a').forEach((a) => a.classList.toggle('on', a.search === '?model=' + id));
 document.getElementById('badge').innerHTML = `<b>${guide.title}</b>`;
 document.getElementById('doc').href = 'doc.html?p=' + guide.doc.replace('../', '');
 
-const stage = createStage(document.getElementById('stage'), {
-  cameraPos: isR ? [760, 520, 860] : [380, 300, 430], target: isR ? [0, 290, 0] : [0, 130, 0],
-  gridSize: isR ? 1400 : 800, preserveDrawingBuffer: params.has('shot'),
-});
+const stage = createStage(document.getElementById('stage'), { gridSize: isR ? 1400 : 800, preserveDrawingBuffer: params.has('shot') });
 const model = isR ? buildRocket() : buildMonocopter();
 stage.scene.add(model.root);
 stage.onTick((dt, t) => model.update && model.update(dt, t));
 if (!isR) model.setThrottle(0.3);
 const T = stage.THREE;
+const fullView = () => stage.fitObject(model.root, isR ? [0.9, 0.42, 1.0] : [1, 0.72, 1.1], isR ? 0.84 : 0.78);
+{ const f = fullView(); stage.setView(f.pos.toArray(), f.t.toArray()); }
+let framed = false;
+addEventListener('resize', () => { if (!framed) { const f = fullView(); stage.setView(f.pos.toArray(), f.t.toArray()); } });
 
 let cur = Math.max(0, Math.min(guide.steps.length - 1, (+params.get('step') || 1) - 1));
 const dots = document.getElementById('dots');
@@ -79,13 +83,12 @@ function go(i) {
     model.parts.setHighlight(p.id, focus.has(p.id));
   }
   // frame the focused parts
-  const box = new T.Box3();
   const ids = [...focus].filter((x) => model.parts.get(x));
-  (ids.length ? ids : [...installed]).forEach((x) => box.expandByObject(model.parts.get(x).group));
-  if (!box.isEmpty()) {
-    const c = box.getCenter(new T.Vector3()); const size = box.getSize(new T.Vector3()).length();
+  const objs = (ids.length ? ids : [...installed]).map((x) => model.parts.get(x).group);
+  if (objs.length) {
     const dir = stage.camera.position.clone().sub(stage.controls.target).normalize();
-    camGoal = { target: c, pos: c.clone().addScaledVector(dir, Math.max(size * 1.7, 260)) };
+    const f = stage.fitObject(objs, dir.toArray(), ids.length ? 0.5 : 0.78);
+    camGoal = { target: f.t, pos: f.pos };
   }
   document.getElementById('stepNo').textContent = `Step ${cur + 1} of ${guide.steps.length}` + (s.gate ? ` · ${s.gate}` : '');
   document.getElementById('stepTitle').textContent = s.title;
@@ -107,6 +110,7 @@ stage.onTick(() => {
   stage.camera.position.lerp(camGoal.pos, 0.08);
   if (stage.camera.position.distanceTo(camGoal.pos) < 1) camGoal = null;
 });
+framed = true;
 go(cur);
 let frames = 0; stage.onTick(() => { if (++frames === 24) window.__ready = true; });
 </script>

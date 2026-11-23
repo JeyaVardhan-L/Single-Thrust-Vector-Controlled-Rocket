@@ -17,8 +17,10 @@ const outlineMat = (ink, width) => new THREE.ShaderMaterial({
  * @param opts       { ink, fill, accent, accentCats, sulfur, visible: [part ids], explode, azimuth, spin, zoom, outline, edgeAngle, target }
  */
 export function createIsoStage(container, model, opts = {}) {
+  const T0 = typeof window !== 'undefined' && window.TVCTheme ? window.TVCTheme.three() : null;   // light / dark palette (web/theme.js)
+  const themeOn = !!T0 && opts.ink === undefined && opts.fill === undefined && opts.accent === undefined;
   const {
-    ink = 0x000000, fill = 0xffffff, accent = 0x1925aa, sulfur = 0xd6d3cb,
+    ink = T0 ? T0.lineInk : 0x000000, fill = T0 ? T0.fill : 0xffffff, accent = T0 ? T0.accent : 0x1925aa, sulfur = T0 ? T0.sulfur : 0xd6d3cb,
     accentCats = ['actuation', 'propulsion'], sulfurCats = ['power'],
     visible = null, hide = [], explode = 0, azimuth = 45, spin = 0, zoom = 1, outline = 1.1, edgeAngle = 28,
     bg = null, pad = 1.12, isStatic = false, fps = 24, maxDpr = 2,
@@ -40,6 +42,7 @@ export function createIsoStage(container, model, opts = {}) {
   };
   const edgeMat = new THREE.LineBasicMaterial({ color: ink });
   const hull = outlineMat(ink, outline);
+  const emissiveMats = [];
   for (const p of model.parts.list()) {
     if ((visible && !visible.includes(p.id)) || hide.includes(p.id)) { p.group.visible = false; continue; }
     const mat = accentCats.includes(p.category) ? fills.accent : sulfurCats.includes(p.category) ? fills.sulfur : fills.base;
@@ -48,7 +51,7 @@ export function createIsoStage(container, model, opts = {}) {
     for (const m of meshes) {
       const geo = m.geometry;
       const emissive = m.material && m.material.type === 'MeshBasicMaterial'; // LEDs
-      m.material = emissive ? new THREE.MeshBasicMaterial({ color: fill }) : mat;
+      if (emissive) emissiveMats.push(m.material = new THREE.MeshBasicMaterial({ color: fill })); else m.material = mat;
       m.castShadow = m.receiveShadow = false;
       if (geo.boundingSphere === null) geo.computeBoundingSphere();
       if (geo.boundingSphere.radius < 0.9) continue;
@@ -96,6 +99,15 @@ export function createIsoStage(container, model, opts = {}) {
     new IntersectionObserver((es) => { inView = es[0].isIntersecting; if (inView) draw(); }).observe(container);
   }
   window.addEventListener('resize', () => { fit(); draw(); });
+  if (themeOn) {
+    window.addEventListener('themechange', () => {
+      const c = window.TVCTheme.three();
+      fills.base.color.setHex(c.fill); fills.accent.color.setHex(c.accent); fills.sulfur.color.setHex(c.sulfur);
+      emissiveMats.forEach((e) => e.color.setHex(c.fill));
+      edgeMat.color.setHex(c.lineInk); hull.uniforms.uInk.value.setHex(c.lineInk);
+      draw();
+    });
+  }
   draw();
   const tick = (now) => {
     if (!running) return;

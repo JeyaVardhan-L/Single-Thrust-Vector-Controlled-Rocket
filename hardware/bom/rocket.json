@@ -1,6 +1,6 @@
 {
   "project": "RK-1 TVC rocket (Phase 2)",
-  "note": "Masses are catalogue values; weigh each part as you build. Prices are indicative USD. Propulsion: coaxial contra-rotating brushless pair on a servo gimbal, see docs/design-choices.md.",
+  "note": "Masses are catalogue values; the printed-parts mass comes from the CAD files. Weigh each part as you build and update this file; the sizing page and the docs are generated from it.",
   "items": [
     {
       "id": "R-01",
@@ -9,7 +9,6 @@
       "qty": 4,
       "onboard": true,
       "mass_g": 23,
-      "price_usd": 4,
       "spec": "Solid or thick-wall tube, 6 mm dia",
       "notes": "Cut to 400 mm, deburr, seal ends with CA.",
       "part": "rods"
@@ -21,7 +20,6 @@
       "qty": 3,
       "onboard": true,
       "mass_g": 22,
-      "price_usd": 3,
       "spec": "PETG/PA-CF, 110 mm square, 4 mm thick",
       "notes": "Print flat, 4 perimeters, 40% gyroid.",
       "part": "pcb-frame"
@@ -33,7 +31,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 38,
-      "price_usd": 4,
       "spec": "PA-CF recommended: landing loads",
       "notes": "133 mm diamond, corners on the leg axes",
       "part": "landing-frame"
@@ -45,7 +42,6 @@
       "qty": 4,
       "onboard": true,
       "mass_g": 22,
-      "price_usd": 4,
       "spec": "Carbon or aluminium tube, hinged at the corner lugs",
       "notes": "34 deg from vertical, footprint 510 mm",
       "part": "landing-gear"
@@ -57,7 +53,6 @@
       "qty": 4,
       "onboard": true,
       "mass_g": 3,
-      "price_usd": 1,
       "spec": "From gimbal mount to leg mid-point",
       "notes": "",
       "part": "landing-gear"
@@ -69,9 +64,8 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 48,
-      "price_usd": 6,
       "spec": "PA-CF or machined 6061 aluminium",
-      "notes": "STL files in hardware/cad/stl/rocket. See docs/cad-parts.md.",
+      "notes": "STL files in hardware/cad/stl/rocket. See docs/phase2-rocket/printable-parts.md.",
       "part": "tvc"
     },
     {
@@ -81,7 +75,6 @@
       "qty": 2,
       "onboard": true,
       "mass_g": 8,
-      "price_usd": 5,
       "spec": "Acetal, nylon or printed PA; CAD names gear36t1 / gear36t2",
       "notes": "The two 36T sectors are printed into the outer ring and the collar. Check backlash; keep spares.",
       "part": "gear36t1"
@@ -93,7 +86,6 @@
       "qty": 2,
       "onboard": true,
       "mass_g": 22,
-      "price_usd": 18,
       "spec": ">= 4.5 kg.cm @ 7.4 V, <= 0.08 s/60 deg, 6-8.4 V rated",
       "notes": "Buy a spare.",
       "part": "gear36t1"
@@ -105,7 +97,6 @@
       "qty": 4,
       "onboard": true,
       "mass_g": 3,
-      "price_usd": 1,
       "spec": "Stainless button-head M3, 3x7x3 mm bearings (one per pivot)",
       "notes": "Bolt is clamped to the fixed part, the bearing rides in the moving boss. Tighten until the bearing just drags, back off 1/8 turn.",
       "part": "tvc"
@@ -117,7 +108,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 3,
-      "price_usd": 1,
       "spec": "Silicone wire, strain-relieved",
       "notes": "Servo 2 rides on the outer ring.",
       "part": "gear36t2"
@@ -129,7 +119,6 @@
       "qty": 2,
       "onboard": true,
       "mass_g": 82,
-      "price_usd": 38,
       "spec": "6S rated, 5 mm shaft, prop adapters for CW and CCW",
       "notes": "Static thrust about 1.5 kgf each with a 9 in prop on 6S (recorded on the stand at Gate B).",
       "part": "motor"
@@ -141,7 +130,6 @@
       "qty": 2,
       "onboard": true,
       "mass_g": 13,
-      "price_usd": 6,
       "spec": "Matched pair, balanced. Upper prop (below its motor) is a pusher type, lower prop (above its motor) is a standard type; both blow air downward",
       "notes": "Contra-rotating pair: reaction torques cancel.",
       "part": "motor"
@@ -153,7 +141,6 @@
       "qty": 4,
       "onboard": false,
       "mass_g": 13,
-      "price_usd": 6,
       "spec": "Same as M-02",
       "notes": "The first crash breaks one.",
       "part": "motor"
@@ -165,7 +152,6 @@
       "qty": 2,
       "onboard": true,
       "mass_g": 12,
-      "price_usd": 20,
       "spec": "One per motor",
       "notes": "Set the directions in the configurator before the first spin.",
       "part": "motor"
@@ -177,7 +163,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 52,
-      "price_usd": 10,
       "spec": "Carbon tube 58 mm + printed plates, 3 struts and a Ø246 mm guard ring",
       "notes": "Holds motor A above the props and motor B below.",
       "part": "motor"
@@ -189,7 +174,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 12,
-      "price_usd": 8,
       "spec": "Two ESC feeds, capacitor close to each ESC",
       "notes": "",
       "part": "motor"
@@ -201,7 +185,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 215,
-      "price_usd": 42,
       "spec": "22.2 V nominal, 25.2 V full",
       "notes": "Feeds the ESCs and, through BECs, the servos.",
       "part": "battery-frame"
@@ -213,7 +196,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 35,
-      "price_usd": 9,
       "spec": "7.4 V nominal",
       "notes": "Keeps the flight computer and log alive and electrically isolated from ESC noise.",
       "part": "battery-frame"
@@ -225,7 +207,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 12,
-      "price_usd": 10,
       "spec": "Switching regulator, input 6S, output 7.4 V",
       "notes": "Servos are HV rated.",
       "part": "pcb-frame"
@@ -237,7 +218,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 5,
-      "price_usd": 6,
       "spec": "",
       "notes": "",
       "part": "pcb-frame"
@@ -249,7 +229,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 8,
-      "price_usd": 6,
       "spec": "RBF pin breaks the main-pack supply: removable with gloves",
       "notes": "",
       "part": "pcb-frame"
@@ -261,7 +240,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 30,
-      "price_usd": 10,
       "spec": "12-14 AWG motor and power leads, 26-28 AWG signals, locking connectors",
       "notes": "No bare Dupont connectors on a rocket: vibration.",
       "part": "pcb-frame"
@@ -273,7 +251,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 4,
-      "price_usd": 32,
       "spec": "",
       "notes": "",
       "part": "pcb-frame"
@@ -285,7 +262,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 2,
-      "price_usd": 15,
       "spec": "SPI, +-2000 dps, +-16 g",
       "notes": "Mount near the stack axis.",
       "part": "pcb-frame"
@@ -297,7 +273,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 1,
-      "price_usd": 8,
       "spec": "",
       "notes": "Vent the frame; avoid sealed cavities.",
       "part": "pcb-frame"
@@ -309,7 +284,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 2,
-      "price_usd": 14,
       "spec": "CRSF over UART, link statistics on the radio",
       "notes": "Antenna on the top plate, clear of the carbon rods.",
       "part": "telemetry-frame"
@@ -321,7 +295,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 8,
-      "price_usd": 18,
       "spec": "UART, 10 Hz",
       "notes": "Top plate, antenna clear of carbon rods.",
       "part": "telemetry-frame"
@@ -333,7 +306,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 2,
-      "price_usd": 3,
       "spec": "",
       "notes": "",
       "part": "telemetry-frame"
@@ -345,7 +317,6 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 0.5,
-      "price_usd": 6,
       "spec": "FAT32/exFAT, 500 Hz logging",
       "notes": "Logs are how you tune.",
       "part": "pcb-frame"
@@ -357,9 +328,8 @@
       "qty": 1,
       "onboard": true,
       "mass_g": 40,
-      "price_usd": 14,
       "spec": "",
-      "notes": "Counts per part are in docs/cad-parts.md (hardware list). About 23 M3 inserts, 75 M3 screws, 50 M3 nuts (8 nylock).",
+      "notes": "Counts per part are in docs/phase2-rocket/printable-parts.md (hardware list). About 23 M3 inserts, 75 M3 screws, 50 M3 nuts (8 nylock).",
       "part": "landing-frame"
     },
     {
@@ -369,7 +339,6 @@
       "qty": 1,
       "onboard": false,
       "mass_g": 0,
-      "price_usd": 45,
       "spec": "Steel/aluminium, anchored",
       "notes": "See docs/phase2-rocket/07-test-stand-procedure.md",
       "part": "test-stand"
@@ -381,7 +350,6 @@
       "qty": 1,
       "onboard": false,
       "mass_g": 0,
-      "price_usd": 25,
       "spec": "Between people and the props",
       "notes": "Props shed fragments.",
       "part": ""
@@ -393,7 +361,6 @@
       "qty": 1,
       "onboard": false,
       "mass_g": 0,
-      "price_usd": 25,
       "spec": "Limit to 2-3 A for the first power-up",
       "notes": "",
       "part": ""
@@ -405,7 +372,6 @@
       "qty": 1,
       "onboard": false,
       "mass_g": 0,
-      "price_usd": 80,
       "spec": "Any EdgeTX radio with an ELRS module",
       "notes": "Skip if you already own one.",
       "part": ""
@@ -417,7 +383,6 @@
       "qty": 1,
       "onboard": false,
       "mass_g": 0,
-      "price_usd": 50,
       "spec": "",
       "notes": "",
       "part": ""
@@ -429,7 +394,6 @@
       "qty": 1,
       "onboard": false,
       "mass_g": 0,
-      "price_usd": 12,
       "spec": "Rated > 80 N",
       "notes": "",
       "part": ""
@@ -441,7 +405,6 @@
       "qty": 1,
       "onboard": false,
       "mass_g": 0,
-      "price_usd": 40,
       "spec": "",
       "notes": "Required at every powered test.",
       "part": ""

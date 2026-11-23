@@ -1,8 +1,8 @@
-# CAD ↔ model ↔ BOM mapping
+# CAD ↔ model ↔ parts-list mapping
 
 The source CAD is a Fusion project named `rera-final` ("Read-only file" banner, so changes are not saved). Its browser tree, as visible in the screenshot, and how this repository represents each item:
 
-| CAD component | three.js part id | Model file | BOM lines | What it is |
+| CAD component | three.js part id | Model file | Parts-list lines | What it is |
 |---|---|---|---|---|
 | `tvc:1` | `tvc` | `src/models/rocket.js` | G-01, G-04, G-06 | Gimbal mount, outer ring, inner collar, pins, bearings |
 | `gear36t1:1` | `gear36t1` | `rocket.js` | G-02, G-03 | 36-tooth gear sector + 18T pinion + servo for axis 1 |
@@ -18,7 +18,7 @@ The source CAD is a Fusion project named `rera-final` ("Read-only file" banner, 
 
 The monocopter parts are:
 
-| three.js part id | What it is | BOM lines |
+| three.js part id | What it is | Parts-list lines |
 |---|---|---|
 | `frame-ring` | Guard ring, spokes, hub plate | F-01..F-03 |
 | `legs` | Three landing legs | F-01 |
@@ -39,7 +39,7 @@ The monocopter parts are:
 
 ## Printable files per CAD component
 
-The printable STL files are in [`hardware/cad/stl/rocket/`](../hardware/cad/stl/rocket/); the full list is [cad-parts](cad-parts.md).
+The printable STL files are in [`hardware/cad/stl/rocket/`](../hardware/cad/stl/rocket/); the full list is [the rocket printable parts](phase2-rocket/printable-parts.md); the monocopter set is [here](phase1-monocopter/printable-parts.md).
 
 | CAD component | STL files |
 |---|---|

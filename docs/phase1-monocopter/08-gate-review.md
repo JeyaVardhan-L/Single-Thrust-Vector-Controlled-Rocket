@@ -13,14 +13,14 @@ Gate 3 decides whether Phase 2 **powered** tests may start. Hold the review with
 | 3 | Gate 2 complete | 10 flights, video, notes | ☐ |
 | 4 | All failsafes demonstrated | RC loss, arm switch, interlocks | ☐ |
 | 5 | Notes and video of every flight stored | `logs/` or release asset | ☐ |
-| 6 | Measured values committed to the repo | `ManualConfig` values, hover throttle, vane authority in the design doc | ☐ |
+| 6 | Measured values committed to the repo | `PhoneConfig` values, hover throttle, vane authority in the design doc | ☐ |
 | 7 | Incident log reviewed | No open safety issues | ☐ |
 
 ### Reuse readiness (what moves to the rocket)
 
 | # | Item | Needed for | OK |
 |---|---|---|---|
-| 8 | CRSF parser, arming rules and failsafe behave as tested (`npm run test:firmware`) | Rocket firmware | ☐ |
+| 8 | Phone-mode arming rules, throttle ramps, kill and failsafe behave as tested (`npm run test:firmware`); the CRSF parser is carried to the rocket | Rocket firmware | ☐ |
 | 9 | Servo power architecture validated (no brown-out, separate 6 V BEC) | Gimbal servos | ☐ |
 | 10 | ESC, motor and propeller handling: direction check, balancing, prop-direction test with paper | Rocket motors | ☐ |
 | 11 | Side-force control understood: vane signs, mixer convention, authority vs throttle | Gimbal sign checks and gain schedule | ☐ |

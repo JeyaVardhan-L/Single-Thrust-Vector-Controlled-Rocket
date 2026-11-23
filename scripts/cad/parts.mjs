@@ -1,4 +1,4 @@
-// Registry of every printable part: file name, quantity, material, BOM line and print orientation.
+// Registry of every printable part: file name, quantity, material, parts-list ID and print orientation.
 // `build()` returns the solid in its design frame; `rot` turns it into the print orientation.
 import * as R from './rocket.mjs';
 import * as C from './mono.mjs';
@@ -46,7 +46,7 @@ export const PARTS = [
   { id: 'mc-hub-plate', vehicle: 'monocopter', name: 'Hub plate (motor under, battery on top)', qty: 1, material: 'PETG', bom: 'F-01', build: () => C.hubPlate(), rot: [0, 0, 0],
     note: 'Motor pattern 16 x 16 and 19 x 19 (M3). Four strap slots for the battery, four standoff holes, four arm stubs.' },
   { id: 'mc-deck-plate', vehicle: 'monocopter', name: 'Electronics deck', qty: 1, material: 'PETG', bom: 'F-01', build: () => C.deckPlate(), rot: [0, 0, 0],
-    note: 'On four M3 x 39 mm standoffs above the battery, in the prop intake airflow. Zip-tie slots for the ESC, ESP32 board, receiver and BECs.' },
+    note: 'On four M3 x 39 mm standoffs above the battery, in the prop intake airflow. Zip-tie slots for the ESC, the ESP32 board and the BECs.' },
   { id: 'mc-arm', vehicle: 'monocopter', name: 'Arm (hub plate to post)', qty: 4, material: 'PETG', bom: 'F-01', build: () => C.arm(), rot: [0, 0, 0],
     note: 'Half lap under the plate stub, two M3 x 8 with nuts in the hexagon holes; tip screws into the post (M3 x 10).' },
   { id: 'mc-post', vehicle: 'monocopter', name: 'Post / leg', qty: 4, material: 'PETG', bom: 'F-01', build: () => C.post(), rot: [0, -90, 0],

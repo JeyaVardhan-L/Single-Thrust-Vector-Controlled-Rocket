@@ -6,7 +6,7 @@ Interactive version with each step highlighted on the model: **[web/assembly.htm
 
 Tools: M3 and M2 hex drivers, soldering iron (inserts and electronics), side cutters, small files, a 3.2 mm drill, a 2 mm and a 1.5 mm drill, epoxy (5 minute and 30 minute), thread-lock, multimeter, a scale, a protractor or phone angle app, a prop balancer.
 
-All printed parts are in [`hardware/cad/stl/monocopter/`](../../hardware/cad/stl/monocopter/); the list with sizes and hardware counts is [cad-parts](../cad-parts.md). A 220 × 220 mm bed is enough.
+All printed parts are in [`hardware/cad/stl/monocopter/`](../../hardware/cad/stl/monocopter/), or as one zip ([mc1-monocopter-stl.zip](../../hardware/cad/mc1-monocopter-stl.zip)); the list with sizes, hardware counts and notes on strength is [printable parts](printable-parts.md). A 220 × 220 mm bed is enough.
 
 ## Step 1: Print and prepare
 
@@ -63,16 +63,16 @@ All printed parts are in [`hardware/cad/stl/monocopter/`](../../hardware/cad/stl
 
 1. Fit the four M3 × 39 standoffs on the hub plate (screws from underneath).
 2. Strap the battery to the hub plate with two Velcro straps through the slots (75 × 35 mm, centred, XT60 pointing out). Foam under the battery.
-3. Fix the electronics deck on the standoffs. Zip-tie the ESC, the two BECs, the ESP32-S3 board and the receiver to the deck through the slots (see the layout in [04-wiring](04-wiring.md)). The receiver antenna comes up through the 6.5 mm hole, vertical, away from the carbon and metal.
+3. Fix the electronics deck on the standoffs. Zip-tie the ESC, the two BECs and the ESP32-S3 board to the deck through the slots (see the layout in [04-wiring](04-wiring.md)). There is no radio receiver: the ESP32-S3 is the link, so keep its antenna end clear of the carbon and the motor leads.
 4. Wire per [04-wiring](04-wiring.md). Route the servo leads along the posts with zip ties every 40 mm and leave a service loop at each servo.
 
 **Check:** continuity battery+ to battery− reads open; no shorts between rails; first power-up on a current-limited supply or a smoke stopper, idle current < 0.2 A.
 
 ## Step 8: Balance (CG check)
 
-1. Weigh the vehicle without the propeller. Compare with the BOM (≈ 813 g without the 12 g prop).
+1. Weigh the vehicle without the propeller. Compare with the parts list (≈ 882 g without the 12 g prop).
 2. Hang the vehicle on two strings from opposite sides of the hub plate: it must hang level. Move the battery a few mm along its strap until it does.
-3. The CG height is about 56 mm above the vane axes (the prop plane). Record the measured value in the test log.
+3. The CG height is about 53 mm above the vane axes (near the prop plane). Record the measured value in the test log.
 
 **Check:** the CG is within ±3 mm of the axis; the battery cannot slide under a 3 g shake.
 

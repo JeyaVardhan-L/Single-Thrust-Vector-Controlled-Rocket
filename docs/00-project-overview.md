@@ -12,9 +12,9 @@ A **vane-controlled monocopter** (MC-1) exercises those on a simpler, cheaper ve
 
 - one brushless motor with a **10 inch** propeller, and four servo-driven vanes in the wash instead of a gimbal,
 - vectored in the same sense as the rocket: a side force below the CG, so the vane mixer and the sign conventions are the same kind of problem,
-- an **ESP32-S3** as the only controller, an ExpressLRS receiver, one ESC and four servos. **No IMU**: the pilot closes the attitude loop and the tether limits the consequences,
+- an **ESP32-S3** as the only controller, flown from a **phone over Wi-Fi** (a web page the vehicle serves itself), one ESC and four servos. **No IMU, no radio receiver**: the pilot closes the attitude loop and the tether limits the consequences,
 - cheap enough to crash (≈ US$ 440 total including test gear; reusable),
-- **print, plug and fly**: 45 printable parts, a bill of materials, wiring, firmware and a build guide.
+- **print, plug and fly**: 45 printable parts, a parts list, wiring, firmware, a phone control page and a build guide.
 
 | What Phase 1 proves | Why it matters in Phase 2 |
 |---|---|
@@ -22,7 +22,7 @@ A **vane-controlled monocopter** (MC-1) exercises those on a simpler, cheaper ve
 | ESC and brushless-motor handling, prop direction and balancing, prop safety | The rocket has two motors and two ESCs |
 | Side-force control: vane order, signs, authority versus throttle | The gimbal has the same sign and gain-schedule questions |
 | Failsafes: RC loss, arm switch, interlocks | Same philosophy in the rocket's state machine |
-| ELRS link, CRSF parsing, range | Same link and parser in the rocket |
+| Link supervision, failsafes, ramped throttle | Same philosophy in the rocket's state machine; the rocket uses an ELRS link |
 | Operating discipline: checklists, call-outs, test director, tether handling | Reused for the stand tests |
 
 What Phase 1 does **not** prove: IMU mounting, the attitude estimator and the PID loop (these are exercised and gated in Phase 2), a mechanical gimbal with gears and backlash, a coaxial contra-rotating pair and its differential-throttle spin control, a higher thrust level and the heavier power system. Phase 2 has its own gates for those.
@@ -34,21 +34,21 @@ What Phase 1 does **not** prove: IMU mounting, the attitude estimator and the PI
 |---|---|---|
 | Thrust source | 1 × 28xx motor (≈ 1100 KV) + 10″ prop, 4S | 2 × 3110 motors, contra-rotating 9″ props, 6S |
 | Control actuators | 4 vanes in the prop wash, 4 servos | 2-axis gimbal, 2 servos, 2:1 gears; differential throttle for spin |
-| Take-off mass (BOM) | ≈ 825 g | ≈ 1.06 kg |
-| Thrust-to-weight | ≈ 2 (target ≥ 2, to be confirmed on the stand) | ≈ 2.5 (target ≥ 2) |
+| Take-off mass (parts list) | ≈ 892 g | ≈ 1.06 kg |
+| Thrust-to-weight | ≈ 2 (target ≥ 2, recorded at Gate 1) | ≈ 2.5 (target ≥ 2) |
 | Controller | ESP32-S3, 250 Hz, no IMU | Teensy 4.1, 500 Hz, IMU |
-| Link | ExpressLRS | ExpressLRS |
-| Run time | ≈ 7 min hover | ≈ 6 to 8 min hover |
+| Link | Wi-Fi from a phone (web app on the ESP32-S3) | ExpressLRS |
+| Run time | ≈ 6 min hover | ≈ 6 to 8 min hover |
 | Recovery | tether, landing legs | tether, landing legs (propulsive landing under pilot control) |
 | Attitude reference | none: the pilot closes the loop | accelerometer + gyro (no magnetometer) |
 
-Numbers in the table come from the BOM JSON files.
+Numbers in the table come from the parts-list JSON files.
 
 ## Deliverables of this repository
 
-1. Models: [rocket](../web/rocket.html) and [monocopter](../web/monocopter.html) in three.js, parameterised, plus **[print-ready STL files](cad-parts.md)** for both.
+1. Models: [rocket](../web/rocket.html) and [monocopter](../web/monocopter.html) in three.js, parameterised, plus **[print-ready STL files](cad-parts.md)** in two separate sets (monocopter first, rocket second).
 2. Procedures: build guides, test procedures and gates, checklists.
-3. Components: BOMs with mass and cost, wiring, pin maps.
+3. Components: parts lists with masses, wiring, pin maps.
 4. Software: a portable tested core plus an ESP32-S3 project (MC-1) and a Teensy 4.1 project (RK-1).
 5. Tutorials: build wizards, PID lab, gimbal lab, sizing, wiring.
 
@@ -56,7 +56,7 @@ Numbers in the table come from the BOM JSON files.
 
 | Step | Work | Output |
 |---|---|---|
-| 0 | Read safety, confirm the [design choices](design-choices.md) and CAD parameters | Updated `spec.js` + BOM |
+| 0 | Read safety, confirm the [design choices](design-choices.md) and CAD parameters | Updated `spec.js` + parts list |
 | 1 | Order Phase 1 parts, print MC-1 | Built airframe |
 | 2 | Compile and bring up firmware on the bench | Gate 0 |
 | 3 | Thrust stand, vane authority | Gate 1 |

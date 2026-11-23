@@ -10,11 +10,11 @@ Tools: those of [Phase 1](../phase1-monocopter/03-build-guide.md) plus a dial in
 
 ## Step 1: Print and prepare
 
-All printable parts are in [`hardware/cad/stl/rocket/`](../../hardware/cad/stl/rocket/), already in print orientation; the list with quantities, sizes and materials is [cad-parts](../cad-parts.md). The smallest bed that fits everything is 220 × 220 mm.
+All printable parts are in [`hardware/cad/stl/rocket/`](../../hardware/cad/stl/rocket/), already in print orientation; the list with quantities, sizes and materials is [printable parts](printable-parts.md). The smallest bed that fits everything is 220 × 220 mm.
 
 | Do | Check |
 |---|---|
-| Print per [printing](../printing.md) and [cad-parts](../cad-parts.md): 3 stack plates (PETG), landing frame, gimbal mount / ring / collar, two servo brackets, two motor plates, six cage arms, three struts, three guard arcs, four leg hinges, four brace clips (PA-CF or PETG), two pinions (PA12 or metal) | Weights vs BOM ±10 % |
+| Print per [printing](../printing.md) and [printable parts](printable-parts.md): 3 stack plates (PETG), landing frame, gimbal mount / ring / collar, two servo brackets, two motor plates, six cage arms, three struts, three guard arcs, four leg hinges, four brace clips (PA-CF or PETG), two pinions (PA12 or metal) | Weights vs BOM ±10 % |
 | Cut four Ø6 mm carbon rods to 400 mm; deburr; seal ends with thin CA (gloves and a mask when cutting carbon) | Rods straight, equal length ±0.5 mm |
 | Press M3 heat-set inserts: 3 in the telemetry plate, 4 in the PCB plate, 2 under the gimbal mount, 2 on top of the outer ring, 4 in each cage strut | Flush, square |
 | Ream the rod holes to Ø6.2 mm and the two bearing bores in each of the outer ring and collar to Ø7.0 mm if tight; clear the Ø8.2 leg sockets with an 8 mm drill | Rod slides through every boss by hand; 683ZZ presses in by hand pressure |
@@ -82,7 +82,7 @@ Install bottom-up and lock each plate with the M3 clamp screw at each rod boss:
 
 ## Step 7: Mass and balance
 
-1. Weigh the vehicle without props: compare with the BOM (≈ 1.06 kg).
+1. Weigh the vehicle without props: compare with the parts list (≈ 1.06 kg).
 2. Find the CG (hang on two cords): expect ≈ 243 mm above the ground. Lateral CG offset ≤ 3 mm (move the packs).
 3. Update `L` (CG − 150 mm) and estimate `I` (bifilar pendulum or the CAD): put both in the PID lab and the gimbal lab.
 

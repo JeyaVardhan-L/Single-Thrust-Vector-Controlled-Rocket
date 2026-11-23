@@ -35,9 +35,13 @@ const shots = [
   { file: 'ui-wiring.png',          url: 'web/wiring.html?model=rocket',            w: 1400, h: 1000 },
   { file: 'ui-sizing.png',          url: 'web/sizing.html?model=rocket',            w: 1400, h: 1000 },
   { file: 'ui-parts.png',           url: 'web/parts.html?part=gimbal-ring',         w: 1400, h: 900 },
-  { file: 'ui-bom.png',             url: 'web/bom.html?model=rocket',               w: 1400, h: 1000 },
   { file: 'ui-index.png',           url: 'index.html',                              w: 1400, h: 1000, full: true },
   { file: 'ui-pid.png',             url: 'web/pid.html',                            w: 1400, h: 1000 },
+  { file: 'ui-control-phone.png',   url: 'firmware/monocopter/web/control.html?demo=1', w: 390, h: 844 },
+  { file: 'ui-control.png',         url: 'web/control.html',                        w: 1400, h: 1000 },
+  { file: 'ui-dark-index.png',      url: 'index.html',                              w: 1400, h: 1000, theme: 'dark' },
+  { file: 'ui-dark-monocopter.png', url: 'web/monocopter.html?pose&select=vanes',   w: 1600, h: 900, theme: 'dark' },
+  { file: 'ui-dark-rocket.png',     url: 'web/rocket.html?pose&select=tvc',         w: 1600, h: 900, theme: 'dark' },
   { file: 'ui-gimbal.png',          url: 'web/gimbal.html',                         w: 1400, h: 1000 },
 ];
 
@@ -54,6 +58,7 @@ try {
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+    await page.evaluateOnNewDocument((t) => { try { localStorage.setItem('tvc-theme', t); } catch (e) { /* none */ } }, s.theme || 'light');
     await page.setViewport({ width: s.w, height: s.h, deviceScaleFactor: 1 });
     const url = `http://localhost:${server.address().port}/${s.url}` + (s.cam ? `&cam=${s.cam}` : '');
     await page.goto(url, { waitUntil: 'networkidle0' });
